@@ -30,9 +30,18 @@ final class StatisticsViewController: UIViewController {
         label.text = "Статистика"
         label.font = UIFont(name: "YSDisplay-Bold", size: 34)
         label.textColor = .ypBlackDay
+        label.contentMode = .scaleAspectFit
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
+    
+    init() {
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
