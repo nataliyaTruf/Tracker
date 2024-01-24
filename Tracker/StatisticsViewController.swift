@@ -8,7 +8,6 @@
 import UIKit
 
 final class StatisticsViewController: UIViewController {
-    
     private let emptyStateImageView = {
         let image = UIImageView(image: UIImage(named: "error3"))
         image.contentMode = .scaleAspectFit

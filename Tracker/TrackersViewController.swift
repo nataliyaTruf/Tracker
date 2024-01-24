@@ -12,14 +12,14 @@ final class TrackersViewController: UIViewController {
     var categories: [TrackerCategory] = []
     var completedTrackers: [TrackerRecord] = []
     
-    private let emptyStateImageView = {
+    private lazy var emptyStateImageView = {
         let image = UIImageView(image: UIImage(named: "error1"))
         image.contentMode = .scaleAspectFit
         image.translatesAutoresizingMaskIntoConstraints = false
         return image
     }()
     
-    private let emptyStateLabel: UILabel = {
+    private lazy var emptyStateLabel: UILabel = {
         let label = UILabel()
         label.text = "Что будем отслеживать?"
         label.font = UIFont(name: "YSDisplay-Medium", size: 12)
@@ -44,8 +44,11 @@ final class TrackersViewController: UIViewController {
         setupSearchController()
     }
     
+
     @objc private func addTrackerButtonTapped() {
-        // TODO: add logic
+        let selectTrackerVC = SelectTrackerViewController()
+        selectTrackerVC.modalPresentationStyle = .pageSheet
+        present(selectTrackerVC, animated: true)
     }
     
     @objc func dateChanged(_ datePicker: UIDatePicker) {

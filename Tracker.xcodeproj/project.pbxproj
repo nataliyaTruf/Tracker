@@ -20,6 +20,7 @@
 		7F49694D2B5D5015006C27A0 /* ReccuringSchedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F49694C2B5D5015006C27A0 /* ReccuringSchedule.swift */; };
 		7F49694F2B5D530F006C27A0 /* TrackerCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F49694E2B5D530F006C27A0 /* TrackerCategory.swift */; };
 		7F4969512B5D53DB006C27A0 /* TrackerRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F4969502B5D53DB006C27A0 /* TrackerRecord.swift */; };
+		7F4969612B61432E006C27A0 /* SelectTrackerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F4969602B61432E006C27A0 /* SelectTrackerViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +39,7 @@
 		7F49694C2B5D5015006C27A0 /* ReccuringSchedule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReccuringSchedule.swift; sourceTree = "<group>"; };
 		7F49694E2B5D530F006C27A0 /* TrackerCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerCategory.swift; sourceTree = "<group>"; };
 		7F4969502B5D53DB006C27A0 /* TrackerRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerRecord.swift; sourceTree = "<group>"; };
+		7F4969602B61432E006C27A0 /* SelectTrackerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectTrackerViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +81,7 @@
 				7F4968A92B55426A006C27A0 /* Info.plist */,
 				7F4968B52B55578D006C27A0 /* TrackersViewController.swift */,
 				7F4968B72B556C9A006C27A0 /* StatisticsViewController.swift */,
+				7F4969602B61432E006C27A0 /* SelectTrackerViewController.swift */,
 			);
 			path = Tracker;
 			sourceTree = "<group>";
@@ -187,6 +190,7 @@
 				7F49694B2B5D4AA3006C27A0 /* Tracker.swift in Sources */,
 				7F4968A02B554269006C27A0 /* MainTabBarController.swift in Sources */,
 				7F49694F2B5D530F006C27A0 /* TrackerCategory.swift in Sources */,
+				7F4969612B61432E006C27A0 /* SelectTrackerViewController.swift in Sources */,
 				7F49694D2B5D5015006C27A0 /* ReccuringSchedule.swift in Sources */,
 				7F4968B82B556C9A006C27A0 /* StatisticsViewController.swift in Sources */,
 				7F4969512B5D53DB006C27A0 /* TrackerRecord.swift in Sources */,
