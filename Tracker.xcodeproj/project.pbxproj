@@ -22,6 +22,7 @@
 		7F4969512B5D53DB006C27A0 /* TrackerRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F4969502B5D53DB006C27A0 /* TrackerRecord.swift */; };
 		7F4969612B61432E006C27A0 /* SelectTrackerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F4969602B61432E006C27A0 /* SelectTrackerViewController.swift */; };
 		7F4969822B650F0C006C27A0 /* TrackersCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F4969812B650F0C006C27A0 /* TrackersCell.swift */; };
+		7F4969862B65294D006C27A0 /* GeometricParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F4969852B65294D006C27A0 /* GeometricParams.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,6 +43,7 @@
 		7F4969502B5D53DB006C27A0 /* TrackerRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerRecord.swift; sourceTree = "<group>"; };
 		7F4969602B61432E006C27A0 /* SelectTrackerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectTrackerViewController.swift; sourceTree = "<group>"; };
 		7F4969812B650F0C006C27A0 /* TrackersCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackersCell.swift; sourceTree = "<group>"; };
+		7F4969852B65294D006C27A0 /* GeometricParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometricParams.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,6 +76,8 @@
 		7F49689A2B554269006C27A0 /* Tracker */ = {
 			isa = PBXGroup;
 			children = (
+				7F4969842B652929006C27A0 /* Helpers */,
+				7F4969832B651878006C27A0 /* Views */,
 				7F4969492B5D4A78006C27A0 /* Models */,
 				7F49689F2B554269006C27A0 /* MainTabBarController.swift */,
 				7F4968AF2B55494D006C27A0 /* Resources */,
@@ -116,6 +120,21 @@
 				7F4969502B5D53DB006C27A0 /* TrackerRecord.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		7F4969832B651878006C27A0 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		7F4969842B652929006C27A0 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				7F4969852B65294D006C27A0 /* GeometricParams.swift */,
+			);
+			path = Helpers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -193,6 +212,7 @@
 				7F49694B2B5D4AA3006C27A0 /* Tracker.swift in Sources */,
 				7F4968A02B554269006C27A0 /* MainTabBarController.swift in Sources */,
 				7F49694F2B5D530F006C27A0 /* TrackerCategory.swift in Sources */,
+				7F4969862B65294D006C27A0 /* GeometricParams.swift in Sources */,
 				7F4969612B61432E006C27A0 /* SelectTrackerViewController.swift in Sources */,
 				7F49694D2B5D5015006C27A0 /* ReccuringSchedule.swift in Sources */,
 				7F4968B82B556C9A006C27A0 /* StatisticsViewController.swift in Sources */,

@@ -41,7 +41,8 @@ final class TrackersViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .ypWhiteDay
-        setupEmptyStateTrackers()
+        //setupEmptyStateTrackers()
+        setupTrackersCollectionView()
         setupNavigationBar()
         setupSearchController()
     }
@@ -108,7 +109,7 @@ final class TrackersViewController: UIViewController {
         navigationItem.rightBarButtonItem = datePickerItem
     }
 
-    private func setupTackersCollectionView() {
+    private func setupTrackersCollectionView() {
         let layout = UICollectionViewFlowLayout()
         trackersCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         trackersCollectionView.dataSource = self
@@ -121,7 +122,7 @@ final class TrackersViewController: UIViewController {
         NSLayoutConstraint.activate([
             trackersCollectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             trackersCollectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            trackersCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            trackersCollectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             trackersCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
     }
@@ -154,5 +155,11 @@ extension TrackersViewController: UICollectionViewDataSource {
 }
 
 extension TrackersViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: 167, height: 148)
+    }
     
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        UIEdgeInsets(top: 12, left: 16, bottom: 0, right: 0)
+    }
 }
