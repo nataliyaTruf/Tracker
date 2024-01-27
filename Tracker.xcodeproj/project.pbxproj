@@ -88,7 +88,6 @@
 				7F4968B52B55578D006C27A0 /* TrackersViewController.swift */,
 				7F4968B72B556C9A006C27A0 /* StatisticsViewController.swift */,
 				7F4969602B61432E006C27A0 /* SelectTrackerViewController.swift */,
-				7F4969812B650F0C006C27A0 /* TrackersCell.swift */,
 			);
 			path = Tracker;
 			sourceTree = "<group>";
@@ -125,6 +124,7 @@
 		7F4969832B651878006C27A0 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				7F4969812B650F0C006C27A0 /* TrackersCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";

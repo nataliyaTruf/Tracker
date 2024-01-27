@@ -13,6 +13,7 @@ final class TrackersViewController: UIViewController {
     
     var categories: [TrackerCategory] = []
     var completedTrackers: [TrackerRecord] = []
+    private var params: GeometricParams
     
     private lazy var emptyStateImageView = {
         let image = UIImageView(image: UIImage(named: "error1"))
@@ -31,6 +32,7 @@ final class TrackersViewController: UIViewController {
     }()
     
     init() {
+        self.params = GeometricParams(cellCount: 2, leftInsets: 16, rightInsets: 16, cellSpacing: 9)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -156,10 +158,17 @@ extension TrackersViewController: UICollectionViewDataSource {
 
 extension TrackersViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 167, height: 148)
+        let avaliableWidth = trackersCollectionView.bounds.width - params.paddingWidth
+        let widthPerItem = avaliableWidth / CGFloat(params.cellCount)
+        let heightPerItem = widthPerItem * (148 / 167)
+        return CGSize(width: widthPerItem, height: heightPerItem)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        UIEdgeInsets(top: 12, left: 16, bottom: 0, right: 0)
+        UIEdgeInsets(top: 12, left: params.leftInsets, bottom: 16, right: params.rightInsets)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return params.cellSpacing
     }
 }

@@ -24,6 +24,7 @@ final class TrackersCell: UICollectionViewCell {
         label.textAlignment = .center
         label.font = UIFont.systemFont(ofSize: 16)
         label.text = "😪"
+        label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
@@ -120,13 +121,13 @@ final class TrackersCell: UICollectionViewCell {
             topBackgroundView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             topBackgroundView.heightAnchor.constraint(equalToConstant: 90),
             
-            emojiLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
-            emojiLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
-            
-            emojiBackgroundView.centerXAnchor.constraint(equalTo: emojiLabel.centerXAnchor),
-            emojiBackgroundView.centerYAnchor.constraint(equalTo: emojiLabel.centerYAnchor),
+            emojiBackgroundView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
+            emojiBackgroundView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
             emojiBackgroundView.widthAnchor.constraint(equalToConstant: 24),
             emojiBackgroundView.heightAnchor.constraint(equalToConstant: 24),
+            
+            emojiLabel.centerXAnchor.constraint(equalTo: emojiBackgroundView.centerXAnchor),
+            emojiLabel.centerYAnchor.constraint(equalTo: emojiBackgroundView.centerYAnchor),
             
             nameLabel.leadingAnchor.constraint(equalTo: topBackgroundView.leadingAnchor, constant: 12),
             nameLabel.trailingAnchor.constraint(equalTo: topBackgroundView.trailingAnchor, constant: -12),
