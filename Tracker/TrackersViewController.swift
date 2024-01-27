@@ -9,6 +9,8 @@ import UIKit
 
 final class TrackersViewController: UIViewController {
     private let searchController = UISearchController(searchResultsController: nil)
+    private var trackersCollectionView: UICollectionView!
+    
     var categories: [TrackerCategory] = []
     var completedTrackers: [TrackerRecord] = []
     
@@ -44,7 +46,7 @@ final class TrackersViewController: UIViewController {
         setupSearchController()
     }
     
-
+    
     @objc private func addTrackerButtonTapped() {
         let selectTrackerVC = SelectTrackerViewController()
         selectTrackerVC.modalPresentationStyle = .pageSheet
@@ -105,6 +107,24 @@ final class TrackersViewController: UIViewController {
         let datePickerItem = UIBarButtonItem(customView: datePicker)
         navigationItem.rightBarButtonItem = datePickerItem
     }
+
+    private func setupTackersCollectionView() {
+        let layout = UICollectionViewFlowLayout()
+        trackersCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        trackersCollectionView.dataSource = self
+        trackersCollectionView.delegate = self
+        trackersCollectionView.register(TrackersCell.self, forCellWithReuseIdentifier: TrackersCell.cellIdetnifier)
+        
+        trackersCollectionView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(trackersCollectionView)
+        
+        NSLayoutConstraint.activate([
+            trackersCollectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            trackersCollectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            trackersCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            trackersCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
+    }
 }
 
 extension TrackersViewController: UISearchControllerDelegate, UISearchBarDelegate {
@@ -116,4 +136,23 @@ extension TrackersViewController: UISearchControllerDelegate, UISearchBarDelegat
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
     }
+}
+
+extension TrackersViewController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 1
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = trackersCollectionView.dequeueReusableCell(withReuseIdentifier: TrackersCell.cellIdetnifier, for: indexPath) as! TrackersCell
+        // TODO: config cell
+        
+        return cell
+    }
+    
+    
+}
+
+extension TrackersViewController: UICollectionViewDelegateFlowLayout {
+    
 }
