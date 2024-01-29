@@ -23,6 +23,7 @@
 		7F4969612B61432E006C27A0 /* SelectTrackerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F4969602B61432E006C27A0 /* SelectTrackerViewController.swift */; };
 		7F4969822B650F0C006C27A0 /* TrackersCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F4969812B650F0C006C27A0 /* TrackersCell.swift */; };
 		7F4969862B65294D006C27A0 /* GeometricParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F4969852B65294D006C27A0 /* GeometricParams.swift */; };
+		7F4969882B662C2F006C27A0 /* TrackersHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F4969872B662C2F006C27A0 /* TrackersHeader.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,6 +45,7 @@
 		7F4969602B61432E006C27A0 /* SelectTrackerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectTrackerViewController.swift; sourceTree = "<group>"; };
 		7F4969812B650F0C006C27A0 /* TrackersCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackersCell.swift; sourceTree = "<group>"; };
 		7F4969852B65294D006C27A0 /* GeometricParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometricParams.swift; sourceTree = "<group>"; };
+		7F4969872B662C2F006C27A0 /* TrackersHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackersHeader.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,6 +127,7 @@
 			isa = PBXGroup;
 			children = (
 				7F4969812B650F0C006C27A0 /* TrackersCell.swift */,
+				7F4969872B662C2F006C27A0 /* TrackersHeader.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -213,6 +216,7 @@
 				7F4968A02B554269006C27A0 /* MainTabBarController.swift in Sources */,
 				7F49694F2B5D530F006C27A0 /* TrackerCategory.swift in Sources */,
 				7F4969862B65294D006C27A0 /* GeometricParams.swift in Sources */,
+				7F4969882B662C2F006C27A0 /* TrackersHeader.swift in Sources */,
 				7F4969612B61432E006C27A0 /* SelectTrackerViewController.swift in Sources */,
 				7F49694D2B5D5015006C27A0 /* ReccuringSchedule.swift in Sources */,
 				7F4968B82B556C9A006C27A0 /* StatisticsViewController.swift in Sources */,

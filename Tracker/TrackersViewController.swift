@@ -90,7 +90,6 @@ final class TrackersViewController: UIViewController {
         )
         
         addButton.imageEdgeInsets = UIEdgeInsets(top: 0, left: -20, bottom: 0, right: 0)
-        
         let addButtonItem = UIBarButtonItem(customView: addButton)
         navigationItem.leftBarButtonItem = addButtonItem
         
@@ -110,13 +109,14 @@ final class TrackersViewController: UIViewController {
         let datePickerItem = UIBarButtonItem(customView: datePicker)
         navigationItem.rightBarButtonItem = datePickerItem
     }
-
+    
     private func setupTrackersCollectionView() {
         let layout = UICollectionViewFlowLayout()
         trackersCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         trackersCollectionView.dataSource = self
         trackersCollectionView.delegate = self
         trackersCollectionView.register(TrackersCell.self, forCellWithReuseIdentifier: TrackersCell.cellIdetnifier)
+        trackersCollectionView.register(TrackersHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: TrackersHeader.headerIdentifier)
         
         trackersCollectionView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(trackersCollectionView)
@@ -134,7 +134,6 @@ extension TrackersViewController: UISearchControllerDelegate, UISearchBarDelegat
     private func setupSearchController() {
         searchController.delegate = self
         searchController.searchBar.delegate = self
-        
         searchController.searchBar.placeholder = "Поиск"
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
@@ -153,7 +152,17 @@ extension TrackersViewController: UICollectionViewDataSource {
         return cell
     }
     
-    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        switch kind {
+        case UICollectionView.elementKindSectionHeader:
+            guard let header = trackersCollectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: TrackersHeader.headerIdentifier, for: indexPath) as? TrackersHeader else {
+                fatalError("Не удалось привести UICollectionReusableView к TrackersHeader")
+            }
+            return header
+        default:
+            fatalError("Unexpected element kind")
+        }
+    }
 }
 
 extension TrackersViewController: UICollectionViewDelegateFlowLayout {
@@ -171,4 +180,21 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return params.cellSpacing
     }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        let indexPath = IndexPath(row: 0, section: section)
+        let headerView = self.collectionView(
+            trackersCollectionView,
+            viewForSupplementaryElementOfKind: UICollectionView.elementKindSectionHeader,
+            at: indexPath
+        )
+        
+        return headerView.systemLayoutSizeFitting(
+            CGSize(width: trackersCollectionView.frame.width,
+                   height: UIView.layoutFittingExpandedSize.height),
+            withHorizontalFittingPriority: .required,
+            verticalFittingPriority: .fittingSizeLevel
+        )
+    }
+    
 }

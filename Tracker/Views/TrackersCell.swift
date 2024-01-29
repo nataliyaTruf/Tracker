@@ -9,7 +9,7 @@ import UIKit
 
 final class TrackersCell: UICollectionViewCell {
     static let cellIdetnifier = "TrackersCell"
-   
+    
     // MARK: UI Elements
     
     private lazy var topBackgroundView: UIView = {
@@ -41,7 +41,7 @@ final class TrackersCell: UICollectionViewCell {
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
         label.textColor = UIColor(resource: .ypWhiteDay)
-        label.font = UIFont.systemFont(ofSize: 12)
+        label.font = UIFont(name: "YSDisplay-Medium", size: 12)
         label.text = "Поливать растения"
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -57,7 +57,7 @@ final class TrackersCell: UICollectionViewCell {
     private lazy var daysCounterLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .left
-        label.font = UIFont.systemFont(ofSize: 12)
+        label.font = UIFont(name: "YSDisplay-Medium", size: 12)
         label.text = "0 дней"
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -69,7 +69,7 @@ final class TrackersCell: UICollectionViewCell {
         button.backgroundColor = .colorSelection18
         let image = UIImage(systemName: "plus")?
             .withTintColor(UIColor(resource: .ypWhiteDay), renderingMode: .alwaysOriginal)
-            .withConfiguration(UIImage.SymbolConfiguration(pointSize: 12))
+            .withConfiguration(UIImage.SymbolConfiguration(pointSize: 12, weight: .bold))
         button.setImage(image, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -101,7 +101,7 @@ final class TrackersCell: UICollectionViewCell {
     @objc private func markAsCompleteButtonTapped() {
         //TODO: button logic
     }
-
+    
     private func setupViews() {
         contentView.addSubview(topBackgroundView)
         contentView.addSubview(bottomBackgroundView)
@@ -110,7 +110,7 @@ final class TrackersCell: UICollectionViewCell {
         contentView.addSubview(nameLabel)
         contentView.addSubview(daysCounterLabel)
         contentView.addSubview(markAsCompleteButton)
-    
+        
         setupLayout()
     }
     
