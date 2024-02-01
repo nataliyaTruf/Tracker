@@ -9,6 +9,16 @@ import UIKit
 
 final class TrackersCell: UICollectionViewCell {
     static let cellIdetnifier = "TrackersCell"
+    var onToggleCompleted: (() -> Void)?
+    
+    var isCompleted: Bool = false {
+        didSet {
+            print("isCompleted изменился на \(isCompleted) 🦖")
+            let buttonImage = isCompleted ? UIImage(named: "done") : plusImage
+            markAsCompleteButton.setImage(buttonImage, for: .normal)
+            markAsCompleteButton.alpha = isCompleted ? 0.3 : 1
+        }
+    }
     
     // MARK: UI Elements
     
@@ -63,14 +73,16 @@ final class TrackersCell: UICollectionViewCell {
         return label
     }()
     
-    private lazy var markAsCompleteButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(systemName: "plus"), for: .normal)
-        button.backgroundColor = .colorSelection18
-        let image = UIImage(systemName: "plus")?
+    private lazy var plusImage: UIImage? = {
+        return UIImage(systemName: "plus")?
             .withTintColor(UIColor(resource: .ypWhiteDay), renderingMode: .alwaysOriginal)
             .withConfiguration(UIImage.SymbolConfiguration(pointSize: 12, weight: .bold))
-        button.setImage(image, for: .normal)
+    }()
+    
+    private lazy var markAsCompleteButton: UIButton = {
+        let button = UIButton()
+        button.backgroundColor = UIColor(resource: .colorSelection18)
+        button.setImage(plusImage, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -79,6 +91,11 @@ final class TrackersCell: UICollectionViewCell {
         super.init(frame: frame)
         
         setupViews()
+        markAsCompleteButton.addTarget(
+            self,
+            action: #selector(markAsCompleteButtonTapped),
+            for: .touchUpInside
+        )
     }
     
     required init?(coder: NSCoder) {
@@ -99,7 +116,8 @@ final class TrackersCell: UICollectionViewCell {
     }
     
     @objc private func markAsCompleteButtonTapped() {
-        //TODO: button logic
+        onToggleCompleted?()
+        print("КНОПКА БЫЛА НАЖАТА 🎾")
     }
     
     private func setupViews() {
@@ -147,5 +165,13 @@ final class TrackersCell: UICollectionViewCell {
             daysCounterLabel.centerYAnchor.constraint(equalTo: markAsCompleteButton.centerYAnchor),
             daysCounterLabel.leadingAnchor.constraint(equalTo: bottomBackgroundView.leadingAnchor, constant: 12),
         ])
+    }
+    
+    func configure(with tracker: Tracker, completedDays: Int) {
+        emojiLabel.text = tracker.emodji
+        nameLabel.text = tracker.name
+        topBackgroundView.backgroundColor =  UIColor.color(from: tracker.color) ?? .blue
+        markAsCompleteButton.backgroundColor = topBackgroundView.backgroundColor
+        daysCounterLabel.text = "\(completedDays) дней"
     }
 }

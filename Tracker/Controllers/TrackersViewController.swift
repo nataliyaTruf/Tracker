@@ -13,6 +13,7 @@ final class TrackersViewController: UIViewController {
     
     var categories: [TrackerCategory] = []
     var completedTrackers: [TrackerRecord] = []
+    var completedTrackerIds = Set<UUID>()
     private var params: GeometricParams
     
     private lazy var emptyStateImageView = {
@@ -47,8 +48,8 @@ final class TrackersViewController: UIViewController {
         setupTrackersCollectionView()
         setupNavigationBar()
         setupSearchController()
+        createDummyData()
     }
-    
     
     @objc private func addTrackerButtonTapped() {
         let selectTrackerVC = SelectTrackerViewController()
@@ -82,7 +83,6 @@ final class TrackersViewController: UIViewController {
         if let iconImage = UIImage(named: "add_tracker")?.withRenderingMode(.alwaysOriginal) {
             addButton.setImage(iconImage, for: .normal)
         }
-        addButton.titleLabel?.font = UIFont(name: "YSDisplay-Bold", size: 34)
         addButton.addTarget(
             self,
             action: #selector(addTrackerButtonTapped),
@@ -98,8 +98,10 @@ final class TrackersViewController: UIViewController {
     
     private func setupDatePickerItem() {
         let datePicker = UIDatePicker()
+        datePicker.widthAnchor.constraint(equalToConstant: 120).isActive = true
         datePicker.datePickerMode = .date
         datePicker.preferredDatePickerStyle = .compact
+        datePicker.locale = Locale(identifier: "ru_RU")
         datePicker.addTarget(
             self,
             action: #selector(dateChanged(_ :)),
@@ -113,6 +115,7 @@ final class TrackersViewController: UIViewController {
     private func setupTrackersCollectionView() {
         let layout = UICollectionViewFlowLayout()
         trackersCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        layout.scrollDirection = .vertical
         trackersCollectionView.dataSource = self
         trackersCollectionView.delegate = self
         trackersCollectionView.register(TrackersCell.self, forCellWithReuseIdentifier: TrackersCell.cellIdetnifier)
@@ -122,7 +125,7 @@ final class TrackersViewController: UIViewController {
         view.addSubview(trackersCollectionView)
         
         NSLayoutConstraint.activate([
-            trackersCollectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            trackersCollectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
             trackersCollectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             trackersCollectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             trackersCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
@@ -141,24 +144,41 @@ extension TrackersViewController: UISearchControllerDelegate, UISearchBarDelegat
 }
 
 extension TrackersViewController: UICollectionViewDataSource {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return categories.count
+    }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 1
+        return categories[section].trackers.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = trackersCollectionView.dequeueReusableCell(withReuseIdentifier: TrackersCell.cellIdetnifier, for: indexPath) as! TrackersCell
-        // TODO: config cell
+        guard let cell = trackersCollectionView.dequeueReusableCell(withReuseIdentifier: TrackersCell.cellIdetnifier, for: indexPath) as? TrackersCell else { fatalError("Unable to dequeue TrackersCell") }
         
+        let tracker = categories[indexPath.section].trackers[indexPath.row]
+        let daysCount = countCompletedDays(for: tracker.id)
+        cell.configure(with: tracker, completedDays: daysCount)
+       
+        cell.onToggleCompleted = { [weak self] in
+            cell.isCompleted.toggle()
+            self?.toggleTrackerCompleted(trackerId: tracker.id, at: indexPath)
+        }
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         switch kind {
+            
         case UICollectionView.elementKindSectionHeader:
-            guard let header = trackersCollectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: TrackersHeader.headerIdentifier, for: indexPath) as? TrackersHeader else {
-                fatalError("Не удалось привести UICollectionReusableView к TrackersHeader")
-            }
+            guard let header = trackersCollectionView.dequeueReusableSupplementaryView(
+                ofKind: kind,
+                withReuseIdentifier: TrackersHeader.headerIdentifier,
+                for: indexPath
+            ) as? TrackersHeader else { fatalError("Failed to cast UICollectionReusableView to TrackersHeader") }
+            
+            header.titleLabel.text = categories[indexPath.section].title
             return header
+            
         default:
             fatalError("Unexpected element kind")
         }
@@ -188,7 +208,6 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
             viewForSupplementaryElementOfKind: UICollectionView.elementKindSectionHeader,
             at: indexPath
         )
-        
         return headerView.systemLayoutSizeFitting(
             CGSize(width: trackersCollectionView.frame.width,
                    height: UIView.layoutFittingExpandedSize.height),
@@ -196,5 +215,45 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
             verticalFittingPriority: .fittingSizeLevel
         )
     }
+}
+
+extension TrackersViewController {
+    func toggleTrackerCompleted(trackerId: UUID, at indexPath: IndexPath) {
+        let currentDate = Date()
+        // TODO: date
+        
+        if completedTrackerIds.contains(trackerId) {
+            completedTrackerIds.remove(trackerId)
+            completedTrackers.removeAll { $0.id == trackerId && Calendar.current.isDate($0.date, inSameDayAs: currentDate) }
+        } else {
+            completedTrackerIds.insert(trackerId)
+            let newRecord = TrackerRecord(id: trackerId, date: currentDate)
+            completedTrackers.append(newRecord)
+        }
+        UIView.performWithoutAnimation {
+            trackersCollectionView.reloadItems(at: [indexPath])
+        }
+    }
     
+    private func countCompletedDays(for trackerId: UUID) -> Int {
+        let completedDates = completedTrackers.filter { $0.id == trackerId }.map { $0.date }
+        let uniqueDates = Set(completedDates)
+        return uniqueDates.count
+    }
+}
+
+extension TrackersViewController {
+    private func createDummyData() {
+        let tracker1 = Tracker(id: UUID(), name: "Полив растений", color: "colorSelection1", emodji: "🦖", scedule: nil)
+        let tracker2 = Tracker(id: UUID(), name: "Йога", color: "colorSelection12", emodji: "🧘‍♀️", scedule: nil)
+        let tracker3 = Tracker(id: UUID(), name: "14 спринт", color: "colorSelection7", emodji: "👹", scedule: nil)
+        let tracker4 = Tracker(id: UUID(), name: "Теннис", color: "colorSelection5", emodji: "🎾", scedule: nil)
+        
+        
+        let category1 = TrackerCategory(title: "Домашние дела", trackers: [tracker1, tracker2])
+        let category2 = TrackerCategory(title: "Здоровье и спорт", trackers: [tracker4])
+        let category3 = TrackerCategory(title: "Образование", trackers: [tracker3])
+        
+        categories = [category1, category2, category3]
+    }
 }
