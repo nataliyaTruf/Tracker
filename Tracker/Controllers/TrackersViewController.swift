@@ -14,6 +14,7 @@ final class TrackersViewController: UIViewController {
     var categories: [TrackerCategory] = []
     var completedTrackers: [TrackerRecord] = []
     var completedTrackerIds = Set<UUID>()
+    var currentDate: Date = Date()
     private var params: GeometricParams
     
     private lazy var emptyStateImageView = {
@@ -59,6 +60,8 @@ final class TrackersViewController: UIViewController {
     
     @objc func dateChanged(_ datePicker: UIDatePicker) {
         //TODO: add date picker logic
+        currentDate = datePicker.date
+        trackersCollectionView.reloadData()
     }
     
     private func setupEmptyStateTrackers() {
@@ -156,12 +159,14 @@ extension TrackersViewController: UICollectionViewDataSource {
         guard let cell = trackersCollectionView.dequeueReusableCell(withReuseIdentifier: TrackersCell.cellIdetnifier, for: indexPath) as? TrackersCell else { fatalError("Unable to dequeue TrackersCell") }
         
         let tracker = categories[indexPath.section].trackers[indexPath.row]
+         cell.isCompleted = completedTrackerIds.contains(tracker.id) && isTrackerCompletedOnCurrentDate(trackerId: tracker.id)
         let daysCount = countCompletedDays(for: tracker.id)
         cell.configure(with: tracker, completedDays: daysCount)
        
         cell.onToggleCompleted = { [weak self] in
+            guard let self = self, self.currentDate <= Date() else { return }
             cell.isCompleted.toggle()
-            self?.toggleTrackerCompleted(trackerId: tracker.id, at: indexPath)
+            self.toggleTrackerCompleted(trackerId: tracker.id, at: indexPath)
         }
         return cell
     }
@@ -202,29 +207,24 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        let indexPath = IndexPath(row: 0, section: section)
-        let headerView = self.collectionView(
-            trackersCollectionView,
-            viewForSupplementaryElementOfKind: UICollectionView.elementKindSectionHeader,
-            at: indexPath
-        )
-        return headerView.systemLayoutSizeFitting(
-            CGSize(width: trackersCollectionView.frame.width,
-                   height: UIView.layoutFittingExpandedSize.height),
+        let header = TrackersHeader()
+        
+        header.titleLabel.text = categories[section].title
+        let size = header.systemLayoutSizeFitting(
+            CGSize(width: collectionView.frame.width, height: UIView.layoutFittingCompressedSize.height),
             withHorizontalFittingPriority: .required,
             verticalFittingPriority: .fittingSizeLevel
         )
+
+        return size
     }
 }
 
 extension TrackersViewController {
-    func toggleTrackerCompleted(trackerId: UUID, at indexPath: IndexPath) {
-        let currentDate = Date()
-        // TODO: date
-        
-        if completedTrackerIds.contains(trackerId) {
+    private func toggleTrackerCompleted(trackerId: UUID, at indexPath: IndexPath) {
+        if isTrackerCompletedOnCurrentDate(trackerId: trackerId) {
             completedTrackerIds.remove(trackerId)
-            completedTrackers.removeAll { $0.id == trackerId && Calendar.current.isDate($0.date, inSameDayAs: currentDate) }
+            completedTrackers.removeAll {$0.id == trackerId && Calendar.current.isDate($0.date, inSameDayAs: currentDate)}
         } else {
             completedTrackerIds.insert(trackerId)
             let newRecord = TrackerRecord(id: trackerId, date: currentDate)
@@ -235,11 +235,15 @@ extension TrackersViewController {
         }
     }
     
+    private func isTrackerCompletedOnCurrentDate(trackerId: UUID) -> Bool {
+        return completedTrackers.contains(where: { $0.id == trackerId && Calendar.current.isDate($0.date, inSameDayAs: currentDate)})
+    }
     private func countCompletedDays(for trackerId: UUID) -> Int {
         let completedDates = completedTrackers.filter { $0.id == trackerId }.map { $0.date }
         let uniqueDates = Set(completedDates)
         return uniqueDates.count
     }
+    
 }
 
 extension TrackersViewController {
