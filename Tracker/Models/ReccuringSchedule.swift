@@ -39,3 +39,28 @@ struct ReccuringSchedule {
 enum Weekday {
     case monday, tuesday, wednesday, thursday, friday, saturday, sunday
 }
+
+extension Date {
+    func toWeekday() -> Weekday {
+        let calendar = Calendar.current
+        let dayNumber = calendar.component(.weekday, from: self)
+        switch dayNumber {
+        case 1:
+            return .sunday
+        case 2:
+            return .monday
+        case 3:
+            return .tuesday
+        case 4:
+            return .wednesday
+        case 5:
+            return .thursday
+        case 6:
+            return .friday
+        case 7:
+            return .saturday
+        default:
+            fatalError("Invalid day number")
+        }
+    }
+}

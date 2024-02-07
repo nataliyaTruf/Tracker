@@ -10,8 +10,8 @@ import UIKit
 final class TrackersViewController: UIViewController {
     private let searchController = UISearchController(searchResultsController: nil)
     private var trackersCollectionView: UICollectionView!
-    
     var categories: [TrackerCategory] = []
+    var filteredCategories: [TrackerCategory] = []
     var completedTrackers: [TrackerRecord] = []
     var completedTrackerIds = Set<UUID>()
     var currentDate: Date = Date()
@@ -45,11 +45,12 @@ final class TrackersViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .ypWhiteDay
-        //setupEmptyStateTrackers()
+        setupEmptyStateTrackers()
         setupTrackersCollectionView()
         setupNavigationBar()
         setupSearchController()
         createDummyData()
+        filterTrackersForSelectedDate()
     }
     
     @objc private func addTrackerButtonTapped() {
@@ -59,8 +60,8 @@ final class TrackersViewController: UIViewController {
     }
     
     @objc func dateChanged(_ datePicker: UIDatePicker) {
-        //TODO: add date picker logic
         currentDate = datePicker.date
+        filterTrackersForSelectedDate()
         trackersCollectionView.reloadData()
     }
     
@@ -74,6 +75,8 @@ final class TrackersViewController: UIViewController {
             emptyStateLabel.topAnchor.constraint(equalTo: emptyStateImageView.bottomAnchor, constant: +8),
             emptyStateLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
+        emptyStateLabel.isHidden = true
+        emptyStateImageView.isHidden = true
     }
     
     private func setupNavigationBar() {
@@ -148,21 +151,21 @@ extension TrackersViewController: UISearchControllerDelegate, UISearchBarDelegat
 
 extension TrackersViewController: UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return categories.count
+        return filteredCategories.count
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return categories[section].trackers.count
+        return filteredCategories[section].trackers.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = trackersCollectionView.dequeueReusableCell(withReuseIdentifier: TrackersCell.cellIdetnifier, for: indexPath) as? TrackersCell else { fatalError("Unable to dequeue TrackersCell") }
         
-        let tracker = categories[indexPath.section].trackers[indexPath.row]
-         cell.isCompleted = completedTrackerIds.contains(tracker.id) && isTrackerCompletedOnCurrentDate(trackerId: tracker.id)
+        let tracker = filteredCategories[indexPath.section].trackers[indexPath.row]
+        cell.isCompleted = completedTrackerIds.contains(tracker.id) && isTrackerCompletedOnCurrentDate(trackerId: tracker.id)
         let daysCount = countCompletedDays(for: tracker.id)
         cell.configure(with: tracker, completedDays: daysCount)
-       
+        
         cell.onToggleCompleted = { [weak self] in
             guard let self = self, self.currentDate <= Date() else { return }
             cell.isCompleted.toggle()
@@ -215,7 +218,6 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
             withHorizontalFittingPriority: .required,
             verticalFittingPriority: .fittingSizeLevel
         )
-
         return size
     }
 }
@@ -238,21 +240,44 @@ extension TrackersViewController {
     private func isTrackerCompletedOnCurrentDate(trackerId: UUID) -> Bool {
         return completedTrackers.contains(where: { $0.id == trackerId && Calendar.current.isDate($0.date, inSameDayAs: currentDate)})
     }
+    
     private func countCompletedDays(for trackerId: UUID) -> Int {
         let completedDates = completedTrackers.filter { $0.id == trackerId }.map { $0.date }
         let uniqueDates = Set(completedDates)
         return uniqueDates.count
     }
     
+    private func filterTrackersForSelectedDate() {
+        let dayOfWeek = currentDate.toWeekday()
+        filteredCategories = categories.map { category in
+            let filteredTrackers = category.trackers.filter { tracker in
+                guard let schedule = tracker.scedule else { return true }
+                return schedule.isReccuringOn(dayOfWeek)
+            }
+            return TrackerCategory(title: category.title, trackers: filteredTrackers)
+        }.filter { !$0.trackers.isEmpty }
+        
+        updateView()
+    }
+    
+    private func updateView() {
+        let hasTrackersToShow = !filteredCategories.flatMap { $0.trackers }.isEmpty
+        trackersCollectionView.isHidden = !hasTrackersToShow
+        emptyStateLabel.isHidden = hasTrackersToShow
+        emptyStateImageView.isHidden = hasTrackersToShow
+    }
 }
 
 extension TrackersViewController {
     private func createDummyData() {
-        let tracker1 = Tracker(id: UUID(), name: "Полив растений", color: "colorSelection1", emodji: "🦖", scedule: nil)
-        let tracker2 = Tracker(id: UUID(), name: "Йога", color: "colorSelection12", emodji: "🧘‍♀️", scedule: nil)
-        let tracker3 = Tracker(id: UUID(), name: "14 спринт", color: "colorSelection7", emodji: "👹", scedule: nil)
-        let tracker4 = Tracker(id: UUID(), name: "Теннис", color: "colorSelection5", emodji: "🎾", scedule: nil)
+        let schedule1 = ReccuringSchedule(mondays: true, tuesdays: true, wednesdays: true, thursdays: true, fridays: true, saturdays: true, sundays: false)
+        let schedule2 = ReccuringSchedule(mondays: false, tuesdays: true, wednesdays: true, thursdays: false, fridays: false, saturdays: false, sundays: false)
+        let schedule3 = ReccuringSchedule(mondays: true, tuesdays: true, wednesdays: false, thursdays: false, fridays: false, saturdays: true, sundays: false)
         
+        let tracker1 = Tracker(id: UUID(), name: "Полив растений", color: "colorSelection1", emodji: "🦖", scedule: schedule1)
+        let tracker2 = Tracker(id: UUID(), name: "Йога", color: "colorSelection12", emodji: "🧘‍♀️", scedule: schedule2)
+        let tracker3 = Tracker(id: UUID(), name: "14 спринт", color: "colorSelection7", emodji: "👹", scedule: schedule3)
+        let tracker4 = Tracker(id: UUID(), name: "Теннис", color: "colorSelection5", emodji: "🎾", scedule: schedule1)
         
         let category1 = TrackerCategory(title: "Домашние дела", trackers: [tracker1, tracker2])
         let category2 = TrackerCategory(title: "Здоровье и спорт", trackers: [tracker4])
