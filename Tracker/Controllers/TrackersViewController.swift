@@ -10,11 +10,12 @@ import UIKit
 final class TrackersViewController: UIViewController {
     private let searchController = UISearchController(searchResultsController: nil)
     private var trackersCollectionView: UICollectionView!
-    var categories: [TrackerCategory] = []
-    var filteredCategories: [TrackerCategory] = []
-    var completedTrackers: [TrackerRecord] = []
-    var completedTrackerIds = Set<UUID>()
-    var currentDate: Date = Date()
+    private var categories: [TrackerCategory] = []
+    private var filteredCategories: [TrackerCategory] = []
+    private var completedTrackers: [TrackerRecord] = []
+    private var completedTrackerIds = Set<UUID>()
+    private var currentDate: Date = Date()
+    private var isSearching = false
     private var params: GeometricParams
     
     private lazy var emptyStateImageView = {
@@ -137,6 +138,24 @@ final class TrackersViewController: UIViewController {
             trackersCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
     }
+    
+    private func updateView() {
+        let hasTrackersToShow = !filteredCategories.flatMap { $0.trackers }.isEmpty
+        
+        trackersCollectionView.isHidden = !hasTrackersToShow
+        emptyStateLabel.isHidden = hasTrackersToShow
+        emptyStateImageView.isHidden = hasTrackersToShow
+        
+        if !hasTrackersToShow {
+            if isSearching {
+                emptyStateLabel.text = "Ничего не найдено"
+                emptyStateImageView.image = UIImage(named: "error2")
+            } else {
+                emptyStateLabel.text = "Что будем отслеживать?"
+                emptyStateImageView.image = UIImage(named: "error1")
+            }
+        }
+    }
 }
 
 extension TrackersViewController: UISearchControllerDelegate, UISearchBarDelegate {
@@ -146,6 +165,32 @@ extension TrackersViewController: UISearchControllerDelegate, UISearchBarDelegat
         searchController.searchBar.placeholder = "Поиск"
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String ) {
+        isSearching = !searchText.isEmpty
+        
+        if searchText.isEmpty {
+            filteredCategories = categories
+        } else {
+            filteredCategories = categories.map { category in
+                let filteredTrackers = category.trackers.filter { tracker in
+                    return tracker.name.localizedCaseInsensitiveContains(searchText)
+                }
+                return TrackerCategory(title: category.title, trackers: filteredTrackers)
+            }.filter { !$0.trackers.isEmpty }
+        }
+        trackersCollectionView.reloadData()
+        updateView()
+    }
+    
+    func didDismissSearchController(_ searchController: UISearchController) {
+        isSearching = false
+        updateView()
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
     }
 }
 
@@ -258,13 +303,6 @@ extension TrackersViewController {
         }.filter { !$0.trackers.isEmpty }
         
         updateView()
-    }
-    
-    private func updateView() {
-        let hasTrackersToShow = !filteredCategories.flatMap { $0.trackers }.isEmpty
-        trackersCollectionView.isHidden = !hasTrackersToShow
-        emptyStateLabel.isHidden = hasTrackersToShow
-        emptyStateImageView.isHidden = hasTrackersToShow
     }
 }
 
