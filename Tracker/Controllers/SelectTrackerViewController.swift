@@ -9,7 +9,7 @@ import UIKit
 
 class SelectTrackerViewController: UIViewController {
     private lazy var eventButton: UIButton = {
-       let button = UIButton()
+        let button = UIButton()
         button.setTitle("Нерегулярное событие", for: .normal)
         button.setTitleColor(UIColor(resource: .ypWhiteDay), for: .normal)
         button.backgroundColor = UIColor(resource: .ypBlackDay)
@@ -21,11 +21,16 @@ class SelectTrackerViewController: UIViewController {
     
     private lazy var habitButton: UIButton = {
         let button = UIButton()
-         button.setTitle("Привычка", for: .normal)
-         button.setTitleColor(UIColor(resource: .ypWhiteDay), for: .normal)
-         button.backgroundColor = UIColor(resource: .ypBlackDay)
-         button.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 16)
+        button.setTitle("Привычка", for: .normal)
+        button.setTitleColor(UIColor(resource: .ypWhiteDay), for: .normal)
+        button.backgroundColor = UIColor(resource: .ypBlackDay)
+        button.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 16)
         button.layer.cornerRadius = 16
+        button.addTarget(
+            self,
+            action: #selector(habitButtonTapped),
+            for: .touchUpInside
+        )
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -43,6 +48,12 @@ class SelectTrackerViewController: UIViewController {
         super.viewDidLoad()
         view?.backgroundColor = UIColor(resource: .ypWhiteDay)
         setupUI()
+    }
+    
+    @objc private func habitButtonTapped() {
+        let createTrackerVC = CreateTrackerViewController()
+        createTrackerVC.modalPresentationStyle = .pageSheet
+        present(createTrackerVC, animated: true)
     }
     
     private func setupUI() {

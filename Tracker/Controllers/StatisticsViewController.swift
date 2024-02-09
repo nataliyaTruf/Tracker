@@ -8,14 +8,14 @@
 import UIKit
 
 final class StatisticsViewController: UIViewController {
-    private let emptyStateImageView = {
+    private lazy var emptyStateImageView = {
         let image = UIImageView(image: UIImage(named: "error3"))
         image.contentMode = .scaleAspectFit
         image.translatesAutoresizingMaskIntoConstraints = false
         return image
     }()
     
-    private let emptyStateLabel: UILabel = {
+    private lazy var emptyStateLabel: UILabel = {
         let label = UILabel()
         label.text = "Анализировать пока нечего"
         label.font = UIFont(name: "YSDisplay-Medium", size: 12)
@@ -24,7 +24,7 @@ final class StatisticsViewController: UIViewController {
         return label
     }()
     
-    private let titleLabel: UILabel = {
+    private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Статистика"
         label.font = UIFont(name: "YSDisplay-Bold", size: 34)

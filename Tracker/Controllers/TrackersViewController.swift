@@ -189,6 +189,10 @@ extension TrackersViewController: UISearchControllerDelegate, UISearchBarDelegat
         updateView()
     }
     
+    func searchBarShouldEndEditing(_ searchBar: UISearchBar) -> Bool {
+        return true
+    }
+    
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         searchBar.resignFirstResponder()
     }

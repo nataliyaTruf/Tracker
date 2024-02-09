@@ -19,7 +19,7 @@ final class TrackersHeader: UICollectionReusableView {
         addSubview(titleLabel)
         titleLabel.text = "Домашний уют"
         titleLabel.font = UIFont(name: "YSDisplay-Bold", size: 19)
-        titleLabel.textColor = UIColor(resource: .ypBlackDay)
+        titleLabel.textColor = .ypBlackDay
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([

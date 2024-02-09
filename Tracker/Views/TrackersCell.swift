@@ -40,7 +40,7 @@ final class TrackersCell: UICollectionViewCell {
     
     private lazy var emojiBackgroundView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor.white.withAlphaComponent(0.3)
+        view.backgroundColor = .white.withAlphaComponent(0.3)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -50,7 +50,7 @@ final class TrackersCell: UICollectionViewCell {
         label.textAlignment = .left
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
-        label.textColor = UIColor(resource: .ypWhiteDay)
+        label.textColor = .ypWhiteDay
         label.font = UIFont(name: "YSDisplay-Medium", size: 12)
         label.text = "Поливать растения"
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -75,13 +75,13 @@ final class TrackersCell: UICollectionViewCell {
     
     private lazy var plusImage: UIImage? = {
         return UIImage(systemName: "plus")?
-            .withTintColor(UIColor(resource: .ypWhiteDay), renderingMode: .alwaysOriginal)
+            .withTintColor(.ypWhiteDay, renderingMode: .alwaysOriginal)
             .withConfiguration(UIImage.SymbolConfiguration(pointSize: 12, weight: .bold))
     }()
     
     private lazy var markAsCompleteButton: UIButton = {
         let button = UIButton()
-        button.backgroundColor = UIColor(resource: .colorSelection18)
+        button.backgroundColor = .colorSelection18
         button.setImage(plusImage, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
