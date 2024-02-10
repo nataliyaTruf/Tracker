@@ -7,7 +7,14 @@
 
 import UIKit
 
+protocol TrackerCreationDelegate: AnyObject {
+    func trackerCreated(_ tracker: Tracker)
+}
+
 final class CreateTrackerViewController: UIViewController {
+    weak var delegate: TrackerCreationDelegate?
+    var onCompletion: (() -> Void)?
+    
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.backgroundColor = .ypWhiteDay
@@ -85,6 +92,7 @@ final class CreateTrackerViewController: UIViewController {
         button.layer.borderWidth = 1
         button.layer.cornerRadius = 16
         button.clipsToBounds = true
+        button.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -98,6 +106,7 @@ final class CreateTrackerViewController: UIViewController {
         button.layer.borderWidth = 1
         button.layer.cornerRadius = 16
         button.tintColor = UIColor.ypWhiteDay
+        button.addTarget(self, action: #selector(createButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -106,6 +115,19 @@ final class CreateTrackerViewController: UIViewController {
         super.viewDidLoad()
         setupViews()
         setupConstraints()
+        nameTextField.delegate = self
+    }
+    
+    @objc private func cancelButtonTapped() {
+        dismiss(animated: true)
+    }
+    
+    @objc private func createButtonTapped() {
+        let trackerName = nameTextField.text ?? ""
+        let tracker = Tracker(id: UUID(), name: trackerName, color: "colorSelection18", emodji: "🦖", scedule: nil)
+        delegate?.trackerCreated(tracker)
+        onCompletion?()
+        dismiss(animated: false, completion: nil)
     }
     
     private func setupViews() {
@@ -156,8 +178,21 @@ final class CreateTrackerViewController: UIViewController {
     }
 }
 
+extension CreateTrackerViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        let currentText = textField.text ?? ""
+        guard let stringRange = Range(range, in: currentText) else { return false }
+        let updateText = currentText.replacingCharacters(in: stringRange, with: string)
+        return updateText.count <= 38
+    }
+}
+
 extension CreateTrackerViewController {
-   
     private func setupTitleView() {
         titleView.addSubview(titleLabel)
         

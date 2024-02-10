@@ -8,6 +8,9 @@
 import UIKit
 
 class SelectTrackerViewController: UIViewController {
+    weak var delegate: TrackerCreationDelegate?
+    var onTrackerCreated: (() -> Void)?
+    
     private lazy var eventButton: UIButton = {
         let button = UIButton()
         button.setTitle("Нерегулярное событие", for: .normal)
@@ -52,7 +55,11 @@ class SelectTrackerViewController: UIViewController {
     
     @objc private func habitButtonTapped() {
         let createTrackerVC = CreateTrackerViewController()
+        createTrackerVC.delegate = delegate
         createTrackerVC.modalPresentationStyle = .pageSheet
+        createTrackerVC.onCompletion = { [weak self] in
+            self?.dismiss(animated: false, completion: self?.onTrackerCreated)
+        }
         present(createTrackerVC, animated: true)
     }
     

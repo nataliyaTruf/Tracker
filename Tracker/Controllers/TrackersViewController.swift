@@ -10,7 +10,7 @@ import UIKit
 final class TrackersViewController: UIViewController {
     private let searchController = UISearchController(searchResultsController: nil)
     private var trackersCollectionView: UICollectionView!
-    private var categories: [TrackerCategory] = []
+    private var categories: [TrackerCategory] = [TrackerCategory(title: "По умолчанию", trackers: [])]
     private var filteredCategories: [TrackerCategory] = []
     private var completedTrackers: [TrackerRecord] = []
     private var completedTrackerIds = Set<UUID>()
@@ -56,8 +56,12 @@ final class TrackersViewController: UIViewController {
     
     @objc private func addTrackerButtonTapped() {
         let selectTrackerVC = SelectTrackerViewController()
+        selectTrackerVC.delegate = self
         selectTrackerVC.modalPresentationStyle = .pageSheet
-        present(selectTrackerVC, animated: true)
+        selectTrackerVC.onTrackerCreated = { [weak self] in
+            self?.dismiss(animated: false, completion: nil)
+        }
+        present(selectTrackerVC, animated: true, completion: nil)
     }
     
     @objc func dateChanged(_ datePicker: UIDatePicker) {
@@ -310,8 +314,25 @@ extension TrackersViewController {
     }
 }
 
+extension TrackersViewController: TrackerCreationDelegate {
+    func trackerCreated(_ tracker: Tracker) {
+        var newTrackers = categories[0].trackers
+        newTrackers.append(tracker)
+        
+        let updateCategory = TrackerCategory(title: categories[0].title, trackers: newTrackers)
+        
+        categories[0] = updateCategory
+        
+        filterTrackersForSelectedDate()
+        trackersCollectionView.reloadData()
+    }
+}
+
 extension TrackersViewController {
     private func createDummyData() {
+        
+        guard categories.first?.trackers.isEmpty ?? true else { return }
+        
         let schedule1 = ReccuringSchedule(mondays: true, tuesdays: true, wednesdays: true, thursdays: true, fridays: true, saturdays: true, sundays: false)
         let schedule2 = ReccuringSchedule(mondays: false, tuesdays: true, wednesdays: true, thursdays: false, fridays: false, saturdays: false, sundays: false)
         let schedule3 = ReccuringSchedule(mondays: true, tuesdays: true, wednesdays: false, thursdays: false, fridays: false, saturdays: true, sundays: false)
@@ -319,12 +340,12 @@ extension TrackersViewController {
         let tracker1 = Tracker(id: UUID(), name: "Полив растений", color: "colorSelection1", emodji: "🦖", scedule: schedule1)
         let tracker2 = Tracker(id: UUID(), name: "Йога", color: "colorSelection12", emodji: "🧘‍♀️", scedule: schedule2)
         let tracker3 = Tracker(id: UUID(), name: "14 спринт", color: "colorSelection7", emodji: "👹", scedule: schedule3)
-        let tracker4 = Tracker(id: UUID(), name: "Теннис", color: "colorSelection5", emodji: "🎾", scedule: schedule1)
+        let tracker4 = Tracker(id: UUID(), name: "Теннис", color: "colorSelection5", emodji: "🎾", scedule: nil)
         
-        let category1 = TrackerCategory(title: "Домашние дела", trackers: [tracker1, tracker2])
-        let category2 = TrackerCategory(title: "Здоровье и спорт", trackers: [tracker4])
-        let category3 = TrackerCategory(title: "Образование", trackers: [tracker3])
-        
-        categories = [category1, category2, category3]
+        let dummyCategories = [ TrackerCategory(title: "Домашние дела", trackers: [tracker1, tracker2]),
+                                TrackerCategory(title: "Здоровье и спорт", trackers: [tracker4]), 
+                                TrackerCategory(title: "Образование", trackers: [tracker3]) ]
+        categories.append(contentsOf: dummyCategories)
+        //categories = [category1, category2, category3]
     }
 }
