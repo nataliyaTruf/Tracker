@@ -8,14 +8,17 @@
 import UIKit
 
 final class DayTableViewCell: UITableViewCell {
-    static let dayCellIdentifier = "DayCell"
     
+    // MARK: - Properties
+    
+    static let dayCellIdentifier = "DayCell"
     var onSwitchValueChanged: ((Bool) -> Void)?
     
-    lazy var daySwitch: UISwitch = {
-       let switchControl = UISwitch()
+    // MARK: - UI Components
+    
+    private lazy var daySwitch: UISwitch = {
+        let switchControl = UISwitch()
         switchControl.onTintColor = .ypBlue
-        //switchControl.addTarget(self, action: #selector(switchValueChanged), for: .valueChanged)
         switchControl.translatesAutoresizingMaskIntoConstraints = false
         return switchControl
     }()
@@ -36,6 +39,8 @@ final class DayTableViewCell: UITableViewCell {
         return label
     }()
     
+    // MARK: - Initialization
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.backgroundColor = .ypBackgroundDay
@@ -48,11 +53,14 @@ final class DayTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Actions
+    
     @objc func switchValueChanged(_ sender: UISwitch) {
-    // TODO: switch logic
         onSwitchValueChanged?(sender.isOn)
     }
-
+    
+    // MARK: - Setup Methods
+    
     private func setupSwitch() {
         contentView.addSubview(daySwitch)
         
@@ -82,6 +90,8 @@ final class DayTableViewCell: UITableViewCell {
         ])
     }
     
+    // MARK: - Visibility Methods
+    
     func hideSeparator() {
         separator.isHidden = true
     }
@@ -89,6 +99,8 @@ final class DayTableViewCell: UITableViewCell {
     func showSeparator() {
         separator.isHidden = false
     }
+    
+    // MARK: - Configuration
     
     func configure(with day: String, isOn: Bool) {
         dayLabel.text = day

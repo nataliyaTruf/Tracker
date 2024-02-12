@@ -9,13 +9,18 @@ import UIKit
 
 
 final class TrackersHeader: UICollectionReusableView {
+    
+    // MARK: - Properties
+    
     static let headerIdentifier = "TrackersHeader"
     
     let titleLabel = UILabel()
     
+    // MARK: - Initialization
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
-    
+        
         addSubview(titleLabel)
         titleLabel.text = "Домашний уют"
         titleLabel.font = UIFont(name: "YSDisplay-Bold", size: 19)

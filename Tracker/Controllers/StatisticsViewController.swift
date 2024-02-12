@@ -8,6 +8,9 @@
 import UIKit
 
 final class StatisticsViewController: UIViewController {
+    
+    // MARK: - UI Components
+    
     private lazy var emptyStateImageView = {
         let image = UIImageView(image: UIImage(named: "error3"))
         image.contentMode = .scaleAspectFit
@@ -34,6 +37,8 @@ final class StatisticsViewController: UIViewController {
         return label
     }()
     
+    // MARK: - Initialization
+    
     init() {
         super.init(nibName: nil, bundle: nil)
     }
@@ -42,11 +47,15 @@ final class StatisticsViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Lifecycle Methods
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .ypWhiteDay
         setupEmptyStateStats()
     }
+    
+    // MARK: - Setup Methods
     
     private func setupEmptyStateStats() {
         view.addSubview(emptyStateImageView)

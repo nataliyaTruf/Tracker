@@ -9,12 +9,15 @@ import UIKit
 
 
 final class ScheduleViewController: UIViewController {
+    
+    // MARK: - Properties
+    
     var onScheduleUpdated: ((ReccuringSchedule) -> Void)?
-    
     var schedule = ReccuringSchedule(mondays: false, tuesdays: false, wednesdays: false, thursdays: false, fridays: false, saturdays: false, sundays: false)
-    
-    var tableView: UITableView!
     let days = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"]
+    var tableView: UITableView!
+    
+    // MARK: - UI Components
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
@@ -37,6 +40,8 @@ final class ScheduleViewController: UIViewController {
         return button
     }()
     
+    // MARK: - Lifecycle Methods
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .ypWhiteDay
@@ -45,12 +50,15 @@ final class ScheduleViewController: UIViewController {
         setuptitleLabel()
     }
     
+    // MARK: - Actions
+    
     @objc func doneButtonTapped() {
-        // TODO: logic
         onScheduleUpdated?(schedule)
         dismiss(animated: true, completion: nil)
     }
-  
+    
+    // MARK: - Setup Methods
+    
     private func setupDoneButton() {
         view.addSubview(doneButton)
         
@@ -97,6 +105,8 @@ final class ScheduleViewController: UIViewController {
     }
 }
 
+// MARK: - UITableViewDelegate, UITableViewDataSource
+
 extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
@@ -111,18 +121,20 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
             fatalError("Unable to dequeue DayTableViewCell")
         }
         
+        cell.selectionStyle = .none
+        
         let isOn: Bool = {
-                switch indexPath.row {
-                case 0: return schedule.mondays
-                case 1: return schedule.tuesdays
-                case 2: return schedule.wednesdays
-                case 3: return schedule.thursdays
-                case 4: return schedule.fridays
-                case 5: return schedule.saturdays
-                case 6: return schedule.sundays
-                default: return false
-                }
-            }()
+            switch indexPath.row {
+            case 0: return schedule.mondays
+            case 1: return schedule.tuesdays
+            case 2: return schedule.wednesdays
+            case 3: return schedule.thursdays
+            case 4: return schedule.fridays
+            case 5: return schedule.saturdays
+            case 6: return schedule.sundays
+            default: return false
+            }
+        }()
         
         cell.configure(with: days[indexPath.row], isOn: isOn
         )
@@ -152,25 +164,27 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
+// MARK: - Schedule Management
+
 extension ScheduleViewController {
     func updateSchedule(forDay dayIndex: Int, isOn: Bool) {
         switch dayIndex {
         case 0:
-                schedule.mondays = isOn
-            case 1:
-                schedule.tuesdays = isOn
-            case 2:
-                schedule.wednesdays = isOn
-            case 3:
-                schedule.thursdays = isOn
-            case 4:
-                schedule.fridays = isOn
-            case 5:
-                schedule.saturdays = isOn
-            case 6:
-                schedule.sundays = isOn
-            default:
-                break
+            schedule.mondays = isOn
+        case 1:
+            schedule.tuesdays = isOn
+        case 2:
+            schedule.wednesdays = isOn
+        case 3:
+            schedule.thursdays = isOn
+        case 4:
+            schedule.fridays = isOn
+        case 5:
+            schedule.saturdays = isOn
+        case 6:
+            schedule.sundays = isOn
+        default:
+            break
         }
         tableView.reloadRows(at: [IndexPath(row: dayIndex, section: 0)], with: .none)
         // TODO: Implement data persistence for schedule changes

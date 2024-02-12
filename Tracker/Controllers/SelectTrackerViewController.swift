@@ -8,8 +8,16 @@
 import UIKit
 
 class SelectTrackerViewController: UIViewController {
+    
+    // MARK: - Delegate
+    
     weak var delegate: TrackerCreationDelegate?
+    
+    // MARK: - Properties
+    
     var onTrackerCreated: (() -> Void)?
+    
+    // MARK: - UI Components
     
     private lazy var eventButton: UIButton = {
         let button = UIButton()
@@ -47,11 +55,15 @@ class SelectTrackerViewController: UIViewController {
         return label
     }()
     
+    // MARK: - Lifecycle Methods
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view?.backgroundColor = UIColor(resource: .ypWhiteDay)
         setupUI()
     }
+    
+    // MARK: - Actions
     
     @objc private func habitButtonTapped() {
         let createTrackerVC = CreateTrackerViewController()
@@ -62,6 +74,8 @@ class SelectTrackerViewController: UIViewController {
         }
         present(createTrackerVC, animated: true)
     }
+    
+    // MARK: - Setup Methods
     
     private func setupUI() {
         view.addSubview(eventButton)

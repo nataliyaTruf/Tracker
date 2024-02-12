@@ -8,6 +8,8 @@
 import UIKit
 
 final class TrackersViewController: UIViewController {
+    
+    // MARK: - Properties
     private let searchController = UISearchController(searchResultsController: nil)
     private var trackersCollectionView: UICollectionView!
     private var categories: [TrackerCategory] = [TrackerCategory(title: "По умолчанию", trackers: [])]
@@ -17,6 +19,8 @@ final class TrackersViewController: UIViewController {
     private var currentDate: Date = Date()
     private var isSearching = false
     private var params: GeometricParams
+    
+    // MARK: - UI Components
     
     private lazy var emptyStateImageView = {
         let image = UIImageView(image: UIImage(named: "error1"))
@@ -34,6 +38,8 @@ final class TrackersViewController: UIViewController {
         return label
     }()
     
+    // MARK: - Initialization
+    
     init() {
         self.params = GeometricParams(cellCount: 2, leftInsets: 16, rightInsets: 16, cellSpacing: 9)
         super.init(nibName: nil, bundle: nil)
@@ -43,6 +49,8 @@ final class TrackersViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Lifecycle Methods
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .ypWhiteDay
@@ -50,9 +58,11 @@ final class TrackersViewController: UIViewController {
         setupTrackersCollectionView()
         setupNavigationBar()
         setupSearchController()
-        createDummyData()
+        categories = MockDataService.shared.getDummyTrackers()
         filterTrackersForSelectedDate()
     }
+    
+    // MARK: - Navigation
     
     @objc private func addTrackerButtonTapped() {
         let selectTrackerVC = SelectTrackerViewController()
@@ -64,11 +74,15 @@ final class TrackersViewController: UIViewController {
         present(selectTrackerVC, animated: true, completion: nil)
     }
     
+    // MARK: - Actions
+    
     @objc func dateChanged(_ datePicker: UIDatePicker) {
         currentDate = datePicker.date
         filterTrackersForSelectedDate()
         trackersCollectionView.reloadData()
     }
+    
+    // MARK: - Setup Methods
     
     private func setupEmptyStateTrackers() {
         view.addSubview(emptyStateImageView)
@@ -143,6 +157,8 @@ final class TrackersViewController: UIViewController {
         ])
     }
     
+    // MARK: - UI Updates
+    
     private func updateView() {
         let hasTrackersToShow = !filteredCategories.flatMap { $0.trackers }.isEmpty
         
@@ -161,6 +177,8 @@ final class TrackersViewController: UIViewController {
         }
     }
 }
+
+// MARK: - UISearchControllerDelegate, UISearchBarDelegate
 
 extension TrackersViewController: UISearchControllerDelegate, UISearchBarDelegate {
     private func setupSearchController() {
@@ -201,6 +219,8 @@ extension TrackersViewController: UISearchControllerDelegate, UISearchBarDelegat
         searchBar.resignFirstResponder()
     }
 }
+
+// MARK: - UICollectionViewDataSource
 
 extension TrackersViewController: UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -246,6 +266,8 @@ extension TrackersViewController: UICollectionViewDataSource {
     }
 }
 
+// MARK: - UICollectionViewDelegateFlowLayout
+
 extension TrackersViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let avaliableWidth = trackersCollectionView.bounds.width - params.paddingWidth
@@ -274,6 +296,8 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
         return size
     }
 }
+
+// MARK: - Tracker Management
 
 extension TrackersViewController {
     private func toggleTrackerCompleted(trackerId: UUID, at indexPath: IndexPath) {
@@ -314,6 +338,8 @@ extension TrackersViewController {
     }
 }
 
+// MARK: - TrackerCreationDelegate
+
 extension TrackersViewController: TrackerCreationDelegate {
     func trackerCreated(_ tracker: Tracker) {
         var newTrackers = categories[0].trackers
@@ -325,27 +351,5 @@ extension TrackersViewController: TrackerCreationDelegate {
         
         filterTrackersForSelectedDate()
         trackersCollectionView.reloadData()
-    }
-}
-
-extension TrackersViewController {
-    private func createDummyData() {
-        
-        guard categories.first?.trackers.isEmpty ?? true else { return }
-        
-        let schedule1 = ReccuringSchedule(mondays: true, tuesdays: true, wednesdays: true, thursdays: true, fridays: true, saturdays: true, sundays: false)
-        let schedule2 = ReccuringSchedule(mondays: false, tuesdays: true, wednesdays: true, thursdays: false, fridays: false, saturdays: false, sundays: false)
-        let schedule3 = ReccuringSchedule(mondays: true, tuesdays: true, wednesdays: false, thursdays: false, fridays: false, saturdays: true, sundays: false)
-        
-        let tracker1 = Tracker(id: UUID(), name: "Полив растений", color: "colorSelection1", emodji: "🦖", scedule: schedule1)
-        let tracker2 = Tracker(id: UUID(), name: "Йога", color: "colorSelection12", emodji: "🧘‍♀️", scedule: schedule2)
-        let tracker3 = Tracker(id: UUID(), name: "14 спринт", color: "colorSelection7", emodji: "👹", scedule: schedule3)
-        let tracker4 = Tracker(id: UUID(), name: "Теннис", color: "colorSelection5", emodji: "🎾", scedule: nil)
-        
-        let dummyCategories = [ TrackerCategory(title: "Домашние дела", trackers: [tracker1, tracker2]),
-                                TrackerCategory(title: "Здоровье и спорт", trackers: [tracker4]), 
-                                TrackerCategory(title: "Образование", trackers: [tracker3]) ]
-        categories.append(contentsOf: dummyCategories)
-        //categories = [category1, category2, category3]
     }
 }

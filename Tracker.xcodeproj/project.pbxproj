@@ -29,6 +29,7 @@
 		7F4969932B7663B9006C27A0 /* CustomOptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F4969922B7663B9006C27A0 /* CustomOptionView.swift */; };
 		7F4969952B77848E006C27A0 /* ScheduleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F4969942B77848E006C27A0 /* ScheduleViewController.swift */; };
 		7F4969972B778982006C27A0 /* DayTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F4969962B778982006C27A0 /* DayTableViewCell.swift */; };
+		7F4969992B7A2A24006C27A0 /* MockDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F4969982B7A2A24006C27A0 /* MockDataService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -56,6 +57,7 @@
 		7F4969922B7663B9006C27A0 /* CustomOptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomOptionView.swift; sourceTree = "<group>"; };
 		7F4969942B77848E006C27A0 /* ScheduleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleViewController.swift; sourceTree = "<group>"; };
 		7F4969962B778982006C27A0 /* DayTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayTableViewCell.swift; sourceTree = "<group>"; };
+		7F4969982B7A2A24006C27A0 /* MockDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDataService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -127,6 +129,7 @@
 				7F49694C2B5D5015006C27A0 /* ReccuringSchedule.swift */,
 				7F49694E2B5D530F006C27A0 /* TrackerCategory.swift */,
 				7F4969502B5D53DB006C27A0 /* TrackerRecord.swift */,
+				7F4969982B7A2A24006C27A0 /* MockDataService.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -242,6 +245,7 @@
 				7F49694F2B5D530F006C27A0 /* TrackerCategory.swift in Sources */,
 				7F4969862B65294D006C27A0 /* GeometricParams.swift in Sources */,
 				7F4969882B662C2F006C27A0 /* TrackersHeader.swift in Sources */,
+				7F4969992B7A2A24006C27A0 /* MockDataService.swift in Sources */,
 				7F4969612B61432E006C27A0 /* SelectTrackerViewController.swift in Sources */,
 				7F49694D2B5D5015006C27A0 /* ReccuringSchedule.swift in Sources */,
 				7F49698A2B67B5CE006C27A0 /* UIColor+Extensions.swift in Sources */,

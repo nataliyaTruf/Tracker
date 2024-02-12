@@ -8,6 +8,9 @@
 import UIKit
 
 final class TrackersCell: UICollectionViewCell {
+    
+    // MARK: - Properties
+    
     static let cellIdetnifier = "TrackersCell"
     var onToggleCompleted: (() -> Void)?
     
@@ -20,7 +23,7 @@ final class TrackersCell: UICollectionViewCell {
         }
     }
     
-    // MARK: UI Elements
+    // MARK: - UI Components
     
     private lazy var topBackgroundView: UIView = {
         let view = UIView()
@@ -87,6 +90,8 @@ final class TrackersCell: UICollectionViewCell {
         return button
     }()
     
+    // MARK: - Initialization
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -102,6 +107,8 @@ final class TrackersCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Lifecycle Methods
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         
@@ -115,10 +122,14 @@ final class TrackersCell: UICollectionViewCell {
         markAsCompleteButton.clipsToBounds = true
     }
     
+    // MARK: - Actions
+    
     @objc private func markAsCompleteButtonTapped() {
         onToggleCompleted?()
         print("КНОПКА БЫЛА НАЖАТА 🎾")
     }
+    
+    // MARK: - Setup Methods
     
     private func setupViews() {
         contentView.addSubview(topBackgroundView)
@@ -166,6 +177,8 @@ final class TrackersCell: UICollectionViewCell {
             daysCounterLabel.leadingAnchor.constraint(equalTo: bottomBackgroundView.leadingAnchor, constant: 12),
         ])
     }
+    
+    // MARK: - Configuration
     
     func configure(with tracker: Tracker, completedDays: Int) {
         emojiLabel.text = tracker.emodji

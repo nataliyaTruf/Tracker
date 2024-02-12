@@ -9,6 +9,8 @@ import UIKit
 
 final class MainTabBarController: UITabBarController {
     
+    // MARK: - Initialization
+    
     init() {
         super.init(nibName: nil, bundle: nil)
     }
@@ -17,11 +19,15 @@ final class MainTabBarController: UITabBarController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Lifecycle Methods
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         getTabBar()
         setupTabBarAppearance()
     }
+    
+    // MARK: - Setup Methods
     
     private func getTabBar() {
         let trackersVC = getVC(
@@ -43,7 +49,7 @@ final class MainTabBarController: UITabBarController {
         viewController.tabBarItem.image = image
         return viewController
     }
-
+    
     private func setupTabBarAppearance() {
         tabBar.layer.borderColor = UIColor.ypGray.cgColor
         tabBar.layer.borderWidth = 1.0

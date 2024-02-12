@@ -7,16 +7,26 @@
 
 import UIKit
 
+// MARK: - Protocols
+
 protocol TrackerCreationDelegate: AnyObject {
     func trackerCreated(_ tracker: Tracker)
 }
 
+// MARK: - Main Class
+
 final class CreateTrackerViewController: UIViewController {
+    
+    // MARK: - Delegate
+    
     weak var delegate: TrackerCreationDelegate?
     
-    var selectedSchedule: ReccuringSchedule?
+    // MARK: - Properties
     
+    private var selectedSchedule: ReccuringSchedule?
     var onCompletion: (() -> Void)?
+    
+    // MARK: - UI Components
     
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -118,12 +128,17 @@ final class CreateTrackerViewController: UIViewController {
         return button
     }()
     
+    // MARK: - Lifecycle Methods
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
         setupConstraints()
+        setupKeyboardDismiss()
         nameTextField.delegate = self
     }
+    
+    // MARK: - Actions
     
     @objc private func cancelButtonTapped() {
         dismiss(animated: true)
@@ -144,6 +159,8 @@ final class CreateTrackerViewController: UIViewController {
         dismiss(animated: false, completion: nil)
     }
     
+    // MARK: - Navigation
+    
     private func showScheduleViewController() {
         let scheduleVC = ScheduleViewController()
         scheduleVC.onScheduleUpdated = { [weak self] updatedSchedule in
@@ -154,6 +171,8 @@ final class CreateTrackerViewController: UIViewController {
         scheduleVC.modalPresentationStyle = .pageSheet
         present(scheduleVC, animated: true)
     }
+    
+    // MARK: - Initial UI Setup
     
     private func setupViews() {
         view.addSubview(scrollView)
@@ -203,19 +222,23 @@ final class CreateTrackerViewController: UIViewController {
     }
 }
 
+// MARK: - UITextFieldDelegate
+
 extension CreateTrackerViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
     }
     
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+    internal func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let currentText = textField.text ?? ""
         guard let stringRange = Range(range, in: currentText) else { return false }
         let updateText = currentText.replacingCharacters(in: stringRange, with: string)
         return updateText.count <= 38
     }
 }
+
+// MARK: - Additional UI Setup
 
 extension CreateTrackerViewController {
     private func setupTitleView() {
@@ -268,18 +291,24 @@ extension CreateTrackerViewController {
         
         return dividerContainer
     }
+    
+    private func setupKeyboardDismiss() {
+        scrollView.keyboardDismissMode = .onDrag
+    }
 }
 
+// MARK: - Utility Methods
+
 extension CreateTrackerViewController {
-   private func formatScheduleText(schedule: ReccuringSchedule) -> String {
+    private func formatScheduleText(schedule: ReccuringSchedule) -> String {
         var days: [String] = []
-       if schedule.mondays { days.append("Пн") }
-           if schedule.tuesdays { days.append("Вт") }
-           if schedule.wednesdays { days.append("Ср") }
-           if schedule.thursdays { days.append("Чт") }
-           if schedule.fridays { days.append("Пт") }
-           if schedule.saturdays { days.append("Сб") }
-           if schedule.sundays { days.append("Вс") }
-           return days.joined(separator: ", ")
+        if schedule.mondays { days.append("Пн") }
+        if schedule.tuesdays { days.append("Вт") }
+        if schedule.wednesdays { days.append("Ср") }
+        if schedule.thursdays { days.append("Чт") }
+        if schedule.fridays { days.append("Пт") }
+        if schedule.saturdays { days.append("Сб") }
+        if schedule.sundays { days.append("Вс") }
+        return days.joined(separator: ", ")
     }
 }
