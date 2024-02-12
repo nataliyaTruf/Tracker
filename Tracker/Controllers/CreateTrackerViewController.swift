@@ -13,6 +13,9 @@ protocol TrackerCreationDelegate: AnyObject {
 
 final class CreateTrackerViewController: UIViewController {
     weak var delegate: TrackerCreationDelegate?
+    
+    var selectedSchedule: ReccuringSchedule?
+    
     var onCompletion: (() -> Void)?
     
     private lazy var scrollView: UIScrollView = {
@@ -74,6 +77,10 @@ final class CreateTrackerViewController: UIViewController {
         view.configure(with: "Расписание", additionalText: nil)
         view.layer.cornerRadius = 16
         view.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+        
+        view.onTap = { [weak self] in
+            self?.showScheduleViewController()
+        }
         return view
     }()
     
@@ -124,10 +131,28 @@ final class CreateTrackerViewController: UIViewController {
     
     @objc private func createButtonTapped() {
         let trackerName = nameTextField.text ?? ""
-        let tracker = Tracker(id: UUID(), name: trackerName, color: "colorSelection18", emodji: "🦖", scedule: nil)
+        let tracker = Tracker(
+            id: UUID(),
+            name: trackerName,
+            color: "colorSelection18",
+            emodji: "🦖",
+            scedule: selectedSchedule
+        )
+        
         delegate?.trackerCreated(tracker)
         onCompletion?()
         dismiss(animated: false, completion: nil)
+    }
+    
+    private func showScheduleViewController() {
+        let scheduleVC = ScheduleViewController()
+        scheduleVC.onScheduleUpdated = { [weak self] updatedSchedule in
+            self?.selectedSchedule = updatedSchedule
+            let formattedSchedule = self?.formatScheduleText(schedule: updatedSchedule) ?? ""
+            self?.scheduleView.configure(with: "Расписание", additionalText: formattedSchedule)
+        }
+        scheduleVC.modalPresentationStyle = .pageSheet
+        present(scheduleVC, animated: true)
     }
     
     private func setupViews() {
@@ -242,5 +267,19 @@ extension CreateTrackerViewController {
         ])
         
         return dividerContainer
+    }
+}
+
+extension CreateTrackerViewController {
+   private func formatScheduleText(schedule: ReccuringSchedule) -> String {
+        var days: [String] = []
+       if schedule.mondays { days.append("Пн") }
+           if schedule.tuesdays { days.append("Вт") }
+           if schedule.wednesdays { days.append("Ср") }
+           if schedule.thursdays { days.append("Чт") }
+           if schedule.fridays { days.append("Пт") }
+           if schedule.saturdays { days.append("Сб") }
+           if schedule.sundays { days.append("Вс") }
+           return days.joined(separator: ", ")
     }
 }

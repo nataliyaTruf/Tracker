@@ -9,6 +9,7 @@ import UIKit
 
 
 final class CustomOptionView: UIView {
+    var onTap: (() -> Void)?
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
@@ -54,6 +55,10 @@ final class CustomOptionView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+      @objc private func viewTaped() {
+          onTap?()
+      }
+      
     private func setupLayout() {
         addSubview(stackView)
         addSubview(arrowIcon)
@@ -72,11 +77,7 @@ final class CustomOptionView: UIView {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(viewTaped))
         addGestureRecognizer(tapGesture)
     }
-  
-    @objc private func viewTaped() {
-        //TODO: logic
-    }
-    
+
     func configure(with title: String, additionalText: String?) {
         titleLabel.text = title
         additionalTextLabel.text = additionalText
