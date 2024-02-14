@@ -13,8 +13,8 @@ final class ScheduleViewController: UIViewController {
     // MARK: - Properties
     
     var onScheduleUpdated: ((ReccuringSchedule) -> Void)?
-    var schedule = ReccuringSchedule(mondays: false, tuesdays: false, wednesdays: false, thursdays: false, fridays: false, saturdays: false, sundays: false)
-    let days = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"]
+    var schedule = ReccuringSchedule(recurringDays: [])
+    let days: [Weekday] = [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday]
     var tableView: UITableView!
     
     // MARK: - UI Components
@@ -118,25 +118,16 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: DayTableViewCell.dayCellIdentifier, for: indexPath) as? DayTableViewCell else {
-            fatalError("Unable to dequeue DayTableViewCell")
+            assertionFailure("Unable to dequeue DayTableViewCell")
+            return UITableViewCell()
         }
         
         cell.selectionStyle = .none
         
-        let isOn: Bool = {
-            switch indexPath.row {
-            case 0: return schedule.mondays
-            case 1: return schedule.tuesdays
-            case 2: return schedule.wednesdays
-            case 3: return schedule.thursdays
-            case 4: return schedule.fridays
-            case 5: return schedule.saturdays
-            case 6: return schedule.sundays
-            default: return false
-            }
-        }()
+        let day = days[indexPath.row]
+        let isOn = schedule.recurringDays.contains(day)
         
-        cell.configure(with: days[indexPath.row], isOn: isOn
+        cell.configure(with: day.localizedString, isOn: isOn
         )
         
         cell.onSwitchValueChanged = { [weak self] isOn in
@@ -168,23 +159,15 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
 
 extension ScheduleViewController {
     func updateSchedule(forDay dayIndex: Int, isOn: Bool) {
-        switch dayIndex {
-        case 0:
-            schedule.mondays = isOn
-        case 1:
-            schedule.tuesdays = isOn
-        case 2:
-            schedule.wednesdays = isOn
-        case 3:
-            schedule.thursdays = isOn
-        case 4:
-            schedule.fridays = isOn
-        case 5:
-            schedule.saturdays = isOn
-        case 6:
-            schedule.sundays = isOn
-        default:
-            break
+        let day = days[dayIndex]
+        
+        if isOn {
+            if !schedule.recurringDays.contains(day) {
+                schedule.recurringDays.append(day)
+                schedule.recurringDays.sort(by: { $0.rawValue < $1.rawValue })
+            }
+        } else {
+            schedule.recurringDays.removeAll { $0 == day }
         }
         tableView.reloadRows(at: [IndexPath(row: dayIndex, section: 0)], with: .none)
         // TODO: Implement data persistence for schedule changes

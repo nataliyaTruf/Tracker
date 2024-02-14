@@ -123,10 +123,9 @@ final class TrackersViewController: UIViewController {
     
     private func setupDatePickerItem() {
         let datePicker = UIDatePicker()
-        datePicker.widthAnchor.constraint(equalToConstant: 120).isActive = true
+        datePicker.widthAnchor.constraint(equalToConstant: 110).isActive = true
         datePicker.datePickerMode = .date
         datePicker.preferredDatePickerStyle = .compact
-        datePicker.locale = Locale(identifier: "ru_RU")
         datePicker.addTarget(
             self,
             action: #selector(dateChanged(_ :)),
@@ -166,15 +165,17 @@ final class TrackersViewController: UIViewController {
         emptyStateLabel.isHidden = hasTrackersToShow
         emptyStateImageView.isHidden = hasTrackersToShow
         
-        if !hasTrackersToShow {
-            if isSearching {
-                emptyStateLabel.text = "Ничего не найдено"
-                emptyStateImageView.image = UIImage(named: "error2")
-            } else {
-                emptyStateLabel.text = "Что будем отслеживать?"
-                emptyStateImageView.image = UIImage(named: "error1")
-            }
-        }
+        emptyStateLabel.text = isSearching ? "Ничего не найдено" : "Что будем отслеживать?"
+        emptyStateImageView.image = UIImage(named: isSearching ? "error2" : "error1")
+//        if !hasTrackersToShow {
+//            if isSearching {
+//                emptyStateLabel.text = "Ничего не найдено"
+//                emptyStateImageView.image = UIImage(named: "error2")
+//            } else {
+//                emptyStateLabel.text = "Что будем отслеживать?"
+//                emptyStateImageView.image = UIImage(named: "error1")
+//            }
+//        }
     }
 }
 
@@ -232,7 +233,10 @@ extension TrackersViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = trackersCollectionView.dequeueReusableCell(withReuseIdentifier: TrackersCell.cellIdetnifier, for: indexPath) as? TrackersCell else { fatalError("Unable to dequeue TrackersCell") }
+        guard let cell = trackersCollectionView.dequeueReusableCell(withReuseIdentifier: TrackersCell.cellIdetnifier, for: indexPath) as? TrackersCell else {
+            assertionFailure("Error: Unable to dequeue TrackersCell")
+            return TrackersCell()
+        }
         
         let tracker = filteredCategories[indexPath.section].trackers[indexPath.row]
         cell.isCompleted = completedTrackerIds.contains(tracker.id) && isTrackerCompletedOnCurrentDate(trackerId: tracker.id)
@@ -255,13 +259,17 @@ extension TrackersViewController: UICollectionViewDataSource {
                 ofKind: kind,
                 withReuseIdentifier: TrackersHeader.headerIdentifier,
                 for: indexPath
-            ) as? TrackersHeader else { fatalError("Failed to cast UICollectionReusableView to TrackersHeader") }
+            ) as? TrackersHeader else {
+                assertionFailure("Failed to cast UICollectionReusableView to TrackersHeader")
+                return UICollectionReusableView()
+            }
             
             header.titleLabel.text = categories[indexPath.section].title
             return header
             
         default:
-            fatalError("Unexpected element kind")
+            assertionFailure("Unexpected element kind")
+            return UICollectionReusableView()
         }
     }
 }
@@ -328,7 +336,7 @@ extension TrackersViewController {
         let dayOfWeek = currentDate.toWeekday()
         filteredCategories = categories.map { category in
             let filteredTrackers = category.trackers.filter { tracker in
-                guard let schedule = tracker.scedule else { return true }
+                guard let schedule = tracker.schedule else { return true }
                 return schedule.isReccuringOn(dayOfWeek)
             }
             return TrackerCategory(title: category.title, trackers: filteredTrackers)

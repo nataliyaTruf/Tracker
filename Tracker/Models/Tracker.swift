@@ -12,5 +12,5 @@ struct Tracker {
     let name: String
     let color: String
     let emodji: String
-    let scedule: ReccuringSchedule?
+    let schedule: ReccuringSchedule?
 }

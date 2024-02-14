@@ -8,36 +8,46 @@
 import Foundation
 
 struct ReccuringSchedule {
-    var mondays: Bool
-    var tuesdays: Bool
-    var wednesdays: Bool
-    var thursdays: Bool
-    var fridays: Bool
-    var saturdays: Bool
-    var sundays: Bool
+    var recurringDays: [Weekday] = []
+    
+    var scheduleText: String {
+        let daysText = recurringDays.map { $0.localizedStringShort }
+        return daysText.joined(separator: ", ")
+    }
     
     func isReccuringOn(_ day: Weekday) -> Bool {
-        switch day {
-        case .monday:
-            return mondays
-        case .tuesday:
-            return tuesdays
-        case .wednesday:
-            return wednesdays
-        case .thursday:
-            return thursdays
-        case .friday:
-            return fridays
-        case .saturday:
-            return saturdays
-        case .sunday:
-            return sundays
-        }
+        return recurringDays.contains(day)
     }
 }
 
-enum Weekday {
-    case monday, tuesday, wednesday, thursday, friday, saturday, sunday
+enum Weekday: Int, CaseIterable {
+    case monday = 1, tuesday, wednesday, thursday, friday, saturday, sunday
+}
+
+extension Weekday {
+    var localizedString: String {
+        switch self {
+        case .monday: return "Понедельник"
+        case .tuesday: return "Вторник"
+        case .wednesday: return "Среда"
+        case .thursday: return "Четверг"
+        case .friday: return "Пятница"
+        case .saturday: return "Суббота"
+        case .sunday: return "Воскресенье"
+        }
+    }
+    
+    var localizedStringShort: String {
+        switch self {
+        case .monday: return "Пн"
+        case .tuesday: return "Вт"
+        case .wednesday: return "Ср"
+        case .thursday: return "Чт"
+        case .friday: return "Пт"
+        case .saturday: return "Сб"
+        case .sunday: return "Вс"
+        }
+    }
 }
 
 extension Date {

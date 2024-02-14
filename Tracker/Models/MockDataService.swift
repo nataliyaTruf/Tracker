@@ -20,14 +20,14 @@ class MockDataService {
             return categories
         }
         
-        let schedule1 = ReccuringSchedule(mondays: true, tuesdays: true, wednesdays: true, thursdays: true, fridays: true, saturdays: true, sundays: false)
-        let schedule2 = ReccuringSchedule(mondays: false, tuesdays: true, wednesdays: true, thursdays: false, fridays: false, saturdays: false, sundays: false)
-        let schedule3 = ReccuringSchedule(mondays: true, tuesdays: true, wednesdays: false, thursdays: false, fridays: false, saturdays: true, sundays: false)
+        let schedule1 = ReccuringSchedule(recurringDays: [.monday])
+        let schedule2 = ReccuringSchedule(recurringDays: [.monday, .thursday, .sunday])
+        let schedule3 = ReccuringSchedule(recurringDays: [.monday, .wednesday, .friday])
         
-        let tracker1 = Tracker(id: UUID(), name: "Полив растений", color: "colorSelection1", emodji: "🦖", scedule: schedule1)
-        let tracker2 = Tracker(id: UUID(), name: "Йога", color: "colorSelection12", emodji: "🧘‍♀️", scedule: schedule2)
-        let tracker3 = Tracker(id: UUID(), name: "14 спринт", color: "colorSelection7", emodji: "👹", scedule: schedule3)
-        let tracker4 = Tracker(id: UUID(), name: "Теннис", color: "colorSelection5", emodji: "🎾", scedule: nil)
+        let tracker1 = Tracker(id: UUID(), name: "Полив растений", color: "colorSelection1", emodji: "🦖", schedule: schedule1)
+        let tracker2 = Tracker(id: UUID(), name: "Йога", color: "colorSelection12", emodji: "🧘‍♀️", schedule: schedule2)
+        let tracker3 = Tracker(id: UUID(), name: "14 спринт", color: "colorSelection7", emodji: "👹", schedule: schedule3)
+        let tracker4 = Tracker(id: UUID(), name: "Теннис", color: "colorSelection5", emodji: "🎾", schedule: schedule1)
         
         let dummyCategories = [ TrackerCategory(title: "Домашние дела", trackers: [tracker1, tracker2]),
                                 TrackerCategory(title: "Здоровье и спорт", trackers: [tracker4]),

@@ -151,7 +151,7 @@ final class CreateTrackerViewController: UIViewController {
             name: trackerName,
             color: "colorSelection18",
             emodji: "🦖",
-            scedule: selectedSchedule
+            schedule: selectedSchedule
         )
         
         delegate?.trackerCreated(tracker)
@@ -165,7 +165,7 @@ final class CreateTrackerViewController: UIViewController {
         let scheduleVC = ScheduleViewController()
         scheduleVC.onScheduleUpdated = { [weak self] updatedSchedule in
             self?.selectedSchedule = updatedSchedule
-            let formattedSchedule = self?.formatScheduleText(schedule: updatedSchedule) ?? ""
+            let formattedSchedule = updatedSchedule.scheduleText
             self?.scheduleView.configure(with: "Расписание", additionalText: formattedSchedule)
         }
         scheduleVC.modalPresentationStyle = .pageSheet
@@ -297,18 +297,3 @@ extension CreateTrackerViewController {
     }
 }
 
-// MARK: - Utility Methods
-
-extension CreateTrackerViewController {
-    private func formatScheduleText(schedule: ReccuringSchedule) -> String {
-        var days: [String] = []
-        if schedule.mondays { days.append("Пн") }
-        if schedule.tuesdays { days.append("Вт") }
-        if schedule.wednesdays { days.append("Ср") }
-        if schedule.thursdays { days.append("Чт") }
-        if schedule.fridays { days.append("Пт") }
-        if schedule.saturdays { days.append("Сб") }
-        if schedule.sundays { days.append("Вс") }
-        return days.joined(separator: ", ")
-    }
-}
