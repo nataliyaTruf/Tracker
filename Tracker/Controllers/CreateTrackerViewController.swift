@@ -31,13 +31,14 @@ final class CreateTrackerViewController: UIViewController {
         "😇", "😡", "🥶", "🤔", "🙌", "🍔",
         "🥦", "🏓", "🥇", "🎸", "🏝️", "😪"
     ]
-    
     private var colors: [UIColor] = [
         .colorSelection1, .colorSelection2, .colorSelection3, .colorSelection4, .colorSelection5,
         .colorSelection6, .colorSelection7, .colorSelection8, .colorSelection9, .colorSelection10,
         .colorSelection11, .colorSelection12, .colorSelection13, .colorSelection14, .colorSelection15,
         .colorSelection16, .colorSelection17, .colorSelection18
     ]
+    private var selectedEmojiIndex: IndexPath?
+    private var selectedColorIndex: IndexPath?
     
     // MARK: - UI Components
     
@@ -206,11 +207,15 @@ final class CreateTrackerViewController: UIViewController {
     
     @objc private func createButtonTapped() {
         let trackerName = nameTextField.text ?? ""
+        let selectedEmoji = selectedEmojiIndex != nil ? emojis[selectedEmojiIndex!.item] : "🍔"
+        let selectedColor = selectedColorIndex != nil ? colors[selectedColorIndex!.item] : .colorSelection6
+        let selectedColorString = UIColor.string(from: selectedColor) ?? "colorSelection6"
+        
         let tracker = Tracker(
             id: UUID(),
             name: trackerName,
-            color: "colorSelection18",
-            emodji: "🦖",
+            color: selectedColorString,
+            emodji: selectedEmoji,
             schedule: selectedSchedule
         )
         
@@ -381,7 +386,8 @@ extension CreateTrackerViewController: UICollectionViewDataSource {
                 assertionFailure("Error: Unable to dequeue EmojiCell")
                 return UICollectionViewCell()
             }
-            cell.configure(with: emojis[indexPath.item], isSelected: false)
+            let isSelected = indexPath == selectedEmojiIndex
+            cell.configure(with: emojis[indexPath.item], isSelected: isSelected)
             
             return cell
             
@@ -390,7 +396,8 @@ extension CreateTrackerViewController: UICollectionViewDataSource {
                 assertionFailure("Error: Unable to dequeue ColorCell")
                 return UICollectionViewCell()
             }
-            cell.configure(with: colors[indexPath.item], isSelected: false)
+            let isSelected = indexPath == selectedColorIndex
+            cell.configure(with: colors[indexPath.item], isSelected: isSelected)
             
             return cell
         }
@@ -416,6 +423,22 @@ extension CreateTrackerViewController: UICollectionViewDataSource {
         }
         
         return header
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if collectionView == emojiCollectionView {
+            
+            if selectedEmojiIndex == indexPath {
+                selectedEmojiIndex = nil
+            }
+            selectedEmojiIndex = indexPath
+        } else if collectionView == colorCollectionView {
+            if selectedColorIndex == indexPath {
+                selectedColorIndex = nil
+            }
+            selectedColorIndex = indexPath
+        }
+        collectionView.reloadData()
     }
 }
 

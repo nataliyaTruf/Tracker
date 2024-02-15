@@ -37,15 +37,12 @@ class ColorCell: UICollectionViewCell {
     
     private func setupView() {
         contentView.addSubview(colorView)
-        
-        self.layer.cornerRadius = 8
-        self.clipsToBounds = true
-        
+
         NSLayoutConstraint.activate([
-            colorView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 3),
-            colorView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -3),
-            colorView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 3),
-            colorView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -3)
+            colorView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6),
+            colorView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -6),
+            colorView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 6),
+            colorView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -6),
         ])
     }
     
@@ -56,10 +53,11 @@ class ColorCell: UICollectionViewCell {
         if isSelected {
             contentView.layer.borderWidth = 3
             contentView.layer.borderColor = color.withAlphaComponent(0.3).cgColor
+            contentView.layer.cornerRadius = 8
         } else {
             contentView.layer.borderWidth = 0
             contentView.layer.borderColor = nil
         }
+        contentView.clipsToBounds = true
     }
-    
 }
