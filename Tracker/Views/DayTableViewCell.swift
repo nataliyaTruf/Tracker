@@ -8,7 +8,6 @@
 import UIKit
 
 final class DayTableViewCell: UITableViewCell {
-    
     // MARK: - Properties
     
     static let dayCellIdentifier = "DayCell"

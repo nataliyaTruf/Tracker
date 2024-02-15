@@ -8,8 +8,8 @@
 import UIKit
 
 final class TrackersViewController: UIViewController {
-    
     // MARK: - Properties
+    
     private let searchController = UISearchController(searchResultsController: nil)
     private var trackersCollectionView: UICollectionView!
     private var categories: [TrackerCategory] = [TrackerCategory(title: "По умолчанию", trackers: [])]
@@ -41,7 +41,7 @@ final class TrackersViewController: UIViewController {
     // MARK: - Initialization
     
     init() {
-        self.params = GeometricParams(cellCount: 2, leftInsets: 16, rightInsets: 16, cellSpacing: 9)
+        self.params = GeometricParams(cellCount: 2, leftInsets: 0, rightInsets: 0, cellSpacing: 9)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -143,7 +143,7 @@ final class TrackersViewController: UIViewController {
         trackersCollectionView.dataSource = self
         trackersCollectionView.delegate = self
         trackersCollectionView.register(TrackersCell.self, forCellWithReuseIdentifier: TrackersCell.cellIdetnifier)
-        trackersCollectionView.register(TrackersHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: TrackersHeader.headerIdentifier)
+        trackersCollectionView.register(ReusableHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: ReusableHeader.identifier)
         
         trackersCollectionView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(trackersCollectionView)
@@ -151,8 +151,8 @@ final class TrackersViewController: UIViewController {
         NSLayoutConstraint.activate([
             trackersCollectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
             trackersCollectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            trackersCollectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            trackersCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+            trackersCollectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            trackersCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
         ])
     }
     
@@ -167,15 +167,7 @@ final class TrackersViewController: UIViewController {
         
         emptyStateLabel.text = isSearching ? "Ничего не найдено" : "Что будем отслеживать?"
         emptyStateImageView.image = UIImage(named: isSearching ? "error2" : "error1")
-//        if !hasTrackersToShow {
-//            if isSearching {
-//                emptyStateLabel.text = "Ничего не найдено"
-//                emptyStateImageView.image = UIImage(named: "error2")
-//            } else {
-//                emptyStateLabel.text = "Что будем отслеживать?"
-//                emptyStateImageView.image = UIImage(named: "error1")
-//            }
-//        }
+
     }
 }
 
@@ -235,7 +227,7 @@ extension TrackersViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = trackersCollectionView.dequeueReusableCell(withReuseIdentifier: TrackersCell.cellIdetnifier, for: indexPath) as? TrackersCell else {
             assertionFailure("Error: Unable to dequeue TrackersCell")
-            return TrackersCell()
+            return UICollectionViewCell()
         }
         
         let tracker = filteredCategories[indexPath.section].trackers[indexPath.row]
@@ -257,14 +249,16 @@ extension TrackersViewController: UICollectionViewDataSource {
         case UICollectionView.elementKindSectionHeader:
             guard let header = trackersCollectionView.dequeueReusableSupplementaryView(
                 ofKind: kind,
-                withReuseIdentifier: TrackersHeader.headerIdentifier,
+                withReuseIdentifier: ReusableHeader.identifier,
                 for: indexPath
-            ) as? TrackersHeader else {
+            ) as? ReusableHeader else {
                 assertionFailure("Failed to cast UICollectionReusableView to TrackersHeader")
                 return UICollectionReusableView()
             }
             
-            header.titleLabel.text = categories[indexPath.section].title
+            let title = categories[indexPath.section].title
+            header.configure(with: title)
+
             return header
             
         default:
@@ -293,7 +287,7 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        let header = TrackersHeader()
+        let header = ReusableHeader()
         
         header.titleLabel.text = categories[section].title
         let size = header.systemLayoutSizeFitting(

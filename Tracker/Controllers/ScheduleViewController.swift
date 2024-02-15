@@ -8,8 +8,7 @@
 import UIKit
 
 
-final class ScheduleViewController: UIViewController {
-    
+final class ScheduleViewController: UIViewController {    
     // MARK: - Properties
     
     var onScheduleUpdated: ((ReccuringSchedule) -> Void)?

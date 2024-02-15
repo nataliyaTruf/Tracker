@@ -7,8 +7,7 @@
 
 import UIKit
 
-final class TrackersCell: UICollectionViewCell {
-    
+final class TrackersCell: UICollectionViewCell {    
     // MARK: - Properties
     
     static let cellIdetnifier = "TrackersCell"

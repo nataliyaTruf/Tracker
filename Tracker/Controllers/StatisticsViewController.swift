@@ -8,7 +8,6 @@
 import UIKit
 
 final class StatisticsViewController: UIViewController {
-    
     // MARK: - UI Components
     
     private lazy var emptyStateImageView = {

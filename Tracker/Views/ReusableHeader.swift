@@ -8,11 +8,10 @@
 import UIKit
 
 
-final class TrackersHeader: UICollectionReusableView {
-    
+final class ReusableHeader: UICollectionReusableView {    
     // MARK: - Properties
     
-    static let headerIdentifier = "TrackersHeader"
+    static let identifier = "TrackersHeader"
     
     let titleLabel = UILabel()
     
@@ -28,7 +27,7 @@ final class TrackersHeader: UICollectionReusableView {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 28),
+            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12),
             titleLabel.topAnchor.constraint(equalTo: topAnchor),
             titleLabel.bottomAnchor.constraint(equalTo: bottomAnchor),
             titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -6)
@@ -39,4 +38,8 @@ final class TrackersHeader: UICollectionReusableView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Configuration
+        func configure(with title: String) {
+            titleLabel.text = title
+        }
 }

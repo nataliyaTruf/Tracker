@@ -16,7 +16,6 @@ protocol TrackerCreationDelegate: AnyObject {
 // MARK: - Main Class
 
 final class CreateTrackerViewController: UIViewController {
-    
     // MARK: - Delegate
     
     weak var delegate: TrackerCreationDelegate?
@@ -25,6 +24,20 @@ final class CreateTrackerViewController: UIViewController {
     
     private var selectedSchedule: ReccuringSchedule?
     var onCompletion: (() -> Void)?
+    private let params: GeometricParams
+    
+    private var emojis: [String] = [
+        "😀", "😻", "🌺", "🐶", "❤️", "😱",
+        "😇", "😡", "🥶", "🤔", "🙌", "🍔",
+        "🥦", "🏓", "🥇", "🎸", "🏝️", "😪"
+    ]
+    
+    private var colors: [UIColor] = [
+        .colorSelection1, .colorSelection2, .colorSelection3, .colorSelection4, .colorSelection5,
+        .colorSelection6, .colorSelection7, .colorSelection8, .colorSelection9, .colorSelection10,
+        .colorSelection11, .colorSelection12, .colorSelection13, .colorSelection14, .colorSelection15,
+        .colorSelection16, .colorSelection17, .colorSelection18
+    ]
     
     // MARK: - UI Components
     
@@ -128,6 +141,53 @@ final class CreateTrackerViewController: UIViewController {
         return button
     }()
     
+    private lazy var emojiCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.backgroundColor = .clear
+        collectionView.showsVerticalScrollIndicator = false
+        collectionView.register(EmojiCell.self, forCellWithReuseIdentifier: EmojiCell.idetnifier)
+        collectionView.register(
+            ReusableHeader.self,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+            withReuseIdentifier: ReusableHeader.identifier
+        )
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        return collectionView
+    }()
+    
+    private lazy var colorCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.backgroundColor = .clear
+        collectionView.showsVerticalScrollIndicator = false
+        collectionView.register(ColorCell.self, forCellWithReuseIdentifier: ColorCell.idetnifier)
+        collectionView.register(
+            ReusableHeader.self,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+            withReuseIdentifier: ReusableHeader.identifier
+        )
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        return collectionView
+    }()
+    
+    // MARK: - Initialization
+    
+    init() {
+        self.params = GeometricParams(cellCount: 6, leftInsets: 2, rightInsets: 2, cellSpacing: 5)
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     // MARK: - Lifecycle Methods
     
     override func viewDidLoad() {
@@ -184,6 +244,8 @@ final class CreateTrackerViewController: UIViewController {
         let divider = createDivider()
         stackView.addArrangedSubview(divider)
         stackView.addArrangedSubview(scheduleView)
+        stackView.addArrangedSubview(emojiCollectionView)
+        stackView.addArrangedSubview(colorCollectionView)
         stackView.addArrangedSubview(buttonsView)
         
         setupTitleView()
@@ -194,7 +256,9 @@ final class CreateTrackerViewController: UIViewController {
     private func setupSpacing() {
         stackView.setCustomSpacing(24, after: titleView)
         stackView.setCustomSpacing(24, after: nameTextField)
-        stackView.setCustomSpacing(508, after: scheduleView)
+        stackView.setCustomSpacing(50, after: scheduleView)
+        stackView.setCustomSpacing(34, after: emojiCollectionView)
+        stackView.setCustomSpacing(16, after: colorCollectionView)
         
         stackView.isLayoutMarginsRelativeArrangement = true
         stackView.layoutMargins = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
@@ -218,6 +282,8 @@ final class CreateTrackerViewController: UIViewController {
             scheduleView.heightAnchor.constraint(equalToConstant: 75),
             titleView.heightAnchor.constraint(equalToConstant: 70),
             nameTextField.heightAnchor.constraint(equalToConstant: 75),
+            emojiCollectionView.heightAnchor.constraint(equalToConstant: 222),
+            colorCollectionView.heightAnchor.constraint(equalToConstant: 222)
         ])
     }
 }
@@ -297,3 +363,85 @@ extension CreateTrackerViewController {
     }
 }
 
+// MARK: - UICollectionViewDataSource
+
+extension CreateTrackerViewController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        if collectionView == emojiCollectionView {
+            return emojis.count
+        } else {
+            return colors.count
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        if collectionView == emojiCollectionView {
+            guard let cell = emojiCollectionView.dequeueReusableCell(withReuseIdentifier: EmojiCell.idetnifier, for: indexPath) as? EmojiCell else {
+                assertionFailure("Error: Unable to dequeue EmojiCell")
+                return UICollectionViewCell()
+            }
+            cell.configure(with: emojis[indexPath.item], isSelected: false)
+            
+            return cell
+            
+        } else {
+            guard let cell = colorCollectionView.dequeueReusableCell(withReuseIdentifier: ColorCell.idetnifier, for: indexPath) as? ColorCell else {
+                assertionFailure("Error: Unable to dequeue ColorCell")
+                return UICollectionViewCell()
+            }
+            cell.configure(with: colors[indexPath.item], isSelected: false)
+            
+            return cell
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        guard kind == UICollectionView.elementKindSectionHeader else {
+            assertionFailure( "Failed to cast UICollectionReusableView" )
+            return UICollectionReusableView()
+        }
+        
+        guard let header = collectionView.dequeueReusableSupplementaryView(
+            ofKind: kind,
+            withReuseIdentifier: ReusableHeader.identifier,
+            for: indexPath) as? ReusableHeader
+        else { assertionFailure("Failed to cast UICollectionReusableView" )
+            return UICollectionReusableView()
+        }
+        if collectionView == emojiCollectionView {
+            header.configure(with: "Emoji")
+        } else if collectionView == colorCollectionView {
+            header.configure(with: "Цвет")
+        }
+        
+        return header
+    }
+}
+
+// MARK: - UICollectionViewDelegateFlowLayout
+
+extension CreateTrackerViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let totalSpacing = (params.cellSpacing * CGFloat(params.cellCount - 1)) + params.leftInsets + params.rightInsets
+        let availableWidth = collectionView.bounds.width - totalSpacing
+        let widthPerItem = availableWidth / CGFloat(params.cellCount)
+        return CGSize(width: widthPerItem, height: widthPerItem)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets(top: 24, left: params.leftInsets, bottom: 24, right: params.rightInsets)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return params.cellSpacing
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 0
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        return CGSize(width: collectionView.bounds.width, height: 18)
+    }
+}

@@ -7,8 +7,7 @@
 
 import UIKit
 
-class SelectTrackerViewController: UIViewController {
-    
+class SelectTrackerViewController: UIViewController {    
     // MARK: - Delegate
     
     weak var delegate: TrackerCreationDelegate?
