@@ -32,6 +32,7 @@
 		7F4969992B7A2A24006C27A0 /* MockDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F4969982B7A2A24006C27A0 /* MockDataService.swift */; };
 		7F49699C2B7CC1D5006C27A0 /* EmojiCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F49699B2B7CC1D5006C27A0 /* EmojiCell.swift */; };
 		7F4969A22B7D04DE006C27A0 /* ColorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F4969A12B7D04DE006C27A0 /* ColorCell.swift */; };
+		7FFC541D2BC6AD3E00B618F6 /* TrackerModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 7FFC541B2BC6AD3E00B618F6 /* TrackerModel.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -62,6 +63,7 @@
 		7F4969982B7A2A24006C27A0 /* MockDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDataService.swift; sourceTree = "<group>"; };
 		7F49699B2B7CC1D5006C27A0 /* EmojiCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiCell.swift; sourceTree = "<group>"; };
 		7F4969A12B7D04DE006C27A0 /* ColorCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorCell.swift; sourceTree = "<group>"; };
+		7FFC541C2BC6AD3E00B618F6 /* TrackerModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TrackerModel.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +80,7 @@
 		7F49688F2B554269006C27A0 = {
 			isa = PBXGroup;
 			children = (
+				7FFC541B2BC6AD3E00B618F6 /* TrackerModel.xcdatamodeld */,
 				7F49689A2B554269006C27A0 /* Tracker */,
 				7F4968992B554269006C27A0 /* Products */,
 			);
@@ -252,6 +255,7 @@
 				7F4968A02B554269006C27A0 /* MainTabBarController.swift in Sources */,
 				7F49694F2B5D530F006C27A0 /* TrackerCategory.swift in Sources */,
 				7F4969862B65294D006C27A0 /* GeometricParams.swift in Sources */,
+				7FFC541D2BC6AD3E00B618F6 /* TrackerModel.xcdatamodeld in Sources */,
 				7F4969882B662C2F006C27A0 /* ReusableHeader.swift in Sources */,
 				7F4969992B7A2A24006C27A0 /* MockDataService.swift in Sources */,
 				7F4969612B61432E006C27A0 /* SelectTrackerViewController.swift in Sources */,
@@ -485,6 +489,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		7FFC541B2BC6AD3E00B618F6 /* TrackerModel.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				7FFC541C2BC6AD3E00B618F6 /* TrackerModel.xcdatamodel */,
+			);
+			currentVersion = 7FFC541C2BC6AD3E00B618F6 /* TrackerModel.xcdatamodel */;
+			path = TrackerModel.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 7F4968902B554269006C27A0 /* Project object */;
 }
