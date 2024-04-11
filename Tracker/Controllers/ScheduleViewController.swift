@@ -124,7 +124,7 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
         cell.selectionStyle = .none
         
         let day = days[indexPath.row]
-        let isOn = schedule.recurringDays.contains(day)
+        let isOn = schedule.recurringDays.contains(day.rawValue)
         
         cell.configure(with: day.localizedString, isOn: isOn
         )
@@ -161,12 +161,12 @@ extension ScheduleViewController {
         let day = days[dayIndex]
         
         if isOn {
-            if !schedule.recurringDays.contains(day) {
-                schedule.recurringDays.append(day)
-                schedule.recurringDays.sort(by: { $0.rawValue < $1.rawValue })
+            if !schedule.recurringDays.contains(day.rawValue) {
+                schedule.recurringDays.append(day.rawValue)
+                schedule.recurringDays.sort(by: { $0 < $1 })
             }
         } else {
-            schedule.recurringDays.removeAll { $0 == day }
+            schedule.recurringDays.removeAll { $0 == day.rawValue }
         }
         tableView.reloadRows(at: [IndexPath(row: dayIndex, section: 0)], with: .none)
         // TODO: Implement data persistence for schedule changes

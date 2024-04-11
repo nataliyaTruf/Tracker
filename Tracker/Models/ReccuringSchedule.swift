@@ -7,17 +7,51 @@
 
 import Foundation
 
-struct ReccuringSchedule {
-    var recurringDays: [Weekday] = []
+//struct ReccuringSchedule {
+//    var recurringDays: [Weekday] = []
+//    
+//    var scheduleText: String {
+//        let daysText = recurringDays.map { $0.localizedStringShort }
+//        return daysText.joined(separator: ", ")
+//    }
+//    
+//    func isReccuringOn(_ day: Weekday) -> Bool {
+//        return recurringDays.contains(day)
+//    }
+//}
+
+class ReccuringSchedule: NSObject, NSSecureCoding {
+    static var supportsSecureCoding: Bool = true
     
+    var recurringDays: [Int]
     var scheduleText: String {
-        let daysText = recurringDays.map { $0.localizedStringShort }
-        return daysText.joined(separator: ", ")
+           let daysText = recurringDays.map { Weekday(rawValue: $0)?.localizedStringShort ?? "" }
+           return daysText.joined(separator: ", ")
+       }
+    
+    init(recurringDays: [Int] = []) {
+        self.recurringDays = recurringDays
     }
     
-    func isReccuringOn(_ day: Weekday) -> Bool {
-        return recurringDays.contains(day)
+    required init?(coder: NSCoder) {
+        self.recurringDays = coder.decodeObject(forKey: "recurringDays") as? [Int] ?? []
     }
+    
+    func encode(with coder: NSCoder) {
+        coder.encode(recurringDays, forKey: "recurringDays")
+    }
+   
+    func addDay(_ day: Weekday) {
+           recurringDays.append(day.rawValue)
+       }
+
+       func removeDay(_ day: Weekday) {
+           recurringDays.removeAll { $0 == day.rawValue }
+       }
+
+       func isReccuringOn(_ day: Weekday) -> Bool {
+           return recurringDays.contains(day.rawValue)
+       }
 }
 
 enum Weekday: Int, CaseIterable {

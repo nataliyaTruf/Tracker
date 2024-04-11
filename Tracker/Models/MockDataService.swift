@@ -20,9 +20,9 @@ class MockDataService {
             return categories
         }
         
-        let schedule1 = ReccuringSchedule(recurringDays: [.monday])
-        let schedule2 = ReccuringSchedule(recurringDays: [.monday, .thursday, .sunday])
-        let schedule3 = ReccuringSchedule(recurringDays: [.monday, .wednesday, .friday])
+        let schedule1 = ReccuringSchedule(recurringDays: [Weekday.monday.rawValue])
+        let schedule2 = ReccuringSchedule(recurringDays: [Weekday.monday.rawValue, Weekday.thursday.rawValue, Weekday.sunday.rawValue])
+        let schedule3 = ReccuringSchedule(recurringDays: [Weekday.monday.rawValue, Weekday.wednesday.rawValue, Weekday.friday.rawValue])
         
         let tracker1 = Tracker(id: UUID(), name: "Полив растений", color: "colorSelection1", emodji: "🦖", schedule: schedule1)
         let tracker2 = Tracker(id: UUID(), name: "Йога", color: "colorSelection12", emodji: "🧘‍♀️", schedule: schedule2)
