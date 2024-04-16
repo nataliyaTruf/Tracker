@@ -211,11 +211,10 @@ final class CreateTrackerViewController: UIViewController {
         let selectedColor = selectedColorIndex != nil ? colors[selectedColorIndex!.item] : .colorSelection6
         let selectedColorString = UIColor.string(from: selectedColor) ?? "colorSelection6"
         
-        let tracker = Tracker(
-            id: UUID(),
+        let tracker = CoreDataStack.shared.trackerStore.createTracker(
             name: trackerName,
             color: selectedColorString,
-            emodji: selectedEmoji,
+            emoji: selectedEmoji,
             schedule: selectedSchedule
         )
         
@@ -228,10 +227,20 @@ final class CreateTrackerViewController: UIViewController {
     
     private func showScheduleViewController() {
         let scheduleVC = ScheduleViewController()
+        scheduleVC.trackerStore = CoreDataStack.shared.trackerStore
         scheduleVC.onScheduleUpdated = { [weak self] updatedSchedule in
             self?.selectedSchedule = updatedSchedule
+            
+            if let scheduleData = self?.selectedSchedule?.recurringDays {
+                       print("✅ CreateTrackerViewController - Received updated schedule: \(scheduleData)")
+                   } else {
+                       print("⚠️ CreateTrackerViewController - Received nil for updated schedule")
+                   }
+            
             let formattedSchedule = updatedSchedule.scheduleText
             self?.scheduleView.configure(with: "Расписание", additionalText: formattedSchedule)
+            
+            
         }
         scheduleVC.modalPresentationStyle = .pageSheet
         present(scheduleVC, animated: true)

@@ -9,22 +9,31 @@ import Foundation
 
 @objc(ReccuringScheduleTransformer)
 final class ReccuringScheduleTransformer: ValueTransformer {
-    override class func transformedValueClass() -> AnyClass { NSData.self }
-    override class func allowsReverseTransformation() -> Bool { true }
-    
-    override func transformedValue(_ value: Any?) -> Any? {
-            guard let days = value as? [Int] else { return nil }
-            return try? JSONEncoder().encode(days)
+    override class func transformedValueClass() -> AnyClass {
+            return NSData.self
         }
-    
-    override func reverseTransformedValue(_ value: Any?) -> Any? {
-            guard let data = value as? NSData else { return nil }
-            return try? JSONDecoder().decode([Int].self, from: data as Data)
-        }
-}
 
-extension ReccuringScheduleTransformer {
+        override class func allowsReverseTransformation() -> Bool {
+            return true
+        }
+
+        override func transformedValue(_ value: Any?) -> Any? {
+            guard let data = value as? Data else {
+                print("Ошибка: ожидаемый тип Data, получен \(type(of: value))")
+                return nil
+            }
+            return data
+        }
+
+        override func reverseTransformedValue(_ value: Any?) -> Any? {
+            guard let data = value as? Data else {
+                return nil
+            }
+            return data
+        }
+
     static func register() {
-        ValueTransformer.setValueTransformer(ReccuringScheduleTransformer(), forName: NSValueTransformerName(rawValue: String(describing: ReccuringScheduleTransformer.self)))
+        let transformer = ReccuringScheduleTransformer()
+        ValueTransformer.setValueTransformer(transformer, forName: NSValueTransformerName(rawValue: String(describing: ReccuringScheduleTransformer.self)))
     }
 }

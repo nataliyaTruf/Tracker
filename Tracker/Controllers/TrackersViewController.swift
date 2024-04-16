@@ -7,6 +7,8 @@
 
 import UIKit
 
+import UIKit
+
 final class TrackersViewController: UIViewController {
     // MARK: - Properties
     
@@ -53,13 +55,15 @@ final class TrackersViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        CoreDataStack.shared.trackerStore.delegate = self
         view.backgroundColor = .ypWhiteDay
         setupEmptyStateTrackers()
         setupTrackersCollectionView()
         setupNavigationBar()
         setupSearchController()
-        categories = MockDataService.shared.getDummyTrackers()
+        //        categories = MockDataService.shared.getDummyTrackers()
         filterTrackersForSelectedDate()
+        loadTrackersAndUpdateUI()
     }
     
     // MARK: - Navigation
@@ -167,7 +171,7 @@ final class TrackersViewController: UIViewController {
         
         emptyStateLabel.text = isSearching ? "Ничего не найдено" : "Что будем отслеживать?"
         emptyStateImageView.image = UIImage(named: isSearching ? "error2" : "error1")
-
+        
     }
 }
 
@@ -258,7 +262,7 @@ extension TrackersViewController: UICollectionViewDataSource {
             
             let title = categories[indexPath.section].title
             header.configure(with: title)
-
+            
             return header
             
         default:
@@ -272,6 +276,9 @@ extension TrackersViewController: UICollectionViewDataSource {
 
 extension TrackersViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        print("Available Width: \(trackersCollectionView.bounds.width), Padding Width: \(params.paddingWidth), Cell Count: \(params.cellCount)")
+        
         let avaliableWidth = trackersCollectionView.bounds.width - params.paddingWidth
         let widthPerItem = avaliableWidth / CGFloat(params.cellCount)
         let heightPerItem = widthPerItem * (148 / 167)
@@ -311,6 +318,7 @@ extension TrackersViewController {
             let newRecord = TrackerRecord(id: trackerId, date: currentDate)
             completedTrackers.append(newRecord)
         }
+        
         UIView.performWithoutAnimation {
             trackersCollectionView.reloadItems(at: [indexPath])
         }
@@ -327,15 +335,21 @@ extension TrackersViewController {
     }
     
     private func filterTrackersForSelectedDate() {
+        print("Filtering for date: \(currentDate)")
+        
         let dayOfWeek = currentDate.toWeekday()
         filteredCategories = categories.map { category in
             let filteredTrackers = category.trackers.filter { tracker in
                 guard let schedule = tracker.schedule else { return true }
                 return schedule.isReccuringOn(dayOfWeek)
             }
+            
+            print("Отфильтрованные трекеры для '\(category.title)': \(filteredTrackers.count)")
+            
             return TrackerCategory(title: category.title, trackers: filteredTrackers)
         }.filter { !$0.trackers.isEmpty }
         
+        print("Filtered categories: \(filteredCategories)")
         updateView()
     }
 }
@@ -344,12 +358,31 @@ extension TrackersViewController {
 
 extension TrackersViewController: TrackerCreationDelegate {
     func trackerCreated(_ tracker: Tracker) {
-        var newTrackers = categories[0].trackers
-        newTrackers.append(tracker)
+        if categories.isEmpty {
+            categories.append(TrackerCategory(title: "По умолчанию", trackers: [tracker]))
+        } else {
+            var newTracckers = categories[0].trackers
+            newTracckers.append(tracker)
+            let updateCategory = TrackerCategory(title: categories[0].title, trackers: newTracckers)
+            categories[0] = updateCategory
+        }
         
-        let updateCategory = TrackerCategory(title: categories[0].title, trackers: newTrackers)
-        
-        categories[0] = updateCategory
+        filterTrackersForSelectedDate()
+        trackersCollectionView.reloadData()
+    }
+}
+
+extension TrackersViewController: TrackerStoreDelegate {
+    func trackerStoreDidUpdate() {
+        DispatchQueue.main.async {
+            self.loadTrackersAndUpdateUI()
+        }
+    }
+    
+    func loadTrackersAndUpdateUI() {
+        categories = CoreDataStack.shared.trackerStore.getCurrentTrackers().map {
+            TrackerCategory(title: "Категория", trackers: [$0].compactMap { CoreDataStack.shared.trackerStore.convertToTrackerModel(coreDataTracker: $0) })
+        }
         
         filterTrackersForSelectedDate()
         trackersCollectionView.reloadData()

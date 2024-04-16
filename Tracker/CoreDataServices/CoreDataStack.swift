@@ -38,16 +38,16 @@ final class CoreDataStack {
     }
     
     // MARK: - Store Accessors
-        
-        var trackerStore: TrackerStore {
-            return TrackerStore(managedObjectContext: persistentContainer.viewContext)
-        }
-
-        var trackerCategoryStore: TrackerCategoryStore {
-            return TrackerCategoryStore(managedObjectContext: persistentContainer.viewContext)
-        }
-
-        var trackerRecordStore: TrackerRecordStore {
-            return TrackerRecordStore(managedObjectContext: persistentContainer.viewContext)
-        }
+    
+    var trackerStore: TrackerStore {
+        return TrackerStore(managedObjectContext: persistentContainer.viewContext)
+    }
+    
+    var trackerCategoryStore: TrackerCategoryStore {
+        return TrackerCategoryStore(managedObjectContext: persistentContainer.viewContext)
+    }
+    
+    var trackerRecordStore: TrackerRecordStore {
+        return TrackerRecordStore(managedObjectContext: persistentContainer.viewContext)
+    }
 }
