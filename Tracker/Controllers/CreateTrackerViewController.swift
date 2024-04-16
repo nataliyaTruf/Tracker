@@ -25,6 +25,7 @@ final class CreateTrackerViewController: UIViewController {
     private var selectedSchedule: ReccuringSchedule?
     var onCompletion: (() -> Void)?
     private let params: GeometricParams
+    private var isHabitTracker: Bool
     
     private var emojis: [String] = [
         "😀", "😻", "🌺", "🐶", "❤️", "😱",
@@ -180,8 +181,9 @@ final class CreateTrackerViewController: UIViewController {
     
     // MARK: - Initialization
     
-    init() {
+    init(isHabit: Bool) {
         self.params = GeometricParams(cellCount: 6, leftInsets: 2, rightInsets: 2, cellSpacing: 5)
+        self.isHabitTracker = isHabit
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -197,6 +199,8 @@ final class CreateTrackerViewController: UIViewController {
         setupConstraints()
         setupKeyboardDismiss()
         nameTextField.delegate = self
+        
+        titleLabel.text = isHabitTracker ? "Новая привычка" : "Новое нерегулярное событие"
     }
     
     // MARK: - Actions
@@ -232,10 +236,10 @@ final class CreateTrackerViewController: UIViewController {
             self?.selectedSchedule = updatedSchedule
             
             if let scheduleData = self?.selectedSchedule?.recurringDays {
-                       print("✅ CreateTrackerViewController - Received updated schedule: \(scheduleData)")
-                   } else {
-                       print("⚠️ CreateTrackerViewController - Received nil for updated schedule")
-                   }
+                print("✅ CreateTrackerViewController - Received updated schedule: \(scheduleData)")
+            } else {
+                print("⚠️ CreateTrackerViewController - Received nil for updated schedule")
+            }
             
             let formattedSchedule = updatedSchedule.scheduleText
             self?.scheduleView.configure(with: "Расписание", additionalText: formattedSchedule)
@@ -256,8 +260,15 @@ final class CreateTrackerViewController: UIViewController {
         stackView.addArrangedSubview(nameTextField)
         stackView.addArrangedSubview(categoryView)
         let divider = createDivider()
-        stackView.addArrangedSubview(divider)
-        stackView.addArrangedSubview(scheduleView)
+        divider.isHidden = !isHabitTracker
+        
+        if !isHabitTracker {
+            categoryView.layer.cornerRadius = 16
+            categoryView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+        } else {
+            stackView.addArrangedSubview(divider)
+            stackView.addArrangedSubview(scheduleView)}
+        
         stackView.addArrangedSubview(emojiCollectionView)
         stackView.addArrangedSubview(colorCollectionView)
         stackView.addArrangedSubview(buttonsView)
@@ -270,7 +281,13 @@ final class CreateTrackerViewController: UIViewController {
     private func setupSpacing() {
         stackView.setCustomSpacing(24, after: titleView)
         stackView.setCustomSpacing(24, after: nameTextField)
-        stackView.setCustomSpacing(50, after: scheduleView)
+        
+        let spacingAfterCategoryView = isHabitTracker ? 0 : 50
+        stackView.setCustomSpacing(CGFloat(spacingAfterCategoryView), after: categoryView)
+        if isHabitTracker {
+            stackView.setCustomSpacing(50, after: scheduleView)
+        }
+        //        stackView.setCustomSpacing(50, after: scheduleView)
         stackView.setCustomSpacing(34, after: emojiCollectionView)
         stackView.setCustomSpacing(16, after: colorCollectionView)
         

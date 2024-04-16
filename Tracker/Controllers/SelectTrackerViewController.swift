@@ -25,6 +25,11 @@ class SelectTrackerViewController: UIViewController {
         button.backgroundColor = UIColor(resource: .ypBlackDay)
         button.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 16)
         button.layer.cornerRadius = 16
+        button.addTarget(
+            self,
+            action: #selector(eventButtonTapped),
+            for: .touchUpInside
+        )
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -65,16 +70,24 @@ class SelectTrackerViewController: UIViewController {
     // MARK: - Actions
     
     @objc private func habitButtonTapped() {
-        let createTrackerVC = CreateTrackerViewController()
-        createTrackerVC.delegate = delegate
-        createTrackerVC.modalPresentationStyle = .pageSheet
-        createTrackerVC.onCompletion = { [weak self] in
-            self?.dismiss(animated: false, completion: self?.onTrackerCreated)
-        }
-        present(createTrackerVC, animated: true)
+presentCreateTrackerViewController(isHabit: true)
     }
     
+    @objc private func eventButtonTapped() {
+        presentCreateTrackerViewController(isHabit: false)
+    }
     
+    // MARK: - Navigation
+    
+    private func presentCreateTrackerViewController(isHabit: Bool) {
+        let createTrackerVC = CreateTrackerViewController(isHabit: isHabit)
+                createTrackerVC.delegate = delegate
+                createTrackerVC.modalPresentationStyle = .pageSheet
+                createTrackerVC.onCompletion = { [weak self] in
+                    self?.dismiss(animated: false, completion: self?.onTrackerCreated)
+                }
+                present(createTrackerVC, animated: true)
+    }
     
     // MARK: - Setup Methods
     
