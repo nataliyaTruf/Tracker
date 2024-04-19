@@ -216,6 +216,7 @@ final class CreateTrackerViewController: UIViewController {
         let selectedColorString = UIColor.string(from: selectedColor) ?? "colorSelection6"
         
         let tracker = CoreDataStack.shared.trackerStore.createTracker(
+            id: UUID(), 
             name: trackerName,
             color: selectedColorString,
             emoji: selectedEmoji,

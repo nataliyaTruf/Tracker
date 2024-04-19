@@ -42,8 +42,9 @@ final class TrackerStore: NSObject {
         }
     }
     
-    func createTracker(name: String, color: String, emoji: String, schedule: ReccuringSchedule?) -> Tracker {
+    func createTracker(id: UUID, name: String, color: String, emoji: String, schedule: ReccuringSchedule?) -> Tracker {
         let newTrackerCoreData = TrackerCoreData(context: managedObjectContext)
+        newTrackerCoreData.id = UUID()
         newTrackerCoreData.name = name
         newTrackerCoreData.color = color
         newTrackerCoreData.emoji = emoji

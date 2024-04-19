@@ -56,6 +56,7 @@ final class TrackersViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         CoreDataStack.shared.trackerStore.delegate = self
+        CoreDataStack.shared.trackerRecordStore.delegate = self
         view.backgroundColor = .ypWhiteDay
         setupEmptyStateTrackers()
         setupTrackersCollectionView()
@@ -64,6 +65,7 @@ final class TrackersViewController: UIViewController {
         //        categories = MockDataService.shared.getDummyTrackers()
         filterTrackersForSelectedDate()
         loadTrackersAndUpdateUI()
+        loadCompletedTrackers()
     }
     
     // MARK: - Navigation
@@ -82,6 +84,7 @@ final class TrackersViewController: UIViewController {
     
     @objc func dateChanged(_ datePicker: UIDatePicker) {
         currentDate = datePicker.date
+        loadCompletedTrackers()
         filterTrackersForSelectedDate()
         trackersCollectionView.reloadData()
     }
@@ -310,17 +313,28 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
 
 extension TrackersViewController {
     private func toggleTrackerCompleted(trackerId: UUID, at indexPath: IndexPath) {
+//        if isTrackerCompletedOnCurrentDate(trackerId: trackerId) {
+//            completedTrackerIds.remove(trackerId)
+//            completedTrackers.removeAll {$0.id == trackerId && Calendar.current.isDate($0.date, inSameDayAs: currentDate)}
+//        } else {
+//            completedTrackerIds.insert(trackerId)
+//            let newRecord = TrackerRecord(id: trackerId, date: currentDate)
+//            completedTrackers.append(newRecord)
+//        }
+//        
         if isTrackerCompletedOnCurrentDate(trackerId: trackerId) {
+            CoreDataStack.shared.trackerRecordStore.deleteRecord(trackerId: trackerId, date: currentDate)
             completedTrackerIds.remove(trackerId)
             completedTrackers.removeAll {$0.id == trackerId && Calendar.current.isDate($0.date, inSameDayAs: currentDate)}
         } else {
+            CoreDataStack.shared.trackerRecordStore.createRecord(trackerId: trackerId, date: currentDate)
             completedTrackerIds.insert(trackerId)
             let newRecord = TrackerRecord(id: trackerId, date: currentDate)
             completedTrackers.append(newRecord)
         }
         
         UIView.performWithoutAnimation {
-            trackersCollectionView.reloadItems(at: [indexPath])
+            self.trackersCollectionView.reloadItems(at: [indexPath])
         }
     }
     
@@ -361,9 +375,9 @@ extension TrackersViewController: TrackerCreationDelegate {
         if categories.isEmpty {
             categories.append(TrackerCategory(title: "По умолчанию", trackers: [tracker]))
         } else {
-            var newTracckers = categories[0].trackers
-            newTracckers.append(tracker)
-            let updateCategory = TrackerCategory(title: categories[0].title, trackers: newTracckers)
+            var newTrackers = categories[0].trackers
+            newTrackers.append(tracker)
+            let updateCategory = TrackerCategory(title: categories[0].title, trackers: newTrackers)
             categories[0] = updateCategory
         }
         
@@ -386,5 +400,20 @@ extension TrackersViewController: TrackerStoreDelegate {
         
         filterTrackersForSelectedDate()
         trackersCollectionView.reloadData()
+    }
+}
+
+extension TrackersViewController: TrackerRecordStoreDelegate {
+    
+    func loadCompletedTrackers() {
+        completedTrackers = CoreDataStack.shared.trackerRecordStore.getAllRecords()
+        completedTrackerIds = Set(completedTrackers.map { $0.id })
+        trackersCollectionView.reloadData()
+    }
+    
+    func trackerRecordStoreDidUpdate(records: [TrackerRecord]) {
+        DispatchQueue.main.async {
+            self.loadCompletedTrackers()
+        }
     }
 }
