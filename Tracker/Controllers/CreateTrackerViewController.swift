@@ -179,6 +179,17 @@ final class CreateTrackerViewController: UIViewController {
         return collectionView
     }()
     
+    private lazy var characterLimitLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Ограничение 38 символов"
+        label.font = UIFont(name: "YSDisplay-Medium", size: 17)
+        label.textAlignment = .center
+        label.textColor = .ypRed
+        label.isHidden = true
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
     // MARK: - Initialization
     
     init(isHabit: Bool) {
@@ -201,6 +212,7 @@ final class CreateTrackerViewController: UIViewController {
         nameTextField.delegate = self
         
         titleLabel.text = isHabitTracker ? "Новая привычка" : "Новое нерегулярное событие"
+        updateSpacing(isVisible: false)
     }
     
     // MARK: - Actions
@@ -216,7 +228,7 @@ final class CreateTrackerViewController: UIViewController {
         let selectedColorString = UIColor.string(from: selectedColor) ?? "colorSelection6"
         
         let tracker = CoreDataStack.shared.trackerStore.createTracker(
-            id: UUID(), 
+            id: UUID(),
             name: trackerName,
             color: selectedColorString,
             emoji: selectedEmoji,
@@ -244,9 +256,9 @@ final class CreateTrackerViewController: UIViewController {
             
             let formattedSchedule = updatedSchedule.scheduleText
             self?.scheduleView.configure(with: "Расписание", additionalText: formattedSchedule)
-            
-            
+            self?.updateCreateButtonState()
         }
+        
         scheduleVC.modalPresentationStyle = .pageSheet
         present(scheduleVC, animated: true)
     }
@@ -259,6 +271,7 @@ final class CreateTrackerViewController: UIViewController {
         
         stackView.addArrangedSubview(titleView)
         stackView.addArrangedSubview(nameTextField)
+        stackView.addArrangedSubview(characterLimitLabel)
         stackView.addArrangedSubview(categoryView)
         let divider = createDivider()
         divider.isHidden = !isHabitTracker
@@ -288,12 +301,20 @@ final class CreateTrackerViewController: UIViewController {
         if isHabitTracker {
             stackView.setCustomSpacing(50, after: scheduleView)
         }
-        //        stackView.setCustomSpacing(50, after: scheduleView)
+        
         stackView.setCustomSpacing(34, after: emojiCollectionView)
         stackView.setCustomSpacing(16, after: colorCollectionView)
         
         stackView.isLayoutMarginsRelativeArrangement = true
         stackView.layoutMargins = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+    }
+    
+    private func updateSpacing(isVisible: Bool) {
+        let spacingAfterTextField: CGFloat = isVisible ? 8 : 24
+            let spacingAfterCharacterLimitLabel: CGFloat = isVisible ? 32 : 0
+            
+            stackView.setCustomSpacing(spacingAfterTextField, after: nameTextField)
+            stackView.setCustomSpacing(spacingAfterCharacterLimitLabel, after: characterLimitLabel)
     }
     
     private func setupConstraints() {
@@ -314,6 +335,7 @@ final class CreateTrackerViewController: UIViewController {
             scheduleView.heightAnchor.constraint(equalToConstant: 75),
             titleView.heightAnchor.constraint(equalToConstant: 70),
             nameTextField.heightAnchor.constraint(equalToConstant: 75),
+            characterLimitLabel.heightAnchor.constraint(equalToConstant: 22),
             emojiCollectionView.heightAnchor.constraint(equalToConstant: 222),
             colorCollectionView.heightAnchor.constraint(equalToConstant: 222)
         ])
@@ -332,7 +354,15 @@ extension CreateTrackerViewController: UITextFieldDelegate {
         let currentText = textField.text ?? ""
         guard let stringRange = Range(range, in: currentText) else { return false }
         let updateText = currentText.replacingCharacters(in: stringRange, with: string)
-        return updateText.count <= 38
+        let isAcceptableLength =  updateText.count <= 38
+        characterLimitLabel.isHidden = isAcceptableLength
+        updateSpacing(isVisible: !isAcceptableLength)
+        
+        if isAcceptableLength {
+            self.updateCreateButtonState()
+        }
+        
+        return isAcceptableLength
     }
 }
 
@@ -393,6 +423,18 @@ extension CreateTrackerViewController {
     private func setupKeyboardDismiss() {
         scrollView.keyboardDismissMode = .onDrag
     }
+    
+    private func updateCreateButtonState() {
+        let isNameEntered = !(nameTextField.text?.isEmpty ?? true)
+        let isEmojiSelected = selectedEmojiIndex != nil
+        let isColorSelected = selectedColorIndex != nil
+        let isScheduleSet = selectedSchedule != nil || !isHabitTracker
+        
+        let isFormComplete = isNameEntered && isEmojiSelected && isColorSelected && isScheduleSet
+        
+        createButton.isEnabled = isFormComplete
+        createButton.backgroundColor = isFormComplete ? .ypBlackDay : .ypGray
+    }
 }
 
 // MARK: - UICollectionViewDataSource
@@ -443,6 +485,7 @@ extension CreateTrackerViewController: UICollectionViewDataSource {
         else { assertionFailure("Failed to cast UICollectionReusableView" )
             return UICollectionReusableView()
         }
+        
         if collectionView == emojiCollectionView {
             header.configure(with: "Emoji")
         } else if collectionView == colorCollectionView {
@@ -465,7 +508,9 @@ extension CreateTrackerViewController: UICollectionViewDataSource {
             }
             selectedColorIndex = indexPath
         }
+        
         collectionView.reloadData()
+        updateCreateButtonState()
     }
 }
 

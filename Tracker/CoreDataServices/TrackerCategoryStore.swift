@@ -18,6 +18,15 @@ final class TrackerCategoryStore {
     func createCategory(title: String) {
            let category = TrackerCategoryCoreData(context: managedObjectContext)
            category.title = title
-        CoreDataStack.shared.saveContext()
+       saveContext()
        }
+    
+    private func saveContext() {
+        if managedObjectContext.hasChanges {
+            do {
+                try managedObjectContext.save()
+            } catch {
+                print("Failed to save context: \(error)")            }
+        }
+    }
 }

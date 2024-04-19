@@ -62,7 +62,6 @@ final class TrackersViewController: UIViewController {
         setupTrackersCollectionView()
         setupNavigationBar()
         setupSearchController()
-        //        categories = MockDataService.shared.getDummyTrackers()
         filterTrackersForSelectedDate()
         loadTrackersAndUpdateUI()
         loadCompletedTrackers()
@@ -313,15 +312,6 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
 
 extension TrackersViewController {
     private func toggleTrackerCompleted(trackerId: UUID, at indexPath: IndexPath) {
-//        if isTrackerCompletedOnCurrentDate(trackerId: trackerId) {
-//            completedTrackerIds.remove(trackerId)
-//            completedTrackers.removeAll {$0.id == trackerId && Calendar.current.isDate($0.date, inSameDayAs: currentDate)}
-//        } else {
-//            completedTrackerIds.insert(trackerId)
-//            let newRecord = TrackerRecord(id: trackerId, date: currentDate)
-//            completedTrackers.append(newRecord)
-//        }
-//        
         if isTrackerCompletedOnCurrentDate(trackerId: trackerId) {
             CoreDataStack.shared.trackerRecordStore.deleteRecord(trackerId: trackerId, date: currentDate)
             completedTrackerIds.remove(trackerId)
@@ -386,6 +376,8 @@ extension TrackersViewController: TrackerCreationDelegate {
     }
 }
 
+// MARK: - TrackerStoreDelegate
+
 extension TrackersViewController: TrackerStoreDelegate {
     func trackerStoreDidUpdate() {
         DispatchQueue.main.async {
@@ -395,13 +387,15 @@ extension TrackersViewController: TrackerStoreDelegate {
     
     func loadTrackersAndUpdateUI() {
         categories = CoreDataStack.shared.trackerStore.getCurrentTrackers().map {
-            TrackerCategory(title: "Категория", trackers: [$0].compactMap { CoreDataStack.shared.trackerStore.convertToTrackerModel(coreDataTracker: $0) })
+            TrackerCategory(title: "По умолчанию", trackers: [$0].compactMap { CoreDataStack.shared.trackerStore.convertToTrackerModel(coreDataTracker: $0) })
         }
         
         filterTrackersForSelectedDate()
         trackersCollectionView.reloadData()
     }
 }
+
+// MARK: - TrackerRecordStoreDelegate
 
 extension TrackersViewController: TrackerRecordStoreDelegate {
     

@@ -8,20 +8,33 @@
 import Foundation
 import CoreData
 
+// MARK: - Protocols
+
 protocol TrackerRecordStoreDelegate: AnyObject {
     func trackerRecordStoreDidUpdate(records: [TrackerRecord])
 }
 
+// MARK: - Main Class
+
 final class TrackerRecordStore: NSObject {
-    private let managedObjectContext: NSManagedObjectContext
+    // MARK: - Delegate
+    
     weak var delegate: TrackerRecordStoreDelegate?
+    
+    // MARK: - Properties
+    
+    private let managedObjectContext: NSManagedObjectContext
     private var fetchedResultController: NSFetchedResultsController<TrackerRecordCoreData>!
+    
+    // MARK: - Initialization
     
     init(managedObjectContext: NSManagedObjectContext = CoreDataStack.shared.persistentContainer.viewContext) {
         self.managedObjectContext = managedObjectContext
         super.init()
         setupFetchedResultsController()
     }
+    
+    // MARK: - Setup Methods
     
     private func setupFetchedResultsController() {
         let fetchRequest: NSFetchRequest<TrackerRecordCoreData> = TrackerRecordCoreData.fetchRequest()
@@ -42,6 +55,8 @@ final class TrackerRecordStore: NSObject {
         }
         
     }
+    
+    // MARK: - Public Methods
     
     func createRecord(trackerId: UUID, date: Date) {
         let record = TrackerRecordCoreData(context: managedObjectContext)
@@ -72,6 +87,12 @@ final class TrackerRecordStore: NSObject {
         }
     }
 
+    func getAllRecords() -> [TrackerRecord] {
+        return (fetchedResultController.fetchedObjects ?? []).map(convertToTrackerRecordModel)
+    }
+ 
+    // MARK: - Private Methods
+  
     private func fetchTracker(by id: UUID) -> TrackerCoreData? {
            let fetchRequest: NSFetchRequest<TrackerCoreData> = TrackerCoreData.fetchRequest()
            fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
@@ -85,9 +106,6 @@ final class TrackerRecordStore: NSObject {
            }
        }
     
-    func getAllRecords() -> [TrackerRecord] {
-        return (fetchedResultController.fetchedObjects ?? []).map(convertToTrackerRecordModel)
-    }
     
     private func convertToTrackerRecordModel(coreDataRecord: TrackerRecordCoreData) -> TrackerRecord {
         return TrackerRecord(id: coreDataRecord.id!, date: coreDataRecord.date!)
@@ -103,6 +121,8 @@ final class TrackerRecordStore: NSObject {
         }
     }
 }
+
+// MARK: - NSFetchedResultsControllerDelegate
 
 extension TrackerRecordStore: NSFetchedResultsControllerDelegate {
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
