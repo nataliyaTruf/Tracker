@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 struct GeometricParams {
     let cellCount: Int
     let leftInsets: CGFloat

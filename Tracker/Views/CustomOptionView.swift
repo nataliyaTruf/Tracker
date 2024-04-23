@@ -9,7 +9,6 @@ import UIKit
 
 
 final class CustomOptionView: UIView {
-    
     // MARK: - Properties
     
     var onTap: (() -> Void)?

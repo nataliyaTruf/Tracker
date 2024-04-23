@@ -8,7 +8,6 @@
 import UIKit
 
 final class TrackersCell: UICollectionViewCell {
-    
     // MARK: - Properties
     
     static let cellIdetnifier = "TrackersCell"
@@ -185,6 +184,24 @@ final class TrackersCell: UICollectionViewCell {
         nameLabel.text = tracker.name
         topBackgroundView.backgroundColor =  UIColor.color(from: tracker.color) ?? .blue
         markAsCompleteButton.backgroundColor = topBackgroundView.backgroundColor
-        daysCounterLabel.text = "\(completedDays) дней"
+        daysCounterLabel.text = "\(completedDays)" + " " + getDayWordForCount(completedDays)
+    }
+    
+    private func getDayWordForCount(_ count: Int) -> String {
+        let countLastDigit = count % 10
+        let countLastTwoDigits = count % 100
+        
+        if (countLastTwoDigits >= 11 && countLastTwoDigits <= 19) {
+            return "дней"
+        } else {
+            switch countLastDigit {
+            case 1:
+                return "день"
+            case 2...4:
+                return "дня"
+            default:
+                return "дней"
+            }
+        }
     }
 }

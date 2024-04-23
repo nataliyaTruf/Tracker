@@ -8,14 +8,14 @@
 import UIKit
 
 
-final class ScheduleViewController: UIViewController {
-    
+final class ScheduleViewController: UIViewController {    
     // MARK: - Properties
     
     var onScheduleUpdated: ((ReccuringSchedule) -> Void)?
     var schedule = ReccuringSchedule(recurringDays: [])
     let days: [Weekday] = [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday]
     var tableView: UITableView!
+    var trackerStore: TrackerStore?
     
     // MARK: - UI Components
     
@@ -53,6 +53,8 @@ final class ScheduleViewController: UIViewController {
     // MARK: - Actions
     
     @objc func doneButtonTapped() {
+        let scheduleData = schedule.recurringDays
+        print("✅ ScheduleViewController - doneButtonTapped() called with schedule: \(scheduleData)")
         onScheduleUpdated?(schedule)
         dismiss(animated: true, completion: nil)
     }
@@ -125,9 +127,9 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
         cell.selectionStyle = .none
         
         let day = days[indexPath.row]
-        let isOn = schedule.recurringDays.contains(day)
+        let isOn = schedule.recurringDays.contains(day.rawValue)
         
-        cell.configure(with: day.localizedString, isOn: isOn
+        cell.configure(with: day.localizedStringShort, isOn: isOn
         )
         
         cell.onSwitchValueChanged = { [weak self] isOn in
@@ -162,14 +164,13 @@ extension ScheduleViewController {
         let day = days[dayIndex]
         
         if isOn {
-            if !schedule.recurringDays.contains(day) {
-                schedule.recurringDays.append(day)
-                schedule.recurringDays.sort(by: { $0.rawValue < $1.rawValue })
+            if !schedule.recurringDays.contains(day.rawValue) {
+                schedule.recurringDays.append(day.rawValue)
+                schedule.recurringDays.sort(by: { $0 < $1 })
             }
         } else {
-            schedule.recurringDays.removeAll { $0 == day }
+            schedule.recurringDays.removeAll { $0 == day.rawValue }
         }
         tableView.reloadRows(at: [IndexPath(row: dayIndex, section: 0)], with: .none)
-        // TODO: Implement data persistence for schedule changes
     }
 }
