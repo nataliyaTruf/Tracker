@@ -52,7 +52,7 @@ final class ScheduleViewController: UIViewController {
     
     // MARK: - Actions
     
-    @objc func doneButtonTapped() {
+    @objc private func doneButtonTapped() {
         let scheduleData = schedule.recurringDays
         print("✅ ScheduleViewController - doneButtonTapped() called with schedule: \(scheduleData)")
         onScheduleUpdated?(schedule)

@@ -7,8 +7,6 @@
 
 import UIKit
 
-import UIKit
-
 final class TrackersViewController: UIViewController {
     // MARK: - Properties
     
@@ -81,7 +79,7 @@ final class TrackersViewController: UIViewController {
     
     // MARK: - Actions
     
-    @objc func dateChanged(_ datePicker: UIDatePicker) {
+    @objc private func dateChanged(_ datePicker: UIDatePicker) {
         currentDate = datePicker.date
         loadCompletedTrackers()
         filterTrackersForSelectedDate()

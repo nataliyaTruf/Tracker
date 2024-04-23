@@ -7,7 +7,7 @@
 
 import UIKit
 
-class SelectTrackerViewController: UIViewController {    
+final class SelectTrackerViewController: UIViewController {
     // MARK: - Delegate
     
     weak var delegate: TrackerCreationDelegate?
@@ -70,7 +70,7 @@ class SelectTrackerViewController: UIViewController {
     // MARK: - Actions
     
     @objc private func habitButtonTapped() {
-presentCreateTrackerViewController(isHabit: true)
+        presentCreateTrackerViewController(isHabit: true)
     }
     
     @objc private func eventButtonTapped() {
@@ -81,12 +81,12 @@ presentCreateTrackerViewController(isHabit: true)
     
     private func presentCreateTrackerViewController(isHabit: Bool) {
         let createTrackerVC = CreateTrackerViewController(isHabit: isHabit)
-                createTrackerVC.delegate = delegate
-                createTrackerVC.modalPresentationStyle = .pageSheet
-                createTrackerVC.onCompletion = { [weak self] in
-                    self?.dismiss(animated: false, completion: self?.onTrackerCreated)
-                }
-                present(createTrackerVC, animated: true)
+        createTrackerVC.delegate = delegate
+        createTrackerVC.modalPresentationStyle = .pageSheet
+        createTrackerVC.onCompletion = { [weak self] in
+            self?.dismiss(animated: false, completion: self?.onTrackerCreated)
+        }
+        present(createTrackerVC, animated: true)
     }
     
     // MARK: - Setup Methods
