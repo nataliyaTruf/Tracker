@@ -27,15 +27,9 @@ final class OnboardingViewController: UIPageViewController {
         return pages
     }()
     
-    lazy var skipButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.setTitle("Вот это технологии", for: .normal)
-        button.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 16)
-        button.setTitleColor(.ypWhiteDay, for: .normal)
-        button.backgroundColor = .ypBlackDay
-        button.layer.cornerRadius = 16
+    lazy var skipButton: CustomButton = {
+        let button = CustomButton(title: "Вот это технологии")
         button.addTarget(self, action: #selector(skipButtonTapped), for: .touchUpInside)
-        button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
@@ -135,9 +129,6 @@ final class OnboardingViewController: UIPageViewController {
     private func setupNextButton() {
         NSLayoutConstraint.activate([
             skipButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -50),
-            skipButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            skipButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            skipButton.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
 }

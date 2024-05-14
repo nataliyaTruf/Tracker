@@ -1,5 +1,5 @@
 //
-//  CreateTrackerController.swift
+//  еф.swift
 //  Tracker
 //
 //  Created by Natasha Trufanova on 09/02/2024.
@@ -57,25 +57,11 @@ final class CreateTrackerViewController: UIViewController {
         return stackView
     }()
     
-    private lazy var titleView: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    
-    private lazy var titleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Новая привычка"
-        label.font = UIFont(name: "YSDisplay-Medium", size: 16)
-        label.textAlignment = .center
-        label.textColor = UIColor.ypBlackDay
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
+    private lazy var titleLabel = CustomTitleLabel(text: "Новая привычка")
     
     private lazy var nameTextField = {
         let textField = UITextField()
-        textField.placeholder = "Введите назывние трекера"
+        textField.placeholder = "Введите название трекера"
         textField.textColor = .ypBlackDay
         textField.textAlignment = .left
         textField.borderStyle = .none
@@ -85,30 +71,19 @@ final class CreateTrackerViewController: UIViewController {
         let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: textField.frame.height))
         textField.leftView = paddingView
         textField.leftViewMode = .always
+        textField.addTarget(self, action: #selector(textFieldDidChange(_ :)), for: .editingChanged)
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
     }()
     
-    private lazy var categoryView: CustomOptionView = {
-        let view = CustomOptionView()
-        view.configure(with: "Категория", additionalText: nil)
-        view.layer.cornerRadius = 16
-        view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-        return view
+    private lazy var optionsTableView: UITableView = {
+        let tableView = UITableView(frame: .zero, style: .plain)
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.configureStandardStyle()
+        return tableView
     }()
-    
-    private lazy var scheduleView: CustomOptionView = {
-        let view = CustomOptionView()
-        view.configure(with: "Расписание", additionalText: nil)
-        view.layer.cornerRadius = 16
-        view.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         
-        view.onTap = { [weak self] in
-            self?.showScheduleViewController()
-        }
-        return view
-    }()
-    
     private lazy var buttonsView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -132,12 +107,13 @@ final class CreateTrackerViewController: UIViewController {
     private lazy var createButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Создать", for: .normal)
+        button.setTitleColor(.ypWhiteDay, for: .normal)
+        button.setTitleColor(.ypWhiteDay, for: .disabled)
         button.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 16)
         button.backgroundColor = UIColor.ypGray
         button.layer.borderColor = UIColor.ypGray.cgColor
         button.layer.borderWidth = 1
         button.layer.cornerRadius = 16
-        button.tintColor = UIColor.ypWhiteDay
         button.addTarget(self, action: #selector(createButtonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -222,7 +198,7 @@ final class CreateTrackerViewController: UIViewController {
     }
     
     @objc private func createButtonTapped() {
-        let trackerName = nameTextField.text ?? ""
+        let trackerName = nameTextField.text ?? "По умолчанию"
         let selectedEmoji = selectedEmojiIndex != nil ? emojis[selectedEmojiIndex!.item] : "🍔"
         let selectedColor = selectedColorIndex != nil ? colors[selectedColorIndex!.item] : .colorSelection6
         let selectedColorString = UIColor.string(from: selectedColor) ?? "colorSelection6"
@@ -240,6 +216,11 @@ final class CreateTrackerViewController: UIViewController {
         dismiss(animated: false, completion: nil)
     }
     
+    
+    @objc private func textFieldDidChange(_ textField: UITextField) {
+        updateCreateButtonState()
+    }
+    
     // MARK: - Navigation
     
     private func showScheduleViewController() {
@@ -255,7 +236,14 @@ final class CreateTrackerViewController: UIViewController {
             }
             
             let formattedSchedule = updatedSchedule.scheduleText
-            self?.scheduleView.configure(with: "Расписание", additionalText: formattedSchedule)
+//            self?.cell.configure(with: "Расписание", additionalText: formattedSchedule)
+            
+            let indexPath = IndexPath(row: 1, section: 0)
+            if let cell = self?.optionsTableView.cellForRow(at: indexPath) as? ConfigurableTableViewCell {
+//                let formattedSchedule = updatedSchedule.scheduleText
+                cell.configure(with: "Расписание", additionalText: formattedSchedule, accessoryType: .disclosureIndicator)
+            }
+            self?.optionsTableView.reloadData()
             self?.updateCreateButtonState()
         }
         
@@ -269,39 +257,22 @@ final class CreateTrackerViewController: UIViewController {
         view.addSubview(scrollView)
         scrollView.addSubview(stackView)
         
-        stackView.addArrangedSubview(titleView)
+        stackView.addArrangedSubview(titleLabel)
         stackView.addArrangedSubview(nameTextField)
         stackView.addArrangedSubview(characterLimitLabel)
-        stackView.addArrangedSubview(categoryView)
-        let divider = createDivider()
-        divider.isHidden = !isHabitTracker
-        
-        if !isHabitTracker {
-            categoryView.layer.cornerRadius = 16
-            categoryView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]
-        } else {
-            stackView.addArrangedSubview(divider)
-            stackView.addArrangedSubview(scheduleView)}
-        
+        stackView.addArrangedSubview(optionsTableView)
         stackView.addArrangedSubview(emojiCollectionView)
         stackView.addArrangedSubview(colorCollectionView)
         stackView.addArrangedSubview(buttonsView)
-        
-        setupTitleView()
         setupButtonsView()
         setupSpacing()
     }
     
     private func setupSpacing() {
-        stackView.setCustomSpacing(24, after: titleView)
+        stackView.setCustomSpacing(38, after: titleLabel)
         stackView.setCustomSpacing(24, after: nameTextField)
-        
-        let spacingAfterCategoryView = isHabitTracker ? 0 : 50
-        stackView.setCustomSpacing(CGFloat(spacingAfterCategoryView), after: categoryView)
-        if isHabitTracker {
-            stackView.setCustomSpacing(50, after: scheduleView)
-        }
-        
+        stackView.setCustomSpacing(50, after: optionsTableView)
+       
         stackView.setCustomSpacing(34, after: emojiCollectionView)
         stackView.setCustomSpacing(16, after: colorCollectionView)
         
@@ -311,10 +282,10 @@ final class CreateTrackerViewController: UIViewController {
     
     private func updateSpacing(isVisible: Bool) {
         let spacingAfterTextField: CGFloat = isVisible ? 8 : 24
-            let spacingAfterCharacterLimitLabel: CGFloat = isVisible ? 32 : 0
-            
-            stackView.setCustomSpacing(spacingAfterTextField, after: nameTextField)
-            stackView.setCustomSpacing(spacingAfterCharacterLimitLabel, after: characterLimitLabel)
+        let spacingAfterCharacterLimitLabel: CGFloat = isVisible ? 32 : 0
+        
+        stackView.setCustomSpacing(spacingAfterTextField, after: nameTextField)
+        stackView.setCustomSpacing(spacingAfterCharacterLimitLabel, after: characterLimitLabel)
     }
     
     private func setupConstraints() {
@@ -331,9 +302,7 @@ final class CreateTrackerViewController: UIViewController {
             stackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             
             buttonsView.heightAnchor.constraint(equalToConstant: 60),
-            categoryView.heightAnchor.constraint(equalToConstant: 75),
-            scheduleView.heightAnchor.constraint(equalToConstant: 75),
-            titleView.heightAnchor.constraint(equalToConstant: 70),
+            optionsTableView.heightAnchor.constraint(equalToConstant: isHabitTracker ? 150 : 75),
             nameTextField.heightAnchor.constraint(equalToConstant: 75),
             characterLimitLabel.heightAnchor.constraint(equalToConstant: 22),
             emojiCollectionView.heightAnchor.constraint(equalToConstant: 222),
@@ -369,16 +338,6 @@ extension CreateTrackerViewController: UITextFieldDelegate {
 // MARK: - Additional UI Setup
 
 extension CreateTrackerViewController {
-    private func setupTitleView() {
-        titleView.addSubview(titleLabel)
-        
-        NSLayoutConstraint.activate([
-            titleLabel.centerXAnchor.constraint(equalTo: titleView.centerXAnchor),
-            titleLabel.bottomAnchor.constraint(equalTo: titleView.bottomAnchor, constant: -14),
-            titleLabel.heightAnchor.constraint(equalToConstant: 22)
-        ])
-    }
-    
     private func setupButtonsView() {
         buttonsView.addSubview(cancelButton)
         buttonsView.addSubview(createButton)
@@ -397,29 +356,7 @@ extension CreateTrackerViewController {
             createButton.widthAnchor.constraint(equalTo: cancelButton.widthAnchor)
         ])
     }
-    
-    private func createDivider() -> UIView {
-        let dividerContainer = UIView()
-        dividerContainer.translatesAutoresizingMaskIntoConstraints = false
-        
-        let divider = UIView()
-        divider.backgroundColor = UIColor.ypGray
-        divider.translatesAutoresizingMaskIntoConstraints = false
-        dividerContainer.addSubview(divider)
-        
-        NSLayoutConstraint.activate([
-            divider.heightAnchor.constraint(equalToConstant: 0.5),
-            divider.centerXAnchor.constraint(equalTo: dividerContainer.centerXAnchor),
-            divider.centerYAnchor.constraint(equalTo: dividerContainer.centerYAnchor),
-            divider.widthAnchor.constraint(equalTo: dividerContainer.widthAnchor, multiplier: 0.9)
-        ])
-        NSLayoutConstraint.activate([
-            dividerContainer.heightAnchor.constraint(equalToConstant: 0.5)
-        ])
-        
-        return dividerContainer
-    }
-    
+
     private func setupKeyboardDismiss() {
         scrollView.keyboardDismissMode = .onDrag
     }
@@ -538,5 +475,42 @@ extension CreateTrackerViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         return CGSize(width: collectionView.bounds.width, height: 18)
+    }
+}
+
+extension CreateTrackerViewController: UITableViewDelegate, UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return isHabitTracker ? 2 : 1
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: ConfigurableTableViewCell.identifier, for: indexPath) as? ConfigurableTableViewCell else {
+            assertionFailure("Unable to dequeue DayTableViewCell")
+            return UITableViewCell()
+        }
+        
+        switch indexPath.row {
+        case 0:
+            cell.configure(with: "Категория", additionalText: nil, accessoryType: .disclosureIndicator)
+        case 1:
+            cell.configure(with: "Расписание", additionalText: selectedSchedule?.scheduleText, accessoryType: .disclosureIndicator)
+            cell.onCellTapped = { [weak self] in
+                self?.showScheduleViewController()
+            }
+        default:
+            break
+        }
+        
+        let isLastCell = indexPath.row == tableView.numberOfRows(inSection: indexPath.section) - 1
+        if isLastCell {
+                cell.hideSeparator()
+            } else {
+                cell.showSeparator()
+            }
+        
+        cell.layer.cornerRadius = isLastCell ? 16 : 0
+        cell.layer.maskedCorners = isLastCell ? [.layerMinXMaxYCorner, .layerMaxXMaxYCorner] : []
+        cell.selectionStyle = .none
+        return cell
     }
 }
