@@ -64,7 +64,7 @@ final class ConfigurableTableViewCell: UITableViewCell {
     
     private lazy var checkmarkIcon: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(named: "check_icon")
+        imageView.image = UIImage(named: "selectmark")
         imageView.contentMode = .scaleAspectFit
         imageView.isHidden = true
         imageView.translatesAutoresizingMaskIntoConstraints = false

@@ -19,6 +19,7 @@ final class TrackersViewController: UIViewController {
     private var currentDate: Date = Date()
     private var isSearching = false
     private var params: GeometricParams
+    private var trackerCreationDates: [UUID : Date] = [:]
     
     // MARK: - UI Components
     
@@ -341,8 +342,14 @@ extension TrackersViewController {
 
         filteredCategories = categories.map { category in
             let filteredTrackers = category.trackers.filter { tracker in
-                guard let schedule = tracker.schedule else { return true }
-                return schedule.isReccuringOn(dayOfWeek)
+                if let schedule = tracker.schedule {
+                    return schedule.isReccuringOn(dayOfWeek)
+                } else {
+                    if let creationDate = trackerCreationDates[tracker.id] {
+                        return !completedTrackerIds.contains(tracker.id) && Calendar.current.isDate(currentDate, inSameDayAs: creationDate)
+                    }
+                    return false
+                }
             }
             return TrackerCategory(title: category.title, trackers: filteredTrackers)
         }.filter { !$0.trackers.isEmpty }
@@ -350,8 +357,6 @@ extension TrackersViewController {
         print("Filtered categories: \(filteredCategories.map { $0.title })")
         updateView()
     }
-
-    
 }
 
 // MARK: - TrackerCreationDelegate
@@ -366,6 +371,10 @@ extension TrackersViewController: TrackerCreationDelegate {
             let newCategory = TrackerCategory(title: category, trackers: [tracker])
             categories.append(newCategory)
         }
+        
+//        нерегулярное
+        trackerCreationDates[tracker.id] = Date()
+        
         print("Tracker created: \(tracker.name) in category: \(category)")
         filterTrackersForSelectedDate()
         trackersCollectionView.reloadData()
