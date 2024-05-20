@@ -41,7 +41,6 @@ final class ScheduleViewController: UIViewController {
     
     @objc private func doneButtonTapped() {
         let scheduleData = schedule.recurringDays
-        print("✅ ScheduleViewController - doneButtonTapped() called with schedule: \(scheduleData)")
         onScheduleUpdated?(schedule)
         dismiss(animated: true, completion: nil)
     }

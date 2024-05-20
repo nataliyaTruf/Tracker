@@ -15,7 +15,6 @@ final class TrackersCell: UICollectionViewCell {
     
     var isCompleted: Bool = false {
         didSet {
-            print("isCompleted изменился на \(isCompleted) 🦖")
             let buttonImage = isCompleted ? UIImage(named: "done") : plusImage
             markAsCompleteButton.setImage(buttonImage, for: .normal)
             markAsCompleteButton.alpha = isCompleted ? 0.3 : 1
@@ -125,7 +124,6 @@ final class TrackersCell: UICollectionViewCell {
     
     @objc private func markAsCompleteButtonTapped() {
         onToggleCompleted?()
-        print("КНОПКА БЫЛА НАЖАТА 🎾")
     }
     
     // MARK: - Setup Methods

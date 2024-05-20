@@ -11,7 +11,7 @@ import CoreData
 // MARK: - Protocols
 
 protocol TrackerStoreDelegate: AnyObject {
-    func trackerStoreDidUpdate()
+    func trackerStoreDidChangeContent()
 }
 
 // MARK: - Main Class
@@ -24,12 +24,14 @@ final class TrackerStore: NSObject {
     // MARK: - Properties
     
     private let managedObjectContext: NSManagedObjectContext
+    private let categoryStore: TrackerCategoryStore
     private var fetchedResultsController: NSFetchedResultsController<TrackerCoreData>!
   
     // MARK: - Initialization
     
     init(managedObjectContext: NSManagedObjectContext = CoreDataStack.shared.persistentContainer.viewContext) {
         self.managedObjectContext = managedObjectContext
+        self.categoryStore = TrackerCategoryStore(managedObjectContext: managedObjectContext)
         super.init()
         setupFetchedResultsController()
     }
@@ -46,6 +48,7 @@ final class TrackerStore: NSObject {
             sectionNameKeyPath: nil,
             cacheName: nil
         )
+        
         fetchedResultsController.delegate = self
         
         do {
@@ -57,7 +60,7 @@ final class TrackerStore: NSObject {
    
     // MARK: - Public Methods
     
-    func createTracker(id: UUID, name: String, color: String, emoji: String, schedule: ReccuringSchedule?) -> Tracker {
+    func createTracker(id: UUID, name: String, color: String, emoji: String, schedule: ReccuringSchedule?, categoryTitle: String) -> Tracker {
         let newTrackerCoreData = TrackerCoreData(context: managedObjectContext)
         newTrackerCoreData.id = UUID()
         newTrackerCoreData.name = name
@@ -66,21 +69,38 @@ final class TrackerStore: NSObject {
         
         if let schedule = schedule {
             do {
-                let jsonData = try JSONEncoder().encode(schedule)
-                print("🔵 TrackerStore - Encoded JSON Data: \(jsonData)")
-                newTrackerCoreData.schedule = jsonData as NSObject
+                let scheduleData = try JSONEncoder().encode(schedule)
+                newTrackerCoreData.schedule = scheduleData as NSObject
             } catch {
-                print("🔴 TrackerStore - Error encoding schedule: \(error)")
+                print("TrackerStore - Error encoding schedule: \(error)")
             }
         }
+//        новое
+        let category = categoryStore.createCategoryIfNotExists(with: categoryTitle)
+        newTrackerCoreData.category = category
+        category.addToTrackers(newTrackerCoreData)
+        
+        print("🎾Создан трекер: \(name) с категорией \(categoryTitle)")
         
         saveContext()
         return convertToTrackerModel(coreDataTracker: newTrackerCoreData)
     }
     
-    func getCurrentTrackers() -> [TrackerCoreData] {
-        let trackers = fetchedResultsController.fetchedObjects ?? []
-        return trackers
+    func fetchTrackerCoreData(by id: UUID) -> TrackerCoreData? {
+        let fetchRequest: NSFetchRequest<TrackerCoreData> = TrackerCoreData.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        
+        do {
+            return try managedObjectContext.fetch(fetchRequest).first
+        } catch {
+            print("TrackerStore - Error fetching TrackerCoreData: \(error)")
+            return nil
+        }
+    }
+  
+    func getCurrentTrackers() -> [Tracker] {
+        let trackersCoreData = fetchedResultsController.fetchedObjects ?? []
+        return trackersCoreData.map { convertToTrackerModel(coreDataTracker: $0) }
     }
   
     func convertToTrackerModel(coreDataTracker: TrackerCoreData) -> Tracker {
@@ -89,9 +109,8 @@ final class TrackerStore: NSObject {
         if let scheduleData = coreDataTracker.schedule as? Data {
             do {
                 schedule = try JSONDecoder().decode(ReccuringSchedule.self, from: scheduleData)
-                print("🔵 TrackerStore - Decoded Schedule: \(String(describing: schedule))")
             } catch {
-                print("🔴 TrackerStore - Error decoding schedule: \(error)")
+                print("TrackerStore - Error decoding schedule: \(error)")
             }
         }
         
@@ -103,8 +122,6 @@ final class TrackerStore: NSObject {
             schedule: schedule
         )
     }
-    
-    
     // MARK: - Private Methods
     
     private func saveContext() {
@@ -131,6 +148,6 @@ final class TrackerStore: NSObject {
 
 extension TrackerStore: NSFetchedResultsControllerDelegate {
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        delegate?.trackerStoreDidUpdate()
+        delegate?.trackerStoreDidChangeContent()
     }
 }

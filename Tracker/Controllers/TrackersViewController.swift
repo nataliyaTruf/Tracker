@@ -55,12 +55,12 @@ final class TrackersViewController: UIViewController {
         super.viewDidLoad()
         CoreDataStack.shared.trackerStore.delegate = self
         CoreDataStack.shared.trackerRecordStore.delegate = self
+        CoreDataStack.shared.trackerCategoryStore.delegate = self
         view.backgroundColor = .ypWhiteDay
         setupEmptyStateTrackers()
         setupTrackersCollectionView()
         setupNavigationBar()
         setupSearchController()
-        filterTrackersForSelectedDate()
         loadTrackersAndUpdateUI()
         loadCompletedTrackers()
     }
@@ -260,7 +260,7 @@ extension TrackersViewController: UICollectionViewDataSource {
                 return UICollectionReusableView()
             }
             
-            let title = categories[indexPath.section].title
+            let title = filteredCategories[indexPath.section].title
             header.configure(with: title)
             
             return header
@@ -276,8 +276,6 @@ extension TrackersViewController: UICollectionViewDataSource {
 
 extension TrackersViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        
-        print("Available Width: \(trackersCollectionView.bounds.width), Padding Width: \(params.paddingWidth), Cell Count: \(params.cellCount)")
         
         let avaliableWidth = trackersCollectionView.bounds.width - params.paddingWidth
         let widthPerItem = avaliableWidth / CGFloat(params.cellCount)
@@ -335,40 +333,40 @@ extension TrackersViewController {
         let uniqueDates = Set(completedDates)
         return uniqueDates.count
     }
-    
+
     private func filterTrackersForSelectedDate() {
         print("Filtering for date: \(currentDate)")
-        
+
         let dayOfWeek = currentDate.toWeekday()
+
         filteredCategories = categories.map { category in
             let filteredTrackers = category.trackers.filter { tracker in
                 guard let schedule = tracker.schedule else { return true }
                 return schedule.isReccuringOn(dayOfWeek)
             }
-            
-            print("Отфильтрованные трекеры для '\(category.title)': \(filteredTrackers.count)")
-            
             return TrackerCategory(title: category.title, trackers: filteredTrackers)
         }.filter { !$0.trackers.isEmpty }
         
-        print("Filtered categories: \(filteredCategories)")
+        print("Filtered categories: \(filteredCategories.map { $0.title })")
         updateView()
     }
+
+    
 }
 
 // MARK: - TrackerCreationDelegate
 
 extension TrackersViewController: TrackerCreationDelegate {
-    func trackerCreated(_ tracker: Tracker) {
-        if categories.isEmpty {
-            categories.append(TrackerCategory(title: "По умолчанию", trackers: [tracker]))
+    func trackerCreated(_ tracker: Tracker, category: String) {
+        if let index = categories.firstIndex(where: { $0.title == category }) {
+            var updatedTrackers = categories[index].trackers
+            updatedTrackers.append(tracker)
+            categories[index] = TrackerCategory(title: category, trackers: updatedTrackers)
         } else {
-            var newTrackers = categories[0].trackers
-            newTrackers.append(tracker)
-            let updateCategory = TrackerCategory(title: categories[0].title, trackers: newTrackers)
-            categories[0] = updateCategory
+            let newCategory = TrackerCategory(title: category, trackers: [tracker])
+            categories.append(newCategory)
         }
-        
+        print("Tracker created: \(tracker.name) in category: \(category)")
         filterTrackersForSelectedDate()
         trackersCollectionView.reloadData()
     }
@@ -377,17 +375,14 @@ extension TrackersViewController: TrackerCreationDelegate {
 // MARK: - TrackerStoreDelegate
 
 extension TrackersViewController: TrackerStoreDelegate {
-    func trackerStoreDidUpdate() {
+    func trackerStoreDidChangeContent() {
         DispatchQueue.main.async {
             self.loadTrackersAndUpdateUI()
         }
     }
     
     func loadTrackersAndUpdateUI() {
-        categories = CoreDataStack.shared.trackerStore.getCurrentTrackers().map {
-            TrackerCategory(title: "По умолчанию", trackers: [$0].compactMap { CoreDataStack.shared.trackerStore.convertToTrackerModel(coreDataTracker: $0) })
-        }
-        
+        categories = CoreDataStack.shared.trackerCategoryStore.getAllCategoriesWithTrackers()
         filterTrackersForSelectedDate()
         trackersCollectionView.reloadData()
     }
@@ -400,12 +395,21 @@ extension TrackersViewController: TrackerRecordStoreDelegate {
     func loadCompletedTrackers() {
         completedTrackers = CoreDataStack.shared.trackerRecordStore.getAllRecords()
         completedTrackerIds = Set(completedTrackers.map { $0.id })
+        
         trackersCollectionView.reloadData()
     }
     
-    func trackerRecordStoreDidUpdate(records: [TrackerRecord]) {
+    func trackerRecordStoreDidChangeContent(records: [TrackerRecord]) {
         DispatchQueue.main.async {
             self.loadCompletedTrackers()
+        }
+    }
+}
+
+extension TrackersViewController: TrackerCategoryStoreDelegate {
+    func trackerCategoryStoreDidChangeContent(_ store: TrackerCategoryStore) {
+        DispatchQueue.main.async {
+            self.loadTrackersAndUpdateUI()
         }
     }
 }

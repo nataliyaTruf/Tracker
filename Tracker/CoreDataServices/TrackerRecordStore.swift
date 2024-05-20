@@ -11,7 +11,7 @@ import CoreData
 // MARK: - Protocols
 
 protocol TrackerRecordStoreDelegate: AnyObject {
-    func trackerRecordStoreDidUpdate(records: [TrackerRecord])
+    func trackerRecordStoreDidChangeContent(records: [TrackerRecord])
 }
 
 // MARK: - Main Class
@@ -115,7 +115,7 @@ final class TrackerRecordStore: NSObject {
         if managedObjectContext.hasChanges {
             do {
                 try managedObjectContext.save()
-                delegate?.trackerRecordStoreDidUpdate(records: getAllRecords())
+                delegate?.trackerRecordStoreDidChangeContent(records: getAllRecords())
             } catch {
                 print("Failed to save context: \(error)")            }
         }
@@ -128,6 +128,6 @@ extension TrackerRecordStore: NSFetchedResultsControllerDelegate {
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         guard let recordsCoreData = controller.fetchedObjects as? [TrackerRecordCoreData] else { return }
         let records = recordsCoreData.map { self.convertToTrackerRecordModel(coreDataRecord: $0) }
-        delegate?.trackerRecordStoreDidUpdate(records: records)
+        delegate?.trackerRecordStoreDidChangeContent(records: records)
     }
 }

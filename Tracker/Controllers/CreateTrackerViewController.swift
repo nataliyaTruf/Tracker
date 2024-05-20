@@ -10,7 +10,7 @@ import UIKit
 // MARK: - Protocols
 
 protocol TrackerCreationDelegate: AnyObject {
-    func trackerCreated(_ tracker: Tracker)
+    func trackerCreated(_ tracker: Tracker, category: String)
 }
 
 // MARK: - Main Class
@@ -40,6 +40,7 @@ final class CreateTrackerViewController: UIViewController {
     ]
     private var selectedEmojiIndex: IndexPath?
     private var selectedColorIndex: IndexPath?
+    private var selectedCategoryName: String = "По умолчанию"
     
     // MARK: - UI Components
     
@@ -57,7 +58,7 @@ final class CreateTrackerViewController: UIViewController {
         return stackView
     }()
     
-    private lazy var titleLabel = CustomTitleLabel(text: "Новая привычка")
+    private lazy var titleLabel = CustomTitleLabel(text: isHabitTracker ? "Новая привычка" : "Новое нерегулярное событие")
     
     private lazy var nameTextField = {
         let textField = UITextField()
@@ -186,8 +187,6 @@ final class CreateTrackerViewController: UIViewController {
         setupConstraints()
         setupKeyboardDismiss()
         nameTextField.delegate = self
-        
-        titleLabel.text = isHabitTracker ? "Новая привычка" : "Новое нерегулярное событие"
         updateSpacing(isVisible: false)
     }
     
@@ -203,15 +202,21 @@ final class CreateTrackerViewController: UIViewController {
         let selectedColor = selectedColorIndex != nil ? colors[selectedColorIndex!.item] : .colorSelection6
         let selectedColorString = UIColor.string(from: selectedColor) ?? "colorSelection6"
         
-        let tracker = CoreDataStack.shared.trackerStore.createTracker(
+        let newTracker = CoreDataStack.shared.trackerStore.createTracker(
             id: UUID(),
             name: trackerName,
             color: selectedColorString,
             emoji: selectedEmoji,
-            schedule: selectedSchedule
+            schedule: selectedSchedule, 
+            categoryTitle: selectedCategoryName
         )
         
-        delegate?.trackerCreated(tracker)
+// новое
+        if let newTrackerCoreData = CoreDataStack.shared.trackerStore.fetchTrackerCoreData(by: newTracker.id) {
+            CoreDataStack.shared.trackerCategoryStore.linkTracker(newTrackerCoreData, toCategoryWithtitle: selectedCategoryName)
+            }
+    
+        delegate?.trackerCreated(newTracker, category: selectedCategoryName)
         onCompletion?()
         dismiss(animated: false, completion: nil)
     }
@@ -229,19 +234,13 @@ final class CreateTrackerViewController: UIViewController {
         scheduleVC.onScheduleUpdated = { [weak self] updatedSchedule in
             self?.selectedSchedule = updatedSchedule
             
-            if let scheduleData = self?.selectedSchedule?.recurringDays {
-                print("✅ CreateTrackerViewController - Received updated schedule: \(scheduleData)")
-            } else {
-                print("⚠️ CreateTrackerViewController - Received nil for updated schedule")
-            }
+            let scheduleData = self?.selectedSchedule?.recurringDays
             
             let formattedSchedule = updatedSchedule.scheduleText
-//            self?.cell.configure(with: "Расписание", additionalText: formattedSchedule)
             
             let indexPath = IndexPath(row: 1, section: 0)
             if let cell = self?.optionsTableView.cellForRow(at: indexPath) as? ConfigurableTableViewCell {
-//                let formattedSchedule = updatedSchedule.scheduleText
-                cell.configure(with: "Расписание", additionalText: formattedSchedule, accessoryType: .disclosureIndicator)
+                cell.configure(with: "Расписание", additionalText: formattedSchedule, accessoryType: .arrow)
             }
             self?.optionsTableView.reloadData()
             self?.updateCreateButtonState()
@@ -249,6 +248,22 @@ final class CreateTrackerViewController: UIViewController {
         
         scheduleVC.modalPresentationStyle = .pageSheet
         present(scheduleVC, animated: true)
+    }
+    
+    private func showCategoryListViewController() {
+        let categoryListVC = CategoryListViewController()
+        categoryListVC.onSelectCategory = { [weak self] categoryName in
+            self?.selectedCategoryName = categoryName
+            self?.updateCategoryName(categoryName)
+        }
+        categoryListVC.modalPresentationStyle = .pageSheet
+        present(categoryListVC, animated: true)
+    }
+    
+    private func updateCategoryName(_ categoryName: String) {
+        if let cell = optionsTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? ConfigurableTableViewCell {
+            cell.configure(with: "Категория", additionalText: categoryName, accessoryType: .arrow)
+        }
     }
     
     // MARK: - Initial UI Setup
@@ -295,7 +310,7 @@ final class CreateTrackerViewController: UIViewController {
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
-            stackView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            stackView.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 27),
             stackView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
             stackView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
             stackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
@@ -491,9 +506,13 @@ extension CreateTrackerViewController: UITableViewDelegate, UITableViewDataSourc
         
         switch indexPath.row {
         case 0:
-            cell.configure(with: "Категория", additionalText: nil, accessoryType: .disclosureIndicator)
+            let additionalText = selectedCategoryName == "По умолчанию" ? nil : selectedCategoryName
+            cell.configure(with: "Категория", additionalText: additionalText, accessoryType: .arrow)
+            cell.onCellTapped = { [weak self] in
+                self?.showCategoryListViewController()
+            }
         case 1:
-            cell.configure(with: "Расписание", additionalText: selectedSchedule?.scheduleText, accessoryType: .disclosureIndicator)
+            cell.configure(with: "Расписание", additionalText: selectedSchedule?.scheduleText, accessoryType: .arrow)
             cell.onCellTapped = { [weak self] in
                 self?.showScheduleViewController()
             }

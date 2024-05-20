@@ -9,7 +9,7 @@ import UIKit
 
 enum CellAccessoryType {
     case none
-    case disclosureIndicator
+    case arrow
     case checkmark
     case switchControl(isOn: Bool)
 }
@@ -64,7 +64,7 @@ final class ConfigurableTableViewCell: UITableViewCell {
     
     private lazy var checkmarkIcon: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(systemName: "checkmark")
+        imageView.image = UIImage(named: "check_icon")
         imageView.contentMode = .scaleAspectFit
         imageView.isHidden = true
         imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -155,7 +155,7 @@ final class ConfigurableTableViewCell: UITableViewCell {
         switch accessoryType {
         case .none:
             selectionStyle = .none
-        case .disclosureIndicator:
+        case .arrow:
             arrowIcon.isHidden = false
             selectionStyle = .none
         case .checkmark:
