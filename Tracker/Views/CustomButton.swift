@@ -12,7 +12,7 @@ final class CustomButton: UIButton {
     init(title: String) {
         super.init(frame: .zero)
         setTitle(title, for: .normal)
-        titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 16)
+        titleLabel?.font = Fonts.medium(size: 16)
         setTitleColor(.ypWhiteDay, for: .normal)
         backgroundColor = .ypBlackDay
         layer.cornerRadius = 16

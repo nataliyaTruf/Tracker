@@ -33,7 +33,7 @@ final class TrackersViewController: UIViewController {
     private lazy var emptyStateLabel: UILabel = {
         let label = UILabel()
         label.text = "Что будем отслеживать?"
-        label.font = UIFont(name: "YSDisplay-Medium", size: 12)
+        label.font = Fonts.medium(size: 12)
         label.textColor = .ypBlackDay
         label.translatesAutoresizingMaskIntoConstraints = false
         return label

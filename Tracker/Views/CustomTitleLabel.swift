@@ -12,7 +12,7 @@ final class CustomTitleLabel: UILabel {
     init(text: String) {
         super.init(frame: .zero)
         self.text = text
-        font = UIFont(name: "YSDisplay-Medium", size: 16)
+        font = Fonts.medium(size: 16)
         textColor = .ypBlackDay
         textAlignment = .center
         translatesAutoresizingMaskIntoConstraints = false

@@ -60,20 +60,9 @@ final class CreateTrackerViewController: UIViewController {
     
     private lazy var titleLabel = CustomTitleLabel(text: isHabitTracker ? "Новая привычка" : "Новое нерегулярное событие")
     
-    private lazy var nameTextField = {
-        let textField = UITextField()
-        textField.placeholder = "Введите название трекера"
-        textField.textColor = .ypBlackDay
-        textField.textAlignment = .left
-        textField.borderStyle = .none
-        textField.layer.masksToBounds = true
-        textField.layer.cornerRadius = 16
-        textField.backgroundColor = .ypBackgroundDay
-        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: textField.frame.height))
-        textField.leftView = paddingView
-        textField.leftViewMode = .always
+    private lazy var nameTextField: CustomTextField = {
+        let textField = CustomTextField(placeholder: "Введите название трекера")
         textField.addTarget(self, action: #selector(textFieldDidChange(_ :)), for: .editingChanged)
-        textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
     }()
     
@@ -94,7 +83,7 @@ final class CreateTrackerViewController: UIViewController {
     private lazy var cancelButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Отменить", for: .normal)
-        button.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 16)
+        button.titleLabel?.font = Fonts.medium(size: 16)
         button.tintColor = UIColor.ypRed
         button.layer.borderColor = UIColor.ypRed.cgColor
         button.layer.borderWidth = 1
@@ -110,7 +99,7 @@ final class CreateTrackerViewController: UIViewController {
         button.setTitle("Создать", for: .normal)
         button.setTitleColor(.ypWhiteDay, for: .normal)
         button.setTitleColor(.ypWhiteDay, for: .disabled)
-        button.titleLabel?.font = UIFont(name: "YSDisplay-Medium", size: 16)
+        button.titleLabel?.font = Fonts.medium(size: 16)
         button.backgroundColor = UIColor.ypGray
         button.layer.borderColor = UIColor.ypGray.cgColor
         button.layer.borderWidth = 1
@@ -159,7 +148,7 @@ final class CreateTrackerViewController: UIViewController {
     private lazy var characterLimitLabel: UILabel = {
         let label = UILabel()
         label.text = "Ограничение 38 символов"
-        label.font = UIFont(name: "YSDisplay-Medium", size: 17)
+        label.font = Fonts.medium(size: 17)
         label.textAlignment = .center
         label.textColor = .ypRed
         label.isHidden = true

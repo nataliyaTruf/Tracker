@@ -52,7 +52,7 @@ final class TrackersCell: UICollectionViewCell {
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
         label.textColor = .ypWhiteDay
-        label.font = UIFont(name: "YSDisplay-Medium", size: 12)
+        label.font = Fonts.medium(size: 12)
         label.text = "Поливать растения"
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -68,7 +68,7 @@ final class TrackersCell: UICollectionViewCell {
     private lazy var daysCounterLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .left
-        label.font = UIFont(name: "YSDisplay-Medium", size: 12)
+        label.font = Fonts.medium(size: 12)
         label.text = "0 дней"
         label.translatesAutoresizingMaskIntoConstraints = false
         return label

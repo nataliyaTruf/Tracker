@@ -20,7 +20,7 @@ final class StatisticsViewController: UIViewController {
     private lazy var emptyStateLabel: UILabel = {
         let label = UILabel()
         label.text = "Анализировать пока нечего"
-        label.font = UIFont(name: "YSDisplay-Medium", size: 12)
+        label.font = Fonts.medium(size: 12)
         label.textColor = .ypBlackDay
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -29,7 +29,7 @@ final class StatisticsViewController: UIViewController {
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Статистика"
-        label.font = UIFont(name: "YSDisplay-Bold", size: 34)
+        label.font = Fonts.bold(size: 34)
         label.textColor = .ypBlackDay
         label.contentMode = .scaleAspectFit
         label.translatesAutoresizingMaskIntoConstraints = false

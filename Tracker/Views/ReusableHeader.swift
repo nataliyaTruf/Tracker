@@ -22,7 +22,7 @@ final class ReusableHeader: UICollectionReusableView {
         
         addSubview(titleLabel)
         titleLabel.text = "Домашний уют"
-        titleLabel.font = UIFont(name: "YSDisplay-Bold", size: 19)
+        titleLabel.font = Fonts.bold(size: 19)
         titleLabel.textColor = .ypBlackDay
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         

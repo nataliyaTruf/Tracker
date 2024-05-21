@@ -14,6 +14,8 @@ enum CellAccessoryType {
     case switchControl(isOn: Bool)
 }
 
+// MARK: - Main Class
+
 final class ConfigurableTableViewCell: UITableViewCell {
     // MARK: - Properties
     
@@ -24,7 +26,7 @@ final class ConfigurableTableViewCell: UITableViewCell {
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = .ypBlackDay
-        label.font = UIFont(name: "YSDisplay-Medium", size: 17)
+        label.font = Fonts.medium(size: 17)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -33,7 +35,7 @@ final class ConfigurableTableViewCell: UITableViewCell {
         let label = UILabel()
         label.text = "расписание"
         label.textColor = .ypGray
-        label.font = UIFont(name: "YSDisplay-Medium", size: 17)
+        label.font = Fonts.medium(size: 17)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()

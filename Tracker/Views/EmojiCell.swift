@@ -17,7 +17,7 @@ final class EmojiCell: UICollectionViewCell {
     private lazy var emojiLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
-        label.font = UIFont(name: "YSDisplay-Bold", size: 32)
+        label.font = Fonts.bold(size: 32)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()

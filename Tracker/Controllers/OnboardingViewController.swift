@@ -98,7 +98,7 @@ final class OnboardingViewController: UIPageViewController {
         
         let textLabel = UILabel()
         textLabel.numberOfLines = 0
-        textLabel.font = UIFont(name: "YSDisplay-Bold", size: 32)
+        textLabel.font = Fonts.bold(size: 32)
         textLabel.textAlignment = .center
         textLabel.textColor = .ypBlackDay
         textLabel.backgroundColor = .clear

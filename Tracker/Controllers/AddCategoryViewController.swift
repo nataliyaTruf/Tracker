@@ -23,20 +23,9 @@ final class AddCategoryViewController: UIViewController {
         return button
     }()
     
-    private lazy var nameTextField = {
-        let textField = UITextField()
-        textField.placeholder = "Введите название категории"
-        textField.textColor = .ypBlackDay
-        textField.textAlignment = .left
-        textField.borderStyle = .none
-        textField.layer.masksToBounds = true
-        textField.layer.cornerRadius = 16
-        textField.backgroundColor = .ypBackgroundDay
-        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: textField.frame.height))
-        textField.leftView = paddingView
-        textField.leftViewMode = .always
+    private lazy var nameTextField: CustomTextField = {
+        let textField = CustomTextField(placeholder: "Введите название категории")
         textField.addTarget(self, action: #selector(textFieldDidChange(_ :)), for: .editingChanged)
-        textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
     }()
     
