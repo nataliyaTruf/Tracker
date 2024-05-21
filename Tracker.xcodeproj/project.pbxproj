@@ -42,6 +42,7 @@
 		7FFC54242BC6C8ED00B618F6 /* TrackerRecordStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFC54232BC6C8ED00B618F6 /* TrackerRecordStore.swift */; };
 		7FFC54262BC6D60800B618F6 /* ReccuringScheduleTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFC54252BC6D60800B618F6 /* ReccuringScheduleTransformer.swift */; };
 		7FFC54282BC6D93300B618F6 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFC54272BC6D93300B618F6 /* CoreDataStack.swift */; };
+		7FFDB1822BFC619D000BF785 /* CategoryListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFDB1812BFC619D000BF785 /* CategoryListViewModel.swift */; };
 		7FFF1B3E2BF38AE00025D1C7 /* AddCategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFF1B3D2BF38AE00025D1C7 /* AddCategoryViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -83,6 +84,7 @@
 		7FFC54232BC6C8ED00B618F6 /* TrackerRecordStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerRecordStore.swift; sourceTree = "<group>"; };
 		7FFC54252BC6D60800B618F6 /* ReccuringScheduleTransformer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReccuringScheduleTransformer.swift; sourceTree = "<group>"; };
 		7FFC54272BC6D93300B618F6 /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
+		7FFDB1812BFC619D000BF785 /* CategoryListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryListViewModel.swift; sourceTree = "<group>"; };
 		7FFF1B3D2BF38AE00025D1C7 /* AddCategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCategoryViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -171,7 +173,6 @@
 				7F9A189F2BDFC2B9002D3DF3 /* CustomButton.swift */,
 				7F9A18A12BDFD0E3002D3DF3 /* CustomTitleLabel.swift */,
 				7F9A18A52BE0FE72002D3DF3 /* ConfigurableTableViewCell.swift */,
-				7F9A18A72BE142C4002D3DF3 /* TableView+Extensions.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -181,6 +182,7 @@
 			children = (
 				7F4969852B65294D006C27A0 /* GeometricParams.swift */,
 				7F4969892B67B5CE006C27A0 /* UIColor+Extensions.swift */,
+				7F9A18A72BE142C4002D3DF3 /* TableView+Extensions.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -196,6 +198,7 @@
 				7FB1C1982BD7C675000C6BA6 /* OnboardingViewController.swift */,
 				7F49689F2B554269006C27A0 /* MainTabBarController.swift */,
 				7F9A18A32BE0FB47002D3DF3 /* CategoryListViewController.swift */,
+				7FFDB1812BFC619D000BF785 /* CategoryListViewModel.swift */,
 				7FFF1B3D2BF38AE00025D1C7 /* AddCategoryViewController.swift */,
 			);
 			path = Controllers;
@@ -302,6 +305,7 @@
 				7F4969882B662C2F006C27A0 /* ReusableHeader.swift in Sources */,
 				7F4969992B7A2A24006C27A0 /* MockDataService.swift in Sources */,
 				7F4969612B61432E006C27A0 /* SelectTrackerViewController.swift in Sources */,
+				7FFDB1822BFC619D000BF785 /* CategoryListViewModel.swift in Sources */,
 				7F49694D2B5D5015006C27A0 /* ReccuringSchedule.swift in Sources */,
 				7F49698A2B67B5CE006C27A0 /* UIColor+Extensions.swift in Sources */,
 				7FFC54262BC6D60800B618F6 /* ReccuringScheduleTransformer.swift in Sources */,

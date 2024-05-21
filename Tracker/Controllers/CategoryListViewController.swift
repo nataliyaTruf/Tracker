@@ -7,15 +7,16 @@
 
 import UIKit
 
+
 final class CategoryListViewController: UIViewController {
-    var categories: [TrackerCategory] = []
-    var tableView: UITableView!
-    var selectedCategory: TrackerCategory?
-    var selectedIndex: IndexPath?
+    // MARK: - Properties
+    
+    private var viewModel = CategoryListViewModel()
     var onSelectCategory: ((String) -> Void)?
     
-    private let categoryStore = CoreDataStack.shared.trackerCategoryStore
+    // MARK: - UI Components
     
+    private var tableView: UITableView!
     private lazy var titleLabel = CustomTitleLabel(text: "Категория")
     
     private lazy var addCategoryButton: CustomButton = {
@@ -24,43 +25,65 @@ final class CategoryListViewController: UIViewController {
         return button
     }()
     
+    // MARK: - Lifecycle Methods
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .ypWhiteDay
-        setuptitleLabel()
+        
+        setupTitleLabel()
         setupAddCategoryButton()
         setupTableView()
-        loadCategories()
+        
+        bindViewModel()
     }
+    
+    // MARK: - Bind ViewModel
+    
+    private func bindViewModel() {
+        viewModel.onCategoriesUpdated = { [weak self] categories in
+            self?.tableView.reloadData()
+        }
+        
+        viewModel.onCategorySelected = { [weak self] categoryName in
+            guard let self = self else { return }
+            self.onSelectCategory?(categoryName)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.dismiss(animated: true, completion: nil)
+            }
+        }
+    }
+    
+    // MARK: - Actions
     
     @objc private func addCategoryButtonTapped() {
         let addCategoryVC = AddCategoryViewController()
         addCategoryVC.onCategoryAdded = { [weak self] newCategoryName in
-            guard let self = self else { return }
-            self.categoryStore.createCategory(title: newCategoryName)
-            self.loadCategories()
+            self?.viewModel.addCategory(name: newCategoryName)
         }
         addCategoryVC.modalPresentationStyle = .pageSheet
         present(addCategoryVC, animated: true)
     }
     
-    private func setuptitleLabel() {
+    // MARK: - Setup Methods
+    
+    private func setupTitleLabel() {
         view.addSubview(titleLabel)
     }
     
     private func setupTableView() {
-            tableView = UITableView(frame: .zero, style: .plain)
-            tableView.configureStandardStyle()
-            tableView.delegate = self
-            tableView.dataSource = self
-            
-            view.addSubview(tableView)
-            
+        tableView = UITableView(frame: .zero, style: .plain)
+        tableView.configureStandardStyle()
+        tableView.delegate = self
+        tableView.dataSource = self
+        
+        view.addSubview(tableView)
+        
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: view.topAnchor, constant: 87),
             tableView.bottomAnchor.constraint(equalTo: addCategoryButton.topAnchor, constant: -39)
         ])
-        }
+    }
     
     private func setupAddCategoryButton() {
         view.addSubview(addCategoryButton)
@@ -69,16 +92,13 @@ final class CategoryListViewController: UIViewController {
             addCategoryButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16)
         ])
     }
-    
-    private func loadCategories() {
-        categories = categoryStore.getAllCategoriesWithTrackers()
-        tableView.reloadData()
-    }
 }
+
+// MARK: - UITableViewDelegate, UITableViewDataSource
 
 extension CategoryListViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return categories.count
+        return viewModel.categories.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -87,16 +107,16 @@ extension CategoryListViewController: UITableViewDelegate, UITableViewDataSource
             return UITableViewCell()
         }
         
-        let category = categories[indexPath.row]
+        let category = viewModel.categories[indexPath.row]
         cell.configure(with: category.title, accessoryType: .none)
-        cell.accessoryType = (indexPath == selectedIndex) ? .checkmark : .none
+        cell.accessoryType = (indexPath == viewModel.selectedIndex) ? .checkmark : .none
         
         let isLastCell = indexPath.row == tableView.numberOfRows(inSection: indexPath.section) - 1
         if isLastCell {
-                cell.hideSeparator()
-            } else {
-                cell.showSeparator()
-            }
+            cell.hideSeparator()
+        } else {
+            cell.showSeparator()
+        }
         
         cell.layer.cornerRadius = isLastCell ? 16 : 0
         cell.layer.maskedCorners = isLastCell ? [.layerMinXMaxYCorner, .layerMaxXMaxYCorner] : []
@@ -105,12 +125,7 @@ extension CategoryListViewController: UITableViewDelegate, UITableViewDataSource
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        selectedIndex = indexPath
-        selectedCategory = categories[indexPath.row]
-        onSelectCategory?(selectedCategory?.title ?? "По умолчанию")
+        viewModel.selectCategory(at: indexPath.row)
         tableView.reloadData()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                self.dismiss(animated: true, completion: nil)
-            }
     }
 }
