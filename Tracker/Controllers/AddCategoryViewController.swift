@@ -8,9 +8,14 @@
 import UIKit
 
 final class AddCategoryViewController: UIViewController {
+    // MARK: - Properties
+    
     var onCategoryAdded: ((String) -> Void)?
+    private var viewModel = AddCategoryViewModel()
+    
+    // MARK: - UI Components
+    
     private lazy var titleLabel = CustomTitleLabel(text: "Категория")
-    private let categoryStore = CoreDataStack.shared.trackerCategoryStore
     
     private lazy var doneButton: CustomButton = {
         let button = CustomButton(title: "Готово")
@@ -35,27 +40,45 @@ final class AddCategoryViewController: UIViewController {
         return textField
     }()
     
+    // MARK: - Lifecycle Methods
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .ypWhiteDay
         setuptitleLabel()
         setupDoneButton()
         setupNameTextField()
+        bindViewModel()
+        validateInitialButtonState()
+    }
+    
+    // MARK: - Binding ViewModel
+    
+    private func bindViewModel() {
+        viewModel.onCategoryAdded = { [weak self] categoryName in
+            self?.onCategoryAdded?(categoryName)
+            self?.dismiss(animated: true, completion: nil)
+        }
+        
+        viewModel.onDoneButtonStateUpdated = { [weak self] isEnabled in
+            self?.doneButton.isEnabled = isEnabled
+            self?.doneButton.backgroundColor = isEnabled ? .ypBlackDay : .ypGray
+        }
     }
     
     // MARK: - Actions
     
     @objc private func doneButtonTapped() {
         if let categoryName = nameTextField.text, !categoryName.isEmpty {
-            categoryStore.createCategory(title: categoryName)
-            onCategoryAdded?(categoryName)
+            viewModel.addCategory(name: categoryName)
         }
-        dismiss(animated: true, completion: nil)
     }
     
     @objc private func textFieldDidChange(_ textField: UITextField) {
-        updateDoneButtonState()
+        viewModel.validateCategoryName(textField.text)
     }
+    
+    // MARK: - Setup Methods
     
     private func setuptitleLabel() {
         view.addSubview(titleLabel)
@@ -81,14 +104,14 @@ final class AddCategoryViewController: UIViewController {
         ])
     }
     
-    private func updateDoneButtonState() {
-            let isNameEntered = !(nameTextField.text?.isEmpty ?? true)
-  
-            doneButton.isEnabled = isNameEntered
-            doneButton.backgroundColor = isNameEntered ? .ypBlackDay : .ypGray
-        
+    // MARK: - Private Methods
+    
+    private func validateInitialButtonState() {
+        viewModel.validateCategoryName(nameTextField.text)
     }
 }
+
+// MARK: - UITextFieldDelegate
 
 extension AddCategoryViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
