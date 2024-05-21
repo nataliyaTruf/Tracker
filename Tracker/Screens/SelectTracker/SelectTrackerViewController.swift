@@ -1,5 +1,5 @@
 //
-//  CreateTrackerViewController.swift
+// SelectTrackerViewController.swift
 //  Tracker
 //
 //  Created by Natasha Trufanova on 24/01/2024.

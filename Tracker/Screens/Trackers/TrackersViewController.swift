@@ -6,20 +6,26 @@
 //
 
 import UIKit
+import Combine
+
+/**
+По заданию CategoryListViewController переписан на архитектуру MVVM с байндингами через замыкания, но после согласования с наставником, я решила использовать Combine для других контроллеров, чтобы попробовать разные подходы к реализации паттерна MVVM.
+ Таким образом, пришлось пожертвовать однородностью стиля кода ради учебных целей.
+
+As per the assignment, CategoryListViewController was refactored to the MVVM architecture with bindings via closures. However, after consulting with my mentor, I decided to use Combine for other controllers to experiment with different approaches to implementing the MVVM pattern.
+ Thus, I had to sacrifice code style uniformity for educational purposes.
+*/
 
 final class TrackersViewController: UIViewController {
     // MARK: - Properties
     
     private let searchController = UISearchController(searchResultsController: nil)
     private var trackersCollectionView: UICollectionView!
-    private var categories: [TrackerCategory] = [TrackerCategory(title: "По умолчанию", trackers: [])]
-    private var filteredCategories: [TrackerCategory] = []
-    private var completedTrackers: [TrackerRecord] = []
-    private var completedTrackerIds = Set<UUID>()
-    private var currentDate: Date = Date()
-    private var isSearching = false
     private var params: GeometricParams
     private var trackerCreationDates: [UUID : Date] = [:]
+    
+    private var viewModel = TrackersViewModel()
+    private var cancelables = Set<AnyCancellable>()
     
     // MARK: - UI Components
     
@@ -62,8 +68,35 @@ final class TrackersViewController: UIViewController {
         setupTrackersCollectionView()
         setupNavigationBar()
         setupSearchController()
-        loadTrackersAndUpdateUI()
-        loadCompletedTrackers()
+        bindViewModel()
+        viewModel.loadCategories()
+        viewModel.loadCompletedTrackers()
+    }
+    
+    // MARK: - Binding ViewModel
+    
+    private func bindViewModel() {
+        viewModel.$filteredCategories
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.trackersCollectionView.reloadData()
+                self?.updateView()
+            }
+            .store(in: &cancelables)
+        
+        viewModel.$isSearching
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isSearching in
+                self?.updateEmptyStateView(isSearching: isSearching)
+            }
+            .store(in: &cancelables)
+        
+        viewModel.$currentDate
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.trackersCollectionView.reloadData()
+            }
+            .store(in: &cancelables)
     }
     
     // MARK: - Navigation
@@ -81,10 +114,9 @@ final class TrackersViewController: UIViewController {
     // MARK: - Actions
     
     @objc private func dateChanged(_ datePicker: UIDatePicker) {
-        currentDate = datePicker.date
-        loadCompletedTrackers()
-        filterTrackersForSelectedDate()
-        trackersCollectionView.reloadData()
+        viewModel.currentDate = datePicker.date
+        viewModel.loadCompletedTrackers()
+        viewModel.filterTrackersForSelectedDate()
     }
     
     // MARK: - Setup Methods
@@ -164,15 +196,17 @@ final class TrackersViewController: UIViewController {
     // MARK: - UI Updates
     
     private func updateView() {
-        let hasTrackersToShow = !filteredCategories.flatMap { $0.trackers }.isEmpty
+        let hasTrackersToShow = !viewModel.filteredCategories.flatMap { $0.trackers }.isEmpty
         
         trackersCollectionView.isHidden = !hasTrackersToShow
         emptyStateLabel.isHidden = hasTrackersToShow
-        emptyStateImageView.isHidden = hasTrackersToShow
-        
+        emptyStateImageView.isHidden = hasTrackersToShow        
+        updateEmptyStateView(isSearching: viewModel.isSearching)
+    }
+    
+    private func updateEmptyStateView(isSearching: Bool) {
         emptyStateLabel.text = isSearching ? "Ничего не найдено" : "Что будем отслеживать?"
         emptyStateImageView.image = UIImage(named: isSearching ? "error2" : "error1")
-        
     }
 }
 
@@ -188,12 +222,12 @@ extension TrackersViewController: UISearchControllerDelegate, UISearchBarDelegat
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String ) {
-        isSearching = !searchText.isEmpty
+        viewModel.isSearching = !searchText.isEmpty
         
         if searchText.isEmpty {
-            filteredCategories = categories
+            viewModel.filteredCategories = viewModel.categories
         } else {
-            filteredCategories = categories.map { category in
+            viewModel.filteredCategories = viewModel.categories.map { category in
                 let filteredTrackers = category.trackers.filter { tracker in
                     return tracker.name.localizedCaseInsensitiveContains(searchText)
                 }
@@ -205,7 +239,7 @@ extension TrackersViewController: UISearchControllerDelegate, UISearchBarDelegat
     }
     
     func didDismissSearchController(_ searchController: UISearchController) {
-        isSearching = false
+        viewModel.isSearching = false
         updateView()
     }
     
@@ -222,11 +256,11 @@ extension TrackersViewController: UISearchControllerDelegate, UISearchBarDelegat
 
 extension TrackersViewController: UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return filteredCategories.count
+        return viewModel.filteredCategories.count
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return filteredCategories[section].trackers.count
+        return viewModel.filteredCategories[section].trackers.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -235,15 +269,16 @@ extension TrackersViewController: UICollectionViewDataSource {
             return UICollectionViewCell()
         }
         
-        let tracker = filteredCategories[indexPath.section].trackers[indexPath.row]
-        cell.isCompleted = completedTrackerIds.contains(tracker.id) && isTrackerCompletedOnCurrentDate(trackerId: tracker.id)
-        let daysCount = countCompletedDays(for: tracker.id)
+        let tracker = viewModel.filteredCategories[indexPath.section].trackers[indexPath.row]
+        cell.isCompleted = viewModel.completedTrackerIds.contains(tracker.id) && viewModel.isTrackerCompletedOnCurrentDate(trackerId: tracker.id)
+        let daysCount = viewModel.countCompletedDays(for: tracker.id)
         cell.configure(with: tracker, completedDays: daysCount)
         
         cell.onToggleCompleted = { [weak self] in
-            guard let self = self, self.currentDate <= Date() else { return }
+            guard let self = self, self.viewModel.currentDate <= Date() else { return }
             cell.isCompleted.toggle()
-            self.toggleTrackerCompleted(trackerId: tracker.id, at: indexPath)
+            self.viewModel.toggleTrackerCompleted(trackerId: tracker.id)
+            self.trackersCollectionView.reloadItems(at: [indexPath])
         }
         return cell
     }
@@ -261,7 +296,7 @@ extension TrackersViewController: UICollectionViewDataSource {
                 return UICollectionReusableView()
             }
             
-            let title = filteredCategories[indexPath.section].title
+            let title = viewModel.filteredCategories[indexPath.section].title
             header.configure(with: title)
             
             return header
@@ -295,7 +330,7 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         let header = ReusableHeader()
         
-        header.titleLabel.text = categories[section].title
+        header.titleLabel.text = viewModel.filteredCategories[section].title
         let size = header.systemLayoutSizeFitting(
             CGSize(width: collectionView.frame.width, height: UIView.layoutFittingCompressedSize.height),
             withHorizontalFittingPriority: .required,
@@ -305,78 +340,11 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
     }
 }
 
-// MARK: - Tracker Management
-
-extension TrackersViewController {
-    private func toggleTrackerCompleted(trackerId: UUID, at indexPath: IndexPath) {
-        if isTrackerCompletedOnCurrentDate(trackerId: trackerId) {
-            CoreDataStack.shared.trackerRecordStore.deleteRecord(trackerId: trackerId, date: currentDate)
-            completedTrackerIds.remove(trackerId)
-            completedTrackers.removeAll {$0.id == trackerId && Calendar.current.isDate($0.date, inSameDayAs: currentDate)}
-        } else {
-            CoreDataStack.shared.trackerRecordStore.createRecord(trackerId: trackerId, date: currentDate)
-            completedTrackerIds.insert(trackerId)
-            let newRecord = TrackerRecord(id: trackerId, date: currentDate)
-            completedTrackers.append(newRecord)
-        }
-        
-        UIView.performWithoutAnimation {
-            self.trackersCollectionView.reloadItems(at: [indexPath])
-        }
-    }
-    
-    private func isTrackerCompletedOnCurrentDate(trackerId: UUID) -> Bool {
-        return completedTrackers.contains(where: { $0.id == trackerId && Calendar.current.isDate($0.date, inSameDayAs: currentDate)})
-    }
-    
-    private func countCompletedDays(for trackerId: UUID) -> Int {
-        let completedDates = completedTrackers.filter { $0.id == trackerId }.map { $0.date }
-        let uniqueDates = Set(completedDates)
-        return uniqueDates.count
-    }
-
-    private func filterTrackersForSelectedDate() {
-        print("Filtering for date: \(currentDate)")
-
-        let dayOfWeek = currentDate.toWeekday()
-
-        filteredCategories = categories.map { category in
-            let filteredTrackers = category.trackers.filter { tracker in
-                if let schedule = tracker.schedule {
-                    return schedule.isReccuringOn(dayOfWeek)
-                } else {
-                    if let creationDate = trackerCreationDates[tracker.id] {
-                        return !completedTrackerIds.contains(tracker.id) && Calendar.current.isDate(currentDate, inSameDayAs: creationDate)
-                    }
-                    return false
-                }
-            }
-            return TrackerCategory(title: category.title, trackers: filteredTrackers)
-        }.filter { !$0.trackers.isEmpty }
-        
-        print("Filtered categories: \(filteredCategories.map { $0.title })")
-        updateView()
-    }
-}
-
 // MARK: - TrackerCreationDelegate
 
 extension TrackersViewController: TrackerCreationDelegate {
     func trackerCreated(_ tracker: Tracker, category: String) {
-        if let index = categories.firstIndex(where: { $0.title == category }) {
-            var updatedTrackers = categories[index].trackers
-            updatedTrackers.append(tracker)
-            categories[index] = TrackerCategory(title: category, trackers: updatedTrackers)
-        } else {
-            let newCategory = TrackerCategory(title: category, trackers: [tracker])
-            categories.append(newCategory)
-        }
-        
-//        нерегулярное
-        trackerCreationDates[tracker.id] = Date()
-        
-        print("Tracker created: \(tracker.name) in category: \(category)")
-        filterTrackersForSelectedDate()
+        viewModel.addTracker(tracker, to: category)
         trackersCollectionView.reloadData()
     }
 }
@@ -386,31 +354,19 @@ extension TrackersViewController: TrackerCreationDelegate {
 extension TrackersViewController: TrackerStoreDelegate {
     func trackerStoreDidChangeContent() {
         DispatchQueue.main.async {
-            self.loadTrackersAndUpdateUI()
+            self.viewModel.loadCategories()
+            self.trackersCollectionView.reloadData()
         }
-    }
-    
-    func loadTrackersAndUpdateUI() {
-        categories = CoreDataStack.shared.trackerCategoryStore.getAllCategoriesWithTrackers()
-        filterTrackersForSelectedDate()
-        trackersCollectionView.reloadData()
     }
 }
 
 // MARK: - TrackerRecordStoreDelegate
 
 extension TrackersViewController: TrackerRecordStoreDelegate {
-    
-    func loadCompletedTrackers() {
-        completedTrackers = CoreDataStack.shared.trackerRecordStore.getAllRecords()
-        completedTrackerIds = Set(completedTrackers.map { $0.id })
-        
-        trackersCollectionView.reloadData()
-    }
-    
     func trackerRecordStoreDidChangeContent(records: [TrackerRecord]) {
         DispatchQueue.main.async {
-            self.loadCompletedTrackers()
+            self.viewModel.loadCompletedTrackers()
+            self.trackersCollectionView.reloadData()
         }
     }
 }
@@ -418,7 +374,8 @@ extension TrackersViewController: TrackerRecordStoreDelegate {
 extension TrackersViewController: TrackerCategoryStoreDelegate {
     func trackerCategoryStoreDidChangeContent(_ store: TrackerCategoryStore) {
         DispatchQueue.main.async {
-            self.loadTrackersAndUpdateUI()
+            self.viewModel.loadCategories()
+            self.trackersCollectionView.reloadData()
         }
     }
 }

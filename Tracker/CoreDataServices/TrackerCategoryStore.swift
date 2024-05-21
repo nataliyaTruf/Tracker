@@ -29,10 +29,10 @@ final class TrackerCategoryStore: NSObject {
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
         
         fetchedResultsController = NSFetchedResultsController(
-        fetchRequest: fetchRequest,
-        managedObjectContext: managedObjectContext,
-        sectionNameKeyPath: nil,
-        cacheName: nil
+            fetchRequest: fetchRequest,
+            managedObjectContext: managedObjectContext,
+            sectionNameKeyPath: nil,
+            cacheName: nil
         )
         
         fetchedResultsController.delegate = self
@@ -52,23 +52,23 @@ final class TrackerCategoryStore: NSObject {
         }
     }
     
-       func createCategoryIfNotExists(with title: String) -> TrackerCategoryCoreData {
-           let fetchRequest: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
-           fetchRequest.predicate = NSPredicate(format: "title == %@", title)
-           do {
-                   let fetchedCategories = try managedObjectContext.fetch(fetchRequest)
-                   if let existingCategory = fetchedCategories.first {
-                       return existingCategory
-                   } else {
-                       let newCategory = TrackerCategoryCoreData(context: managedObjectContext)
-                       newCategory.title = title
-                       try managedObjectContext.save()
-                       return newCategory
-                   }
-               } catch {
-                   fatalError("Failed to fetch or create category: \(error)")
-               }
-       }
+    func createCategoryIfNotExists(with title: String) -> TrackerCategoryCoreData {
+        let fetchRequest: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "title == %@", title)
+        do {
+            let fetchedCategories = try managedObjectContext.fetch(fetchRequest)
+            if let existingCategory = fetchedCategories.first {
+                return existingCategory
+            } else {
+                let newCategory = TrackerCategoryCoreData(context: managedObjectContext)
+                newCategory.title = title
+                try managedObjectContext.save()
+                return newCategory
+            }
+        } catch {
+            fatalError("Failed to fetch or create category: \(error)")
+        }
+    }
     
     func linkTracker(_ tracker: TrackerCoreData, toCategoryWithtitle title: String) {
         if let category = fetchCategory(by: title) {
@@ -91,7 +91,7 @@ final class TrackerCategoryStore: NSObject {
             return []
         }
     }
-  
+    
     func fetchCategory(by title: String) -> TrackerCategoryCoreData? {
         let request: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
         request.predicate = NSPredicate(format: "title == %@", title)
