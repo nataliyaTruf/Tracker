@@ -6,6 +6,15 @@
 //
 
 import UIKit
+import Combine
+
+/**
+ По заданию CategoryListViewController переписан на архитектуру MVVM с байндингами через замыкания, но после согласования с наставником, я решила использовать Combine для других контроллеров, чтобы попробовать разные подходы к реализации паттерна MVVM.
+ Таким образом, пришлось пожертвовать однородностью стиля кода ради учебных целей.
+ 
+ As per the assignment, CategoryListViewController was refactored to the MVVM architecture with bindings via closures. However, after consulting with my mentor, I decided to use Combine for other controllers to experiment with different approaches to implementing the MVVM pattern.
+ Thus, I had to sacrifice code style uniformity for educational purposes.
+ */
 
 // MARK: - Protocols
 
@@ -22,25 +31,12 @@ final class CreateTrackerViewController: UIViewController {
     
     // MARK: - Properties
     
-    private var selectedSchedule: ReccuringSchedule?
+    private var viewModel = CreateTrackerViewModel()
+    private var cancellables: Set<AnyCancellable> = []
+    
     var onCompletion: (() -> Void)?
     private let params: GeometricParams
     private var isHabitTracker: Bool
-    
-    private var emojis: [String] = [
-        "😀", "😻", "🌺", "🐶", "❤️", "😱",
-        "😇", "😡", "🥶", "🤔", "🙌", "🍔",
-        "🥦", "🏓", "🥇", "🎸", "🏝️", "😪"
-    ]
-    private var colors: [UIColor] = [
-        .colorSelection1, .colorSelection2, .colorSelection3, .colorSelection4, .colorSelection5,
-        .colorSelection6, .colorSelection7, .colorSelection8, .colorSelection9, .colorSelection10,
-        .colorSelection11, .colorSelection12, .colorSelection13, .colorSelection14, .colorSelection15,
-        .colorSelection16, .colorSelection17, .colorSelection18
-    ]
-    private var selectedEmojiIndex: IndexPath?
-    private var selectedColorIndex: IndexPath?
-    private var selectedCategoryName: String = "По умолчанию"
     
     // MARK: - UI Components
     
@@ -73,7 +69,7 @@ final class CreateTrackerViewController: UIViewController {
         tableView.configureStandardStyle()
         return tableView
     }()
-        
+    
     private lazy var buttonsView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -176,7 +172,47 @@ final class CreateTrackerViewController: UIViewController {
         setupConstraints()
         setupKeyboardDismiss()
         nameTextField.delegate = self
+        bindViewModel()
         updateSpacing(isVisible: false)
+    }
+    
+    // MARK: - Binding ViewModel
+    
+    private func bindViewModel() {
+        viewModel.$trackerName
+            .sink {[weak self] name in
+                self?.nameTextField.text = name
+                self?.updateCreateButtonState()
+            }
+            .store(in: &cancellables)
+        
+        viewModel.$selectedEmojiIndex
+            .sink { [weak self] _ in
+                self?.emojiCollectionView.reloadData()
+                self?.updateCreateButtonState()
+            }
+            .store(in: &cancellables)
+        
+        viewModel.$selectedColorIndex
+            .sink { [weak self] _ in
+                self?.colorCollectionView.reloadData()
+                self?.updateCreateButtonState()
+            }
+            .store(in: &cancellables)
+        
+        viewModel.$selectedCategoryName
+            .sink { [weak self] category in
+                self?.updateCategoryName(category)
+                self?.updateCreateButtonState()
+            }
+            .store(in: &cancellables)
+        
+        viewModel.$selectedSchedule
+            .sink {[weak self] schedule in
+                self?.updateSchedule(schedule)
+                self?.updateCreateButtonState()
+            }
+            .store(in: &cancellables)
     }
     
     // MARK: - Actions
@@ -186,32 +222,15 @@ final class CreateTrackerViewController: UIViewController {
     }
     
     @objc private func createButtonTapped() {
-        let trackerName = nameTextField.text ?? "По умолчанию"
-        let selectedEmoji = selectedEmojiIndex != nil ? emojis[selectedEmojiIndex!.item] : "🍔"
-        let selectedColor = selectedColorIndex != nil ? colors[selectedColorIndex!.item] : .colorSelection6
-        let selectedColorString = UIColor.string(from: selectedColor) ?? "colorSelection6"
+        guard let newTracker = viewModel.createTracker() else { return }
         
-        let newTracker = CoreDataStack.shared.trackerStore.createTracker(
-            id: UUID(),
-            name: trackerName,
-            color: selectedColorString,
-            emoji: selectedEmoji,
-            schedule: selectedSchedule, 
-            categoryTitle: selectedCategoryName
-        )
-        
-// новое
-        if let newTrackerCoreData = CoreDataStack.shared.trackerStore.fetchTrackerCoreData(by: newTracker.id) {
-            CoreDataStack.shared.trackerCategoryStore.linkTracker(newTrackerCoreData, toCategoryWithtitle: selectedCategoryName)
-            }
-    
-        delegate?.trackerCreated(newTracker, category: selectedCategoryName)
+        delegate?.trackerCreated(newTracker, category: viewModel.selectedCategoryName)
         onCompletion?()
         dismiss(animated: false, completion: nil)
     }
     
-    
     @objc private func textFieldDidChange(_ textField: UITextField) {
+        viewModel.updateTrackerName(textField.text ?? "")
         updateCreateButtonState()
     }
     
@@ -221,18 +240,7 @@ final class CreateTrackerViewController: UIViewController {
         let scheduleVC = ScheduleViewController()
         scheduleVC.trackerStore = CoreDataStack.shared.trackerStore
         scheduleVC.onScheduleUpdated = { [weak self] updatedSchedule in
-            self?.selectedSchedule = updatedSchedule
-            
-            let scheduleData = self?.selectedSchedule?.recurringDays
-            
-            let formattedSchedule = updatedSchedule.scheduleText
-            
-            let indexPath = IndexPath(row: 1, section: 0)
-            if let cell = self?.optionsTableView.cellForRow(at: indexPath) as? ConfigurableTableViewCell {
-                cell.configure(with: "Расписание", additionalText: formattedSchedule, accessoryType: .arrow)
-            }
-            self?.optionsTableView.reloadData()
-            self?.updateCreateButtonState()
+            self?.viewModel.selectedSchedule = updatedSchedule
         }
         
         scheduleVC.modalPresentationStyle = .pageSheet
@@ -242,8 +250,7 @@ final class CreateTrackerViewController: UIViewController {
     private func showCategoryListViewController() {
         let categoryListVC = CategoryListViewController()
         categoryListVC.onSelectCategory = { [weak self] categoryName in
-            self?.selectedCategoryName = categoryName
-            self?.updateCategoryName(categoryName)
+            self?.viewModel.selectCategory(name: categoryName)
         }
         categoryListVC.modalPresentationStyle = .pageSheet
         present(categoryListVC, animated: true)
@@ -252,6 +259,13 @@ final class CreateTrackerViewController: UIViewController {
     private func updateCategoryName(_ categoryName: String) {
         if let cell = optionsTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? ConfigurableTableViewCell {
             cell.configure(with: "Категория", additionalText: categoryName, accessoryType: .arrow)
+        }
+    }
+    
+    private func updateSchedule(_ schedule: ReccuringSchedule?) {
+        let formattedSchedule = schedule?.scheduleText ?? ""
+        if let cell = optionsTableView.cellForRow(at: IndexPath(row: 1, section: 0)) as? ConfigurableTableViewCell {
+            cell.configure(with: "Расписание", additionalText: formattedSchedule, accessoryType: .arrow)
         }
     }
     
@@ -276,7 +290,7 @@ final class CreateTrackerViewController: UIViewController {
         stackView.setCustomSpacing(38, after: titleLabel)
         stackView.setCustomSpacing(24, after: nameTextField)
         stackView.setCustomSpacing(50, after: optionsTableView)
-       
+        
         stackView.setCustomSpacing(34, after: emojiCollectionView)
         stackView.setCustomSpacing(16, after: colorCollectionView)
         
@@ -360,16 +374,16 @@ extension CreateTrackerViewController {
             createButton.widthAnchor.constraint(equalTo: cancelButton.widthAnchor)
         ])
     }
-
+    
     private func setupKeyboardDismiss() {
         scrollView.keyboardDismissMode = .onDrag
     }
     
     private func updateCreateButtonState() {
-        let isNameEntered = !(nameTextField.text?.isEmpty ?? true)
-        let isEmojiSelected = selectedEmojiIndex != nil
-        let isColorSelected = selectedColorIndex != nil
-        let isScheduleSet = selectedSchedule != nil || !isHabitTracker
+        let isNameEntered = !viewModel.trackerName.isEmpty
+        let isEmojiSelected = viewModel.selectedEmojiIndex != nil
+        let isColorSelected = viewModel.selectedColorIndex != nil
+        let isScheduleSet = viewModel.selectedSchedule != nil || !isHabitTracker
         
         let isFormComplete = isNameEntered && isEmojiSelected && isColorSelected && isScheduleSet
         
@@ -383,9 +397,9 @@ extension CreateTrackerViewController {
 extension CreateTrackerViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if collectionView == emojiCollectionView {
-            return emojis.count
+            return viewModel.emojis.count
         } else {
-            return colors.count
+            return viewModel.colors.count
         }
     }
     
@@ -396,8 +410,8 @@ extension CreateTrackerViewController: UICollectionViewDataSource {
                 assertionFailure("Error: Unable to dequeue EmojiCell")
                 return UICollectionViewCell()
             }
-            let isSelected = indexPath == selectedEmojiIndex
-            cell.configure(with: emojis[indexPath.item], isSelected: isSelected)
+            let isSelected = indexPath.item == viewModel.selectedEmojiIndex
+            cell.configure(with: viewModel.emojis[indexPath.item], isSelected: isSelected)
             
             return cell
             
@@ -406,8 +420,8 @@ extension CreateTrackerViewController: UICollectionViewDataSource {
                 assertionFailure("Error: Unable to dequeue ColorCell")
                 return UICollectionViewCell()
             }
-            let isSelected = indexPath == selectedColorIndex
-            cell.configure(with: colors[indexPath.item], isSelected: isSelected)
+            let isSelected = indexPath.item == viewModel.selectedColorIndex
+            cell.configure(with: viewModel.colors[indexPath.item], isSelected: isSelected)
             
             return cell
         }
@@ -438,18 +452,11 @@ extension CreateTrackerViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == emojiCollectionView {
-            
-            if selectedEmojiIndex == indexPath {
-                selectedEmojiIndex = nil
-            }
-            selectedEmojiIndex = indexPath
+            viewModel.selectEmoji(at: indexPath.item)
         } else if collectionView == colorCollectionView {
-            if selectedColorIndex == indexPath {
-                selectedColorIndex = nil
-            }
-            selectedColorIndex = indexPath
+            
+            viewModel.selectColor(at: indexPath.item)
         }
-        
         collectionView.reloadData()
         updateCreateButtonState()
     }
@@ -482,6 +489,8 @@ extension CreateTrackerViewController: UICollectionViewDelegateFlowLayout {
     }
 }
 
+// MARK: - UITableViewDelegate, UITableViewDataSource
+
 extension CreateTrackerViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return isHabitTracker ? 2 : 1
@@ -495,13 +504,13 @@ extension CreateTrackerViewController: UITableViewDelegate, UITableViewDataSourc
         
         switch indexPath.row {
         case 0:
-            let additionalText = selectedCategoryName == "По умолчанию" ? nil : selectedCategoryName
+            let additionalText = viewModel.selectedCategoryName == "По умолчанию" ? nil : viewModel.selectedCategoryName
             cell.configure(with: "Категория", additionalText: additionalText, accessoryType: .arrow)
             cell.onCellTapped = { [weak self] in
                 self?.showCategoryListViewController()
             }
         case 1:
-            cell.configure(with: "Расписание", additionalText: selectedSchedule?.scheduleText, accessoryType: .arrow)
+            cell.configure(with: "Расписание", additionalText: viewModel.selectedSchedule?.scheduleText, accessoryType: .arrow)
             cell.onCellTapped = { [weak self] in
                 self?.showScheduleViewController()
             }
@@ -511,10 +520,10 @@ extension CreateTrackerViewController: UITableViewDelegate, UITableViewDataSourc
         
         let isLastCell = indexPath.row == tableView.numberOfRows(inSection: indexPath.section) - 1
         if isLastCell {
-                cell.hideSeparator()
-            } else {
-                cell.showSeparator()
-            }
+            cell.hideSeparator()
+        } else {
+            cell.showSeparator()
+        }
         
         cell.layer.cornerRadius = isLastCell ? 16 : 0
         cell.layer.maskedCorners = isLastCell ? [.layerMinXMaxYCorner, .layerMaxXMaxYCorner] : []

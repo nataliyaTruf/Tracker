@@ -70,7 +70,7 @@ final class TrackerCategoryStore: NSObject {
         }
     }
     
-    func linkTracker(_ tracker: TrackerCoreData, toCategoryWithtitle title: String) {
+    func linkTracker(_ tracker: TrackerCoreData, toCategoryWithTitle title: String) {
         if let category = fetchCategory(by: title) {
             tracker.category = category
         } else {

@@ -47,6 +47,7 @@
 		7FFDB1862BFC8BD5000BF785 /* CustomTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFDB1852BFC8BD5000BF785 /* CustomTextField.swift */; };
 		7FFDB1882BFC9634000BF785 /* Fonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFDB1872BFC9634000BF785 /* Fonts.swift */; };
 		7FFDB18A2BFCA300000BF785 /* TrackersViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFDB1892BFCA300000BF785 /* TrackersViewModel.swift */; };
+		7FFDB1962BFCEA74000BF785 /* CreateTrackerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFDB1952BFCEA74000BF785 /* CreateTrackerViewModel.swift */; };
 		7FFF1B3E2BF38AE00025D1C7 /* AddCategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFF1B3D2BF38AE00025D1C7 /* AddCategoryViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -93,6 +94,7 @@
 		7FFDB1852BFC8BD5000BF785 /* CustomTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextField.swift; sourceTree = "<group>"; };
 		7FFDB1872BFC9634000BF785 /* Fonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fonts.swift; sourceTree = "<group>"; };
 		7FFDB1892BFCA300000BF785 /* TrackersViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackersViewModel.swift; sourceTree = "<group>"; };
+		7FFDB1952BFCEA74000BF785 /* CreateTrackerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateTrackerViewModel.swift; sourceTree = "<group>"; };
 		7FFF1B3D2BF38AE00025D1C7 /* AddCategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCategoryViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -129,9 +131,9 @@
 			children = (
 				7FFC541E2BC6C26900B618F6 /* CoreDataServices */,
 				7FFDB18B2BFCDF2C000BF785 /* Screens */,
-				7F4969842B652929006C27A0 /* Helpers */,
 				7F4969832B651878006C27A0 /* Components */,
 				7F4969492B5D4A78006C27A0 /* Models */,
+				7F4969842B652929006C27A0 /* Helpers */,
 				7F4968AF2B55494D006C27A0 /* Resources */,
 				7F49689B2B554269006C27A0 /* AppDelegate.swift */,
 				7F49689D2B554269006C27A0 /* SceneDelegate.swift */,
@@ -225,9 +227,9 @@
 		7FFDB18C2BFCDFE6000BF785 /* Trackers */ = {
 			isa = PBXGroup;
 			children = (
-				7F4969812B650F0C006C27A0 /* TrackersCell.swift */,
 				7F4968B52B55578D006C27A0 /* TrackersViewController.swift */,
 				7FFDB1892BFCA300000BF785 /* TrackersViewModel.swift */,
+				7F4969812B650F0C006C27A0 /* TrackersCell.swift */,
 			);
 			path = Trackers;
 			sourceTree = "<group>";
@@ -244,6 +246,7 @@
 			isa = PBXGroup;
 			children = (
 				7F4969902B76307F006C27A0 /* CreateTrackerViewController.swift */,
+				7FFDB1952BFCEA74000BF785 /* CreateTrackerViewModel.swift */,
 				7F4969A12B7D04DE006C27A0 /* ColorCell.swift */,
 				7F49699B2B7CC1D5006C27A0 /* EmojiCell.swift */,
 			);
@@ -383,6 +386,7 @@
 				7F4969952B77848E006C27A0 /* ScheduleViewController.swift in Sources */,
 				7F4968A02B554269006C27A0 /* MainTabBarController.swift in Sources */,
 				7F49694F2B5D530F006C27A0 /* TrackerCategory.swift in Sources */,
+				7FFDB1962BFCEA74000BF785 /* CreateTrackerViewModel.swift in Sources */,
 				7F4969862B65294D006C27A0 /* GeometricParams.swift in Sources */,
 				7FB1C1992BD7C675000C6BA6 /* OnboardingViewController.swift in Sources */,
 				7FFC541D2BC6AD3E00B618F6 /* TrackerModel.xcdatamodeld in Sources */,

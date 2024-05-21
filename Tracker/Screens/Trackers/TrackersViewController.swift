@@ -9,12 +9,12 @@ import UIKit
 import Combine
 
 /**
-По заданию CategoryListViewController переписан на архитектуру MVVM с байндингами через замыкания, но после согласования с наставником, я решила использовать Combine для других контроллеров, чтобы попробовать разные подходы к реализации паттерна MVVM.
+ По заданию CategoryListViewController переписан на архитектуру MVVM с байндингами через замыкания, но после согласования с наставником, я решила использовать Combine для других контроллеров, чтобы попробовать разные подходы к реализации паттерна MVVM.
  Таким образом, пришлось пожертвовать однородностью стиля кода ради учебных целей.
-
-As per the assignment, CategoryListViewController was refactored to the MVVM architecture with bindings via closures. However, after consulting with my mentor, I decided to use Combine for other controllers to experiment with different approaches to implementing the MVVM pattern.
+ 
+ As per the assignment, CategoryListViewController was refactored to the MVVM architecture with bindings via closures. However, after consulting with my mentor, I decided to use Combine for other controllers to experiment with different approaches to implementing the MVVM pattern.
  Thus, I had to sacrifice code style uniformity for educational purposes.
-*/
+ */
 
 final class TrackersViewController: UIViewController {
     // MARK: - Properties
@@ -200,13 +200,20 @@ final class TrackersViewController: UIViewController {
         
         trackersCollectionView.isHidden = !hasTrackersToShow
         emptyStateLabel.isHidden = hasTrackersToShow
-        emptyStateImageView.isHidden = hasTrackersToShow        
+        emptyStateImageView.isHidden = hasTrackersToShow
         updateEmptyStateView(isSearching: viewModel.isSearching)
     }
     
     private func updateEmptyStateView(isSearching: Bool) {
         emptyStateLabel.text = isSearching ? "Ничего не найдено" : "Что будем отслеживать?"
         emptyStateImageView.image = UIImage(named: isSearching ? "error2" : "error1")
+    }
+    
+    private func toggleTrackerCompleted(trackerId: UUID, at indexPath: IndexPath) {
+        viewModel.toggleTrackerCompleted(trackerId: trackerId)
+        UIView.performWithoutAnimation {
+            self.trackersCollectionView.reloadItems(at: [indexPath])
+        }
     }
 }
 
@@ -276,9 +283,10 @@ extension TrackersViewController: UICollectionViewDataSource {
         
         cell.onToggleCompleted = { [weak self] in
             guard let self = self, self.viewModel.currentDate <= Date() else { return }
-            cell.isCompleted.toggle()
-            self.viewModel.toggleTrackerCompleted(trackerId: tracker.id)
-            self.trackersCollectionView.reloadItems(at: [indexPath])
+            //            cell.isCompleted.toggle()
+            //            self.viewModel.toggleTrackerCompleted(trackerId: tracker.id)
+            //            self.trackersCollectionView.reloadItems(at: [indexPath])
+            self.toggleTrackerCompleted(trackerId: tracker.id, at: indexPath)
         }
         return cell
     }
