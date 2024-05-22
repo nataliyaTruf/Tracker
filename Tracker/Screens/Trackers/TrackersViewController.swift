@@ -283,9 +283,6 @@ extension TrackersViewController: UICollectionViewDataSource {
         
         cell.onToggleCompleted = { [weak self] in
             guard let self = self, self.viewModel.currentDate <= Date() else { return }
-            //            cell.isCompleted.toggle()
-            //            self.viewModel.toggleTrackerCompleted(trackerId: tracker.id)
-            //            self.trackersCollectionView.reloadItems(at: [indexPath])
             self.toggleTrackerCompleted(trackerId: tracker.id, at: indexPath)
         }
         return cell

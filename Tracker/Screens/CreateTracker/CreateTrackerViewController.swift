@@ -237,15 +237,16 @@ final class CreateTrackerViewController: UIViewController {
     // MARK: - Navigation
     
     private func showScheduleViewController() {
+        let scheduleViewModel = ScheduleViewModel(schedule: ReccuringSchedule(recurringDays: []), trackerStore: CoreDataStack.shared.trackerStore)
         let scheduleVC = ScheduleViewController()
-        scheduleVC.trackerStore = CoreDataStack.shared.trackerStore
-        scheduleVC.onScheduleUpdated = { [weak self] updatedSchedule in
+        scheduleVC.viewModel = scheduleViewModel
+        scheduleViewModel.onScheduleUpdated = { [weak self] updatedSchedule in
             self?.viewModel.selectedSchedule = updatedSchedule
         }
-        
         scheduleVC.modalPresentationStyle = .pageSheet
         present(scheduleVC, animated: true)
     }
+    
     
     private func showCategoryListViewController() {
         let categoryListVC = CategoryListViewController()

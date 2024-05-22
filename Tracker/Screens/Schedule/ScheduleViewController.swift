@@ -6,16 +6,23 @@
 //
 
 import UIKit
+import Combine
 
+/**
+ По заданию CategoryListViewController переписан на архитектуру MVVM с байндингами через замыкания, но после согласования с наставником, я решила использовать Combine для других контроллеров, чтобы попробовать разные подходы к реализации паттерна MVVM.
+ Таким образом, пришлось пожертвовать однородностью стиля кода ради учебных целей.
+ 
+ As per the assignment, CategoryListViewController was refactored to the MVVM architecture with bindings via closures. However, after consulting with my mentor, I decided to use Combine for other controllers to experiment with different approaches to implementing the MVVM pattern.
+ Thus, I had to sacrifice code style uniformity for educational purposes.
+ */
 
-final class ScheduleViewController: UIViewController {    
+final class ScheduleViewController: UIViewController {
     // MARK: - Properties
     
-    var onScheduleUpdated: ((ReccuringSchedule) -> Void)?
-    var schedule = ReccuringSchedule(recurringDays: [])
-    let days: [Weekday] = [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday]
+    var viewModel: ScheduleViewModel!
+    private var cancellables = Set<AnyCancellable>()
+    
     var tableView: UITableView!
-    var trackerStore: TrackerStore?
     
     // MARK: - UI Components
     
@@ -35,13 +42,23 @@ final class ScheduleViewController: UIViewController {
         setupDoneButton()
         setupTableView()
         setuptitleLabel()
+        bindViewModel()
+    }
+    
+    // MARK: - Binding ViewModel
+    
+    private func bindViewModel() {
+        viewModel.$selectedDays
+            .sink { [weak self] _ in
+                self?.tableView.reloadData()
+            }
+            .store(in: &cancellables)
     }
     
     // MARK: - Actions
     
     @objc private func doneButtonTapped() {
-        let scheduleData = schedule.recurringDays
-        onScheduleUpdated?(schedule)
+        viewModel.onScheduleUpdated?(ReccuringSchedule(recurringDays: viewModel.selectedDays.map { $0.rawValue }))
         dismiss(animated: true, completion: nil)
     }
     
@@ -82,7 +99,7 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return days.count
+        return viewModel.days.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -90,9 +107,9 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
             assertionFailure("Unable to dequeue DayTableViewCell")
             return UITableViewCell()
         }
-    
-        let day = days[indexPath.row]
-        let isOn = schedule.recurringDays.contains(day.rawValue)
+        
+        let day = viewModel.days[indexPath.row]
+        let isOn = viewModel.selectedDays.contains(day)
         
         cell.configure(with: day.localizedStringShort, additionalText: nil, accessoryType: .switchControl(isOn: isOn))
         
@@ -100,13 +117,13 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
             self?.updateSchedule(forDay: indexPath.row, isOn: isOn)
         }
         
-        if indexPath.row == days.count - 1 {
+        if indexPath.row == viewModel.days.count - 1 {
             cell.hideSeparator()
         } else {
             cell.showSeparator()
         }
         
-        if indexPath.row == days.count - 1 {
+        if indexPath.row == viewModel.days.count - 1 {
             cell.layer.cornerRadius = 16
             cell.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         } else {
@@ -120,16 +137,16 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
 // MARK: - Schedule Management
 
 extension ScheduleViewController {
-    func updateSchedule(forDay dayIndex: Int, isOn: Bool) {
-        let day = days[dayIndex]
+    private func updateSchedule(forDay dayIndex: Int, isOn: Bool) {
+        let day = viewModel.days[dayIndex]
         
         if isOn {
-            if !schedule.recurringDays.contains(day.rawValue) {
-                schedule.recurringDays.append(day.rawValue)
-                schedule.recurringDays.sort(by: { $0 < $1 })
+            if !viewModel.selectedDays.contains(day) {
+                viewModel.selectedDays.append(day)
+                viewModel.selectedDays.sort(by: { $0.rawValue < $1.rawValue })
             }
         } else {
-            schedule.recurringDays.removeAll { $0 == day.rawValue }
+            viewModel.selectedDays.removeAll { $0 == day }
         }
         tableView.reloadRows(at: [IndexPath(row: dayIndex, section: 0)], with: .none)
     }

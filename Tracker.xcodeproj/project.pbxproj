@@ -48,6 +48,7 @@
 		7FFDB1882BFC9634000BF785 /* Fonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFDB1872BFC9634000BF785 /* Fonts.swift */; };
 		7FFDB18A2BFCA300000BF785 /* TrackersViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFDB1892BFCA300000BF785 /* TrackersViewModel.swift */; };
 		7FFDB1962BFCEA74000BF785 /* CreateTrackerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFDB1952BFCEA74000BF785 /* CreateTrackerViewModel.swift */; };
+		7FFDB19A2BFE25F4000BF785 /* ScheduleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFDB1992BFE25F4000BF785 /* ScheduleViewModel.swift */; };
 		7FFF1B3E2BF38AE00025D1C7 /* AddCategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFF1B3D2BF38AE00025D1C7 /* AddCategoryViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -95,6 +96,7 @@
 		7FFDB1872BFC9634000BF785 /* Fonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fonts.swift; sourceTree = "<group>"; };
 		7FFDB1892BFCA300000BF785 /* TrackersViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackersViewModel.swift; sourceTree = "<group>"; };
 		7FFDB1952BFCEA74000BF785 /* CreateTrackerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateTrackerViewModel.swift; sourceTree = "<group>"; };
+		7FFDB1992BFE25F4000BF785 /* ScheduleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleViewModel.swift; sourceTree = "<group>"; };
 		7FFF1B3D2BF38AE00025D1C7 /* AddCategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCategoryViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -211,10 +213,10 @@
 		7FFDB18B2BFCDF2C000BF785 /* Screens */ = {
 			isa = PBXGroup;
 			children = (
-				7FFDB1902BFCE0AA000BF785 /* Onboarding */,
-				7FFDB1912BFCE0C7000BF785 /* MainTabBar */,
+				7FB1C1982BD7C675000C6BA6 /* OnboardingViewController.swift */,
+				7F49689F2B554269006C27A0 /* MainTabBarController.swift */,
+				7F4969602B61432E006C27A0 /* SelectTrackerViewController.swift */,
 				7FFDB18C2BFCDFE6000BF785 /* Trackers */,
-				7FFDB18D2BFCE05C000BF785 /* SelectTracker */,
 				7FFDB18E2BFCE07A000BF785 /* CreateTracker */,
 				7FFDB1922BFCE0D7000BF785 /* CategoryList */,
 				7FFDB1932BFCE0FE000BF785 /* AddCategory */,
@@ -234,14 +236,6 @@
 			path = Trackers;
 			sourceTree = "<group>";
 		};
-		7FFDB18D2BFCE05C000BF785 /* SelectTracker */ = {
-			isa = PBXGroup;
-			children = (
-				7F4969602B61432E006C27A0 /* SelectTrackerViewController.swift */,
-			);
-			path = SelectTracker;
-			sourceTree = "<group>";
-		};
 		7FFDB18E2BFCE07A000BF785 /* CreateTracker */ = {
 			isa = PBXGroup;
 			children = (
@@ -257,24 +251,9 @@
 			isa = PBXGroup;
 			children = (
 				7F4969942B77848E006C27A0 /* ScheduleViewController.swift */,
+				7FFDB1992BFE25F4000BF785 /* ScheduleViewModel.swift */,
 			);
 			path = Schedule;
-			sourceTree = "<group>";
-		};
-		7FFDB1902BFCE0AA000BF785 /* Onboarding */ = {
-			isa = PBXGroup;
-			children = (
-				7FB1C1982BD7C675000C6BA6 /* OnboardingViewController.swift */,
-			);
-			path = Onboarding;
-			sourceTree = "<group>";
-		};
-		7FFDB1912BFCE0C7000BF785 /* MainTabBar */ = {
-			isa = PBXGroup;
-			children = (
-				7F49689F2B554269006C27A0 /* MainTabBarController.swift */,
-			);
-			path = MainTabBar;
 			sourceTree = "<group>";
 		};
 		7FFDB1922BFCE0D7000BF785 /* CategoryList */ = {
@@ -412,6 +391,7 @@
 				7FFDB18A2BFCA300000BF785 /* TrackersViewModel.swift in Sources */,
 				7F4968B62B55578D006C27A0 /* TrackersViewController.swift in Sources */,
 				7F49689C2B554269006C27A0 /* AppDelegate.swift in Sources */,
+				7FFDB19A2BFE25F4000BF785 /* ScheduleViewModel.swift in Sources */,
 				7F49689E2B554269006C27A0 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
