@@ -211,8 +211,8 @@ final class TrackersViewController: UIViewController {
     
     private func toggleTrackerCompleted(trackerId: UUID, at indexPath: IndexPath) {
         viewModel.toggleTrackerCompleted(trackerId: trackerId)
-        UIView.performWithoutAnimation {
-            self.trackersCollectionView.reloadItems(at: [indexPath])
+        UIView.performWithoutAnimation { [weak self] in
+            self?.trackersCollectionView.reloadItems(at: [indexPath])
         }
     }
 }
@@ -358,9 +358,9 @@ extension TrackersViewController: TrackerCreationDelegate {
 
 extension TrackersViewController: TrackerStoreDelegate {
     func trackerStoreDidChangeContent() {
-        DispatchQueue.main.async {
-            self.viewModel.loadCategories()
-            self.trackersCollectionView.reloadData()
+        DispatchQueue.main.async { [weak self] in
+            self?.viewModel.loadCategories()
+            self?.trackersCollectionView.reloadData()
         }
     }
 }
@@ -369,18 +369,18 @@ extension TrackersViewController: TrackerStoreDelegate {
 
 extension TrackersViewController: TrackerRecordStoreDelegate {
     func trackerRecordStoreDidChangeContent(records: [TrackerRecord]) {
-        DispatchQueue.main.async {
-            self.viewModel.loadCompletedTrackers()
-            self.trackersCollectionView.reloadData()
+        DispatchQueue.main.async { [weak self] in
+            self?.viewModel.loadCompletedTrackers()
+            self?.trackersCollectionView.reloadData()
         }
     }
 }
 
 extension TrackersViewController: TrackerCategoryStoreDelegate {
     func trackerCategoryStoreDidChangeContent(_ store: TrackerCategoryStore) {
-        DispatchQueue.main.async {
-            self.viewModel.loadCategories()
-            self.trackersCollectionView.reloadData()
+        DispatchQueue.main.async { [weak self] in
+            self?.viewModel.loadCategories()
+            self?.trackersCollectionView.reloadData()
         }
     }
 }
