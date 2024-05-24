@@ -21,7 +21,6 @@ final class ConfigurableTableViewCell: UITableViewCell {
     
     static let identifier = "ConfigurableCell"
     var onSwitchValueChanged: ((Bool) -> Void)?
-    var onCellTapped: (() -> Void)?
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
@@ -85,7 +84,7 @@ final class ConfigurableTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.backgroundColor = .ypBackgroundDay
         setupLayout()
-        setupGesture()
+//        setupGesture()
     }
     
     required init?(coder: NSCoder) {
@@ -97,12 +96,7 @@ final class ConfigurableTableViewCell: UITableViewCell {
     @objc func switchValueChanged(_ sender: UISwitch) {
         onSwitchValueChanged?(sender.isOn)
     }
-    
-    
-    @objc private func cellTapped() {
-        onCellTapped?()
-    }
-  
+
     private func setupLayout() {
         contentView.addSubview(stackView)
         contentView.addSubview(separator)
@@ -130,11 +124,6 @@ final class ConfigurableTableViewCell: UITableViewCell {
             arrowIcon.centerYAnchor.constraint(equalTo: centerYAnchor),
             arrowIcon.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
         ])
-    }
-    
-    private func setupGesture() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(cellTapped))
-        contentView.addGestureRecognizer(tapGesture)
     }
     
     func hideSeparator() {

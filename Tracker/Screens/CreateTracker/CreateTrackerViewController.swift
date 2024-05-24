@@ -507,14 +507,8 @@ extension CreateTrackerViewController: UITableViewDelegate, UITableViewDataSourc
         case 0:
             let additionalText = viewModel.selectedCategoryName == "По умолчанию" ? nil : viewModel.selectedCategoryName
             cell.configure(with: "Категория", additionalText: additionalText, accessoryType: .arrow)
-            cell.onCellTapped = { [weak self] in
-                self?.showCategoryListViewController()
-            }
         case 1:
             cell.configure(with: "Расписание", additionalText: viewModel.selectedSchedule?.scheduleText, accessoryType: .arrow)
-            cell.onCellTapped = { [weak self] in
-                self?.showScheduleViewController()
-            }
         default:
             break
         }
@@ -531,6 +525,7 @@ extension CreateTrackerViewController: UITableViewDelegate, UITableViewDataSourc
         cell.selectionStyle = .none
         return cell
     }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.row {
                 case 0:
