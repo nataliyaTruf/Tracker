@@ -49,6 +49,7 @@
 		7FFDB18A2BFCA300000BF785 /* TrackersViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFDB1892BFCA300000BF785 /* TrackersViewModel.swift */; };
 		7FFDB1962BFCEA74000BF785 /* CreateTrackerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFDB1952BFCEA74000BF785 /* CreateTrackerViewModel.swift */; };
 		7FFDB19A2BFE25F4000BF785 /* ScheduleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFDB1992BFE25F4000BF785 /* ScheduleViewModel.swift */; };
+		7FFDB1BA2C00D26A000BF785 /* OnboardingPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFDB1B92C00D26A000BF785 /* OnboardingPageViewController.swift */; };
 		7FFF1B3E2BF38AE00025D1C7 /* AddCategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFF1B3D2BF38AE00025D1C7 /* AddCategoryViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -97,6 +98,7 @@
 		7FFDB1892BFCA300000BF785 /* TrackersViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackersViewModel.swift; sourceTree = "<group>"; };
 		7FFDB1952BFCEA74000BF785 /* CreateTrackerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateTrackerViewModel.swift; sourceTree = "<group>"; };
 		7FFDB1992BFE25F4000BF785 /* ScheduleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleViewModel.swift; sourceTree = "<group>"; };
+		7FFDB1B92C00D26A000BF785 /* OnboardingPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPageViewController.swift; sourceTree = "<group>"; };
 		7FFF1B3D2BF38AE00025D1C7 /* AddCategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCategoryViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -213,7 +215,7 @@
 		7FFDB18B2BFCDF2C000BF785 /* Screens */ = {
 			isa = PBXGroup;
 			children = (
-				7FB1C1982BD7C675000C6BA6 /* OnboardingViewController.swift */,
+				7FFDB1B82C00D232000BF785 /* Onboarding */,
 				7F49689F2B554269006C27A0 /* MainTabBarController.swift */,
 				7F4969602B61432E006C27A0 /* SelectTrackerViewController.swift */,
 				7FFDB18C2BFCDFE6000BF785 /* Trackers */,
@@ -280,6 +282,15 @@
 				7F4968B72B556C9A006C27A0 /* StatisticsViewController.swift */,
 			);
 			path = Statistics;
+			sourceTree = "<group>";
+		};
+		7FFDB1B82C00D232000BF785 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				7FB1C1982BD7C675000C6BA6 /* OnboardingViewController.swift */,
+				7FFDB1B92C00D26A000BF785 /* OnboardingPageViewController.swift */,
+			);
+			path = Onboarding;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -366,6 +377,7 @@
 				7F4968A02B554269006C27A0 /* MainTabBarController.swift in Sources */,
 				7F49694F2B5D530F006C27A0 /* TrackerCategory.swift in Sources */,
 				7FFDB1962BFCEA74000BF785 /* CreateTrackerViewModel.swift in Sources */,
+				7FFDB1BA2C00D26A000BF785 /* OnboardingPageViewController.swift in Sources */,
 				7F4969862B65294D006C27A0 /* GeometricParams.swift in Sources */,
 				7FB1C1992BD7C675000C6BA6 /* OnboardingViewController.swift in Sources */,
 				7FFC541D2BC6AD3E00B618F6 /* TrackerModel.xcdatamodeld in Sources */,
