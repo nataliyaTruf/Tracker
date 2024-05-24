@@ -33,7 +33,7 @@ enum OnboardingPage: Int, CaseIterable {
 }
 
 final class OnboardingViewController: UIPageViewController {
-    // MARK: - Properties
+    // MARK: - UI Components
     
     lazy var pageControl: UIPageControl = {
         let pc = UIPageControl()
@@ -79,12 +79,21 @@ final class OnboardingViewController: UIPageViewController {
             setViewControllers([firstPage], direction: .forward, animated: true, completion: nil)
         }
     }
+  
+    // MARK: - Setup Methods
     
-    // MARK: - Actions
+    private func setupPageControl() {
+        NSLayoutConstraint.activate([
+            pageControl.bottomAnchor.constraint(equalTo: skipButton.topAnchor, constant: -24),
+            pageControl.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            pageControl.heightAnchor.constraint(equalToConstant: 20)
+        ])
+    }
     
-    @objc private func skipButtonTapped() {
-        UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
-        switchToMainInterface()
+    private func setupSkipButton() {
+        NSLayoutConstraint.activate([
+            skipButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -50),
+        ])
     }
     
     // MARK: - Navigation
@@ -101,21 +110,13 @@ final class OnboardingViewController: UIPageViewController {
         return OnboardingPageViewController(page: page)
     }
     
-    // MARK: - Setup Methods
+    // MARK: - Actions
     
-    private func setupPageControl() {
-        NSLayoutConstraint.activate([
-            pageControl.bottomAnchor.constraint(equalTo: skipButton.topAnchor, constant: -24),
-            pageControl.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            pageControl.heightAnchor.constraint(equalToConstant: 20)
-        ])
+    @objc private func skipButtonTapped() {
+        UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
+        switchToMainInterface()
     }
     
-    private func setupSkipButton() {
-        NSLayoutConstraint.activate([
-            skipButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -50),
-        ])
-    }
 }
 
 // MARK: - UIPageViewControllerDataSource

@@ -38,9 +38,9 @@ final class ScheduleViewModel {
             }
             .store(in: &cancellables)
     }
-        private func updatedSchedule(with days: [Weekday]) {
-            let updatedDays = days.map { $0.rawValue }
-            let updatedSchedule = ReccuringSchedule(recurringDays: updatedDays)
-            onScheduleUpdated?(updatedSchedule)
-        }
+    private func updatedSchedule(with days: [Weekday]) {
+        let updatedDays = days.map { $0.rawValue }
+        let updatedSchedule = ReccuringSchedule(recurringDays: updatedDays)
+        onScheduleUpdated?(updatedSchedule)
+    }
 }

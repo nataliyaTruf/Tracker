@@ -80,23 +80,55 @@ final class ConfigurableTableViewCell: UITableViewCell {
         return stackView
     }()
     
+    // MARK: - Initialization
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.backgroundColor = .ypBackgroundDay
         setupLayout()
-//        setupGesture()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - Actions
+    // MARK: - Methods
     
-    @objc func switchValueChanged(_ sender: UISwitch) {
-        onSwitchValueChanged?(sender.isOn)
+    func hideSeparator() {
+        separator.isHidden = true
     }
-
+    
+    func showSeparator() {
+        separator.isHidden = false
+    }
+    
+    func configure(with text: String, additionalText: String? = nil, accessoryType: CellAccessoryType) {
+        titleLabel.text = text
+        additionalTextLabel.text = additionalText
+        additionalTextLabel.isHidden = additionalText == nil
+        
+        arrowIcon.isHidden = true
+        accessorySwitch.isHidden = true
+        checkmarkIcon.isHidden = true
+        
+        switch accessoryType {
+        case .none:
+            selectionStyle = .none
+        case .arrow:
+            arrowIcon.isHidden = false
+            selectionStyle = .none
+        case .checkmark:
+            checkmarkIcon.isHidden = false
+            selectionStyle = .blue
+        case .switchControl(let isOn):
+            accessorySwitch.isHidden = false
+            accessorySwitch.isOn = isOn
+            accessorySwitch.addTarget(self, action: #selector(switchValueChanged), for: .valueChanged)
+        }
+    }
+    
+    // MARK: - Setup Methods
+    
     private func setupLayout() {
         contentView.addSubview(stackView)
         contentView.addSubview(separator)
@@ -126,36 +158,9 @@ final class ConfigurableTableViewCell: UITableViewCell {
         ])
     }
     
-    func hideSeparator() {
-        separator.isHidden = true
-    }
+    // MARK: - Actions
     
-    func showSeparator() {
-        separator.isHidden = false
-    }
-    
-    func configure(with text: String, additionalText: String? = nil, accessoryType: CellAccessoryType) {
-        titleLabel.text = text
-        additionalTextLabel.text = additionalText
-        additionalTextLabel.isHidden = additionalText == nil
-        
-        arrowIcon.isHidden = true
-        accessorySwitch.isHidden = true
-        checkmarkIcon.isHidden = true
-        
-        switch accessoryType {
-        case .none:
-            selectionStyle = .none
-        case .arrow:
-            arrowIcon.isHidden = false
-            selectionStyle = .none
-        case .checkmark:
-            checkmarkIcon.isHidden = false
-            selectionStyle = .blue
-        case .switchControl(let isOn):
-                    accessorySwitch.isHidden = false
-                    accessorySwitch.isOn = isOn
-            accessorySwitch.addTarget(self, action: #selector(switchValueChanged), for: .valueChanged)
-        }
+    @objc func switchValueChanged(_ sender: UISwitch) {
+        onSwitchValueChanged?(sender.isOn)
     }
 }

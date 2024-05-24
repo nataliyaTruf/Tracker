@@ -8,15 +8,24 @@
 import Foundation
 import CoreData
 
+// MARK: - Protocols
+
 protocol TrackerCategoryStoreDelegate: AnyObject {
     func trackerCategoryStoreDidChangeContent(_ store: TrackerCategoryStore)
 }
 
+// MARK: - Main Class
+
 final class TrackerCategoryStore: NSObject {
+    // MARK: - Delegate
     weak var delegate: TrackerCategoryStoreDelegate?
+    
+    // MARK: - Properties
     
     private let managedObjectContext: NSManagedObjectContext
     private var fetchedResultsController: NSFetchedResultsController<TrackerCategoryCoreData>!
+    
+    // MARK: - Initialization
     
     init(managedObjectContext: NSManagedObjectContext = CoreDataStack.shared.persistentContainer.viewContext) {
         self.managedObjectContext = managedObjectContext
@@ -24,25 +33,7 @@ final class TrackerCategoryStore: NSObject {
         setupFetchedResultsController()
     }
     
-    private func setupFetchedResultsController() {
-        let fetchRequest: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
-        
-        fetchedResultsController = NSFetchedResultsController(
-            fetchRequest: fetchRequest,
-            managedObjectContext: managedObjectContext,
-            sectionNameKeyPath: nil,
-            cacheName: nil
-        )
-        
-        fetchedResultsController.delegate = self
-        
-        do {
-            try fetchedResultsController.performFetch()
-        } catch {
-            print("Failed to fetch categories: \(error)")
-        }
-    }
+    // MARK: - Public Methods
     
     func createCategory(title: String) {
         if fetchCategory(by: title) == nil {
@@ -116,6 +107,30 @@ final class TrackerCategoryStore: NSObject {
         return TrackerCategory(title: coreDataCategory.title ?? "По умолчанию", trackers: trackers)
     }
     
+    // MARK: - Setup Methods
+    
+    private func setupFetchedResultsController() {
+        let fetchRequest: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+        
+        fetchedResultsController = NSFetchedResultsController(
+            fetchRequest: fetchRequest,
+            managedObjectContext: managedObjectContext,
+            sectionNameKeyPath: nil,
+            cacheName: nil
+        )
+        
+        fetchedResultsController.delegate = self
+        
+        do {
+            try fetchedResultsController.performFetch()
+        } catch {
+            print("Failed to fetch categories: \(error)")
+        }
+    }
+    
+    // MARK: - Private Methods
+    
     private func saveContext() {
         if managedObjectContext.hasChanges {
             do {
@@ -125,6 +140,8 @@ final class TrackerCategoryStore: NSObject {
         }
     }
 }
+
+// MARK: - NSFetchedResultsControllerDelegate
 
 extension TrackerCategoryStore:  NSFetchedResultsControllerDelegate {
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<any NSFetchRequestResult>) {

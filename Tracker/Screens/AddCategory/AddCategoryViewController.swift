@@ -55,18 +55,6 @@ final class AddCategoryViewController: UIViewController {
         }
     }
     
-    // MARK: - Actions
-    
-    @objc private func doneButtonTapped() {
-        if let categoryName = nameTextField.text, !categoryName.isEmpty {
-            viewModel.addCategory(name: categoryName)
-        }
-    }
-    
-    @objc private func textFieldDidChange(_ textField: UITextField) {
-        viewModel.validateCategoryName(textField.text)
-    }
-    
     // MARK: - Setup Methods
     
     private func setuptitleLabel() {
@@ -97,6 +85,18 @@ final class AddCategoryViewController: UIViewController {
     
     private func validateInitialButtonState() {
         viewModel.validateCategoryName(nameTextField.text)
+    }
+    
+    // MARK: - Actions
+    
+    @objc private func doneButtonTapped() {
+        if let categoryName = nameTextField.text, !categoryName.isEmpty {
+            viewModel.addCategory(name: categoryName)
+        }
+    }
+    
+    @objc private func textFieldDidChange(_ textField: UITextField) {
+        viewModel.validateCategoryName(textField.text)
     }
 }
 

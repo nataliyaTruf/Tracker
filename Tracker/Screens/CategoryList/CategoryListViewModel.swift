@@ -11,8 +11,6 @@ import Foundation
 final class CategoryListViewModel {
     // MARK: - Properties
     
-    private let categoryStore = CoreDataStack.shared.trackerCategoryStore
-    
     var categories: [TrackerCategory] = []{
         didSet {
             self.onCategoriesUpdated?(categories)
@@ -26,6 +24,8 @@ final class CategoryListViewModel {
     
     var onCategoriesUpdated: (([TrackerCategory]) -> Void)?
     var onCategorySelected: ((String) -> Void)?
+    
+    private let categoryStore = CoreDataStack.shared.trackerCategoryStore
     
     // MARK: - Initialization
     

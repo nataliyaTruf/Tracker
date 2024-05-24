@@ -33,21 +33,8 @@ final class ColorCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - Setup Methods
-    
-    private func setupView() {
-        contentView.addSubview(colorView)
-
-        NSLayoutConstraint.activate([
-            colorView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6),
-            colorView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -6),
-            colorView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 6),
-            colorView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -6),
-        ])
-    }
-    
     // MARK: - Configuration
-
+    
     func configure(with color: UIColor, isSelected: Bool) {
         colorView.backgroundColor = color
         if isSelected {
@@ -59,5 +46,18 @@ final class ColorCell: UICollectionViewCell {
             contentView.layer.borderColor = nil
         }
         contentView.clipsToBounds = true
+    }
+    
+    // MARK: - Setup Methods
+    
+    private func setupView() {
+        contentView.addSubview(colorView)
+        
+        NSLayoutConstraint.activate([
+            colorView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6),
+            colorView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -6),
+            colorView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 6),
+            colorView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -6),
+        ])
     }
 }

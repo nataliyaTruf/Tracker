@@ -10,8 +10,7 @@ import Combine
 
 final class CreateTrackerViewModel: ObservableObject {
     // MARK: - Published Properties
-    
-    //    🎾
+ 
     @Published var trackerName: String = ""
     @Published var selectedEmojiIndex: Int?
     @Published var selectedColorIndex: Int?

@@ -30,6 +30,10 @@ final class CustomButton: UIButton {
         }
     }
     
+    func addAction(target: Any?, action: Selector) {
+        addTarget(target, action: action, for: .touchUpInside)
+    }
+    
     private func setupDefaultConstraints() {
         guard let superview = superview else { return }
         
@@ -38,9 +42,5 @@ final class CustomButton: UIButton {
             trailingAnchor.constraint(equalTo: superview.trailingAnchor, constant: -20),
             heightAnchor.constraint(equalToConstant: 60)
         ])
-    }
-    
-    func addAction(target: Any?, action: Selector) {
-        addTarget(target, action: action, for: .touchUpInside)
     }
 }

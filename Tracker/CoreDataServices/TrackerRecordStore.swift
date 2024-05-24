@@ -34,28 +34,6 @@ final class TrackerRecordStore: NSObject {
         setupFetchedResultsController()
     }
     
-    // MARK: - Setup Methods
-    
-    private func setupFetchedResultsController() {
-        let fetchRequest: NSFetchRequest<TrackerRecordCoreData> = TrackerRecordCoreData.fetchRequest()
-        fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \TrackerRecordCoreData.date, ascending: true)]
-        
-        fetchedResultController = NSFetchedResultsController(
-            fetchRequest: fetchRequest,
-            managedObjectContext: managedObjectContext,
-            sectionNameKeyPath: nil,
-            cacheName: "TrackerRecordsCache"
-        )
-        fetchedResultController.delegate = self
-        
-        do {
-            try fetchedResultController.performFetch()
-        } catch {
-            print("Failed to initialize fetched results controller: \(error)")
-        }
-        
-    }
-    
     // MARK: - Public Methods
     
     func createRecord(trackerId: UUID, date: Date) {
@@ -86,25 +64,48 @@ final class TrackerRecordStore: NSObject {
             print("Failed delete Record \(error), \(error.userInfo)")
         }
     }
-
+    
     func getAllRecords() -> [TrackerRecord] {
         return (fetchedResultController.fetchedObjects ?? []).map(convertToTrackerRecordModel)
     }
- 
+    
+    // MARK: - Setup Methods
+    
+    private func setupFetchedResultsController() {
+        let fetchRequest: NSFetchRequest<TrackerRecordCoreData> = TrackerRecordCoreData.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(keyPath: \TrackerRecordCoreData.date, ascending: true)]
+        
+        fetchedResultController = NSFetchedResultsController(
+            fetchRequest: fetchRequest,
+            managedObjectContext: managedObjectContext,
+            sectionNameKeyPath: nil,
+            cacheName: "TrackerRecordsCache"
+        )
+        fetchedResultController.delegate = self
+        
+        do {
+            try fetchedResultController.performFetch()
+        } catch {
+            print("Failed to initialize fetched results controller: \(error)")
+        }
+        
+    }
+    
+    
     // MARK: - Private Methods
-  
+    
     private func fetchTracker(by id: UUID) -> TrackerCoreData? {
-           let fetchRequest: NSFetchRequest<TrackerCoreData> = TrackerCoreData.fetchRequest()
-           fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
-           
-           do {
-               let results = try managedObjectContext.fetch(fetchRequest)
-               return results.first
-           } catch {
-               print("Failed to fetch tracker with ID \(id): \(error)")
-               return nil
-           }
-       }
+        let fetchRequest: NSFetchRequest<TrackerCoreData> = TrackerCoreData.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        
+        do {
+            let results = try managedObjectContext.fetch(fetchRequest)
+            return results.first
+        } catch {
+            print("Failed to fetch tracker with ID \(id): \(error)")
+            return nil
+        }
+    }
     
     
     private func convertToTrackerRecordModel(coreDataRecord: TrackerRecordCoreData) -> TrackerRecord {

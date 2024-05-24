@@ -9,14 +9,14 @@ import Foundation
 
 
 final class AddCategoryViewModel {
-    // MARK: - Properties
-    
-    private let categoryStore = CoreDataStack.shared.trackerCategoryStore
-    
     // MARK: - Closures
     
     var onCategoryAdded: ((String) -> Void)?
     var onDoneButtonStateUpdated: ((Bool) -> Void)?
+    
+    // MARK: - Properties
+    
+    private let categoryStore = CoreDataStack.shared.trackerCategoryStore
     
     // MARK: - Methods
     

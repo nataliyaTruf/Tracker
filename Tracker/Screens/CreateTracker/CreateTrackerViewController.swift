@@ -31,11 +31,11 @@ final class CreateTrackerViewController: UIViewController {
     
     // MARK: - Properties
     
+    var onCompletion: (() -> Void)?
+    
+    private let params: GeometricParams
     private var viewModel = CreateTrackerViewModel()
     private var cancellables: Set<AnyCancellable> = []
-    
-    var onCompletion: (() -> Void)?
-    private let params: GeometricParams
     private var isHabitTracker: Bool
     
     // MARK: - UI Components
@@ -174,8 +174,8 @@ final class CreateTrackerViewController: UIViewController {
         nameTextField.delegate = self
         bindViewModel()
         updateSpacing(isVisible: false)
-    }
-    
+    }    
+ 
     // MARK: - Binding ViewModel
     
     private func bindViewModel() {
@@ -214,62 +214,7 @@ final class CreateTrackerViewController: UIViewController {
             }
             .store(in: &cancellables)
     }
-    
-    // MARK: - Actions
-    
-    @objc private func cancelButtonTapped() {
-        dismiss(animated: true)
-    }
-    
-    @objc private func createButtonTapped() {
-        guard let newTracker = viewModel.createTracker() else { return }
-        
-        delegate?.trackerCreated(newTracker, category: viewModel.selectedCategoryName)
-        onCompletion?()
-        dismiss(animated: false, completion: nil)
-    }
-    
-    @objc private func textFieldDidChange(_ textField: UITextField) {
-        viewModel.updateTrackerName(textField.text ?? "")
-        updateCreateButtonState()
-    }
-    
-    // MARK: - Navigation
-    
-    private func showScheduleViewController() {
-        let scheduleViewModel = ScheduleViewModel(schedule: ReccuringSchedule(recurringDays: []), trackerStore: CoreDataStack.shared.trackerStore)
-        let scheduleVC = ScheduleViewController()
-        scheduleVC.viewModel = scheduleViewModel
-        scheduleViewModel.onScheduleUpdated = { [weak self] updatedSchedule in
-            self?.viewModel.selectedSchedule = updatedSchedule
-        }
-        scheduleVC.modalPresentationStyle = .pageSheet
-        present(scheduleVC, animated: true)
-    }
-    
-    
-    private func showCategoryListViewController() {
-        let categoryListVC = CategoryListViewController()
-        categoryListVC.onSelectCategory = { [weak self] categoryName in
-            self?.viewModel.selectCategory(name: categoryName)
-        }
-        categoryListVC.modalPresentationStyle = .pageSheet
-        present(categoryListVC, animated: true)
-    }
-    
-    private func updateCategoryName(_ categoryName: String) {
-        if let cell = optionsTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? ConfigurableTableViewCell {
-            cell.configure(with: "Категория", additionalText: categoryName, accessoryType: .arrow)
-        }
-    }
-    
-    private func updateSchedule(_ schedule: ReccuringSchedule?) {
-        let formattedSchedule = schedule?.scheduleText ?? ""
-        if let cell = optionsTableView.cellForRow(at: IndexPath(row: 1, section: 0)) as? ConfigurableTableViewCell {
-            cell.configure(with: "Расписание", additionalText: formattedSchedule, accessoryType: .arrow)
-        }
-    }
-    
+
     // MARK: - Initial UI Setup
     
     private func setupViews() {
@@ -327,6 +272,61 @@ final class CreateTrackerViewController: UIViewController {
             emojiCollectionView.heightAnchor.constraint(equalToConstant: 222),
             colorCollectionView.heightAnchor.constraint(equalToConstant: 222)
         ])
+    }
+    
+    // MARK: - Navigation
+    
+    private func showScheduleViewController() {
+        let scheduleViewModel = ScheduleViewModel(schedule: ReccuringSchedule(recurringDays: []), trackerStore: CoreDataStack.shared.trackerStore)
+        let scheduleVC = ScheduleViewController()
+        scheduleVC.viewModel = scheduleViewModel
+        scheduleViewModel.onScheduleUpdated = { [weak self] updatedSchedule in
+            self?.viewModel.selectedSchedule = updatedSchedule
+        }
+        scheduleVC.modalPresentationStyle = .pageSheet
+        present(scheduleVC, animated: true)
+    }
+
+    private func showCategoryListViewController() {
+        let categoryListVC = CategoryListViewController()
+        categoryListVC.onSelectCategory = { [weak self] categoryName in
+            self?.viewModel.selectCategory(name: categoryName)
+        }
+        categoryListVC.modalPresentationStyle = .pageSheet
+        present(categoryListVC, animated: true)
+    }
+    
+    private func updateCategoryName(_ categoryName: String) {
+        if let cell = optionsTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? ConfigurableTableViewCell {
+            cell.configure(with: "Категория", additionalText: categoryName, accessoryType: .arrow)
+        }
+    }
+    
+    private func updateSchedule(_ schedule: ReccuringSchedule?) {
+        let formattedSchedule = schedule?.scheduleText ?? ""
+        if let cell = optionsTableView.cellForRow(at: IndexPath(row: 1, section: 0)) as? ConfigurableTableViewCell {
+            cell.configure(with: "Расписание", additionalText: formattedSchedule, accessoryType: .arrow)
+        }
+    }
+    
+    
+    // MARK: - Actions
+    
+    @objc private func cancelButtonTapped() {
+        dismiss(animated: true)
+    }
+    
+    @objc private func createButtonTapped() {
+        guard let newTracker = viewModel.createTracker() else { return }
+        
+        delegate?.trackerCreated(newTracker, category: viewModel.selectedCategoryName)
+        onCompletion?()
+        dismiss(animated: false, completion: nil)
+    }
+    
+    @objc private func textFieldDidChange(_ textField: UITextField) {
+        viewModel.updateTrackerName(textField.text ?? "")
+        updateCreateButtonState()
     }
 }
 

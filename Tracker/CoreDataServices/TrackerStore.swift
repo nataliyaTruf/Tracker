@@ -26,7 +26,7 @@ final class TrackerStore: NSObject {
     private let managedObjectContext: NSManagedObjectContext
     private let categoryStore: TrackerCategoryStore
     private var fetchedResultsController: NSFetchedResultsController<TrackerCoreData>!
-  
+    
     // MARK: - Initialization
     
     init(managedObjectContext: NSManagedObjectContext = CoreDataStack.shared.persistentContainer.viewContext) {
@@ -34,6 +34,68 @@ final class TrackerStore: NSObject {
         self.categoryStore = TrackerCategoryStore(managedObjectContext: managedObjectContext)
         super.init()
         setupFetchedResultsController()
+    }
+    
+    // MARK: - Public Methods
+    
+    func createTracker(id: UUID, name: String, color: String, emoji: String, schedule: ReccuringSchedule?, categoryTitle: String) -> Tracker {
+        let newTrackerCoreData = TrackerCoreData(context: managedObjectContext)
+        newTrackerCoreData.id = UUID()
+        newTrackerCoreData.name = name
+        newTrackerCoreData.color = color
+        newTrackerCoreData.emoji = emoji
+        
+        if let schedule = schedule {
+            do {
+                let scheduleData = try JSONEncoder().encode(schedule)
+                newTrackerCoreData.schedule = scheduleData as NSObject
+            } catch {
+                print("TrackerStore - Error encoding schedule: \(error)")
+            }
+        }
+        let category = categoryStore.createCategoryIfNotExists(with: categoryTitle)
+        newTrackerCoreData.category = category
+        category.addToTrackers(newTrackerCoreData)
+        
+        saveContext()
+        return convertToTrackerModel(coreDataTracker: newTrackerCoreData)
+    }
+    
+    func fetchTrackerCoreData(by id: UUID) -> TrackerCoreData? {
+        let fetchRequest: NSFetchRequest<TrackerCoreData> = TrackerCoreData.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        
+        do {
+            return try managedObjectContext.fetch(fetchRequest).first
+        } catch {
+            print("TrackerStore - Error fetching TrackerCoreData: \(error)")
+            return nil
+        }
+    }
+    
+    func getCurrentTrackers() -> [Tracker] {
+        let trackersCoreData = fetchedResultsController.fetchedObjects ?? []
+        return trackersCoreData.map { convertToTrackerModel(coreDataTracker: $0) }
+    }
+    
+    func convertToTrackerModel(coreDataTracker: TrackerCoreData) -> Tracker {
+        var schedule: ReccuringSchedule? = nil
+        
+        if let scheduleData = coreDataTracker.schedule as? Data {
+            do {
+                schedule = try JSONDecoder().decode(ReccuringSchedule.self, from: scheduleData)
+            } catch {
+                print("TrackerStore - Error decoding schedule: \(error)")
+            }
+        }
+        
+        return Tracker(
+            id: coreDataTracker.id ?? UUID(),
+            name: coreDataTracker.name ?? "Что-то хорошее",
+            color: coreDataTracker.color ?? "colorSelection6",
+            emodji: coreDataTracker.emoji ?? "🦖",
+            schedule: schedule
+        )
     }
     
     // MARK: - Setup Methods
@@ -57,71 +119,7 @@ final class TrackerStore: NSObject {
             print("Failed to fetch trackers: \(error)")
         }
     }
-   
-    // MARK: - Public Methods
     
-    func createTracker(id: UUID, name: String, color: String, emoji: String, schedule: ReccuringSchedule?, categoryTitle: String) -> Tracker {
-        let newTrackerCoreData = TrackerCoreData(context: managedObjectContext)
-        newTrackerCoreData.id = UUID()
-        newTrackerCoreData.name = name
-        newTrackerCoreData.color = color
-        newTrackerCoreData.emoji = emoji
-        
-        if let schedule = schedule {
-            do {
-                let scheduleData = try JSONEncoder().encode(schedule)
-                newTrackerCoreData.schedule = scheduleData as NSObject
-            } catch {
-                print("TrackerStore - Error encoding schedule: \(error)")
-            }
-        }
-//        новое
-        let category = categoryStore.createCategoryIfNotExists(with: categoryTitle)
-        newTrackerCoreData.category = category
-        category.addToTrackers(newTrackerCoreData)
-        
-        print("🎾Создан трекер: \(name) с категорией \(categoryTitle)")
-        
-        saveContext()
-        return convertToTrackerModel(coreDataTracker: newTrackerCoreData)
-    }
-    
-    func fetchTrackerCoreData(by id: UUID) -> TrackerCoreData? {
-        let fetchRequest: NSFetchRequest<TrackerCoreData> = TrackerCoreData.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
-        
-        do {
-            return try managedObjectContext.fetch(fetchRequest).first
-        } catch {
-            print("TrackerStore - Error fetching TrackerCoreData: \(error)")
-            return nil
-        }
-    }
-  
-    func getCurrentTrackers() -> [Tracker] {
-        let trackersCoreData = fetchedResultsController.fetchedObjects ?? []
-        return trackersCoreData.map { convertToTrackerModel(coreDataTracker: $0) }
-    }
-  
-    func convertToTrackerModel(coreDataTracker: TrackerCoreData) -> Tracker {
-        var schedule: ReccuringSchedule? = nil
-        
-        if let scheduleData = coreDataTracker.schedule as? Data {
-            do {
-                schedule = try JSONDecoder().decode(ReccuringSchedule.self, from: scheduleData)
-            } catch {
-                print("TrackerStore - Error decoding schedule: \(error)")
-            }
-        }
-        
-        return Tracker(
-            id: coreDataTracker.id ?? UUID(),
-            name: coreDataTracker.name ?? "Что-то хорошее",
-            color: coreDataTracker.color ?? "colorSelection6",
-            emodji: coreDataTracker.emoji ?? "🦖",
-            schedule: schedule
-        )
-    }
     // MARK: - Private Methods
     
     private func saveContext() {

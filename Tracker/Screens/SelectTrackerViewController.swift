@@ -40,15 +40,18 @@ final class SelectTrackerViewController: UIViewController {
         view?.backgroundColor = UIColor(resource: .ypWhiteDay)
         setupUI()
     }
+   
+    // MARK: - Setup Methods
     
-    // MARK: - Actions
-    
-    @objc private func habitButtonTapped() {
-        presentCreateTrackerViewController(isHabit: true)
-    }
-    
-    @objc private func eventButtonTapped() {
-        presentCreateTrackerViewController(isHabit: false)
+    private func setupUI() {
+        view.addSubview(eventButton)
+        view.addSubview(habitButton)
+        view.addSubview(titleLabel)
+        
+        NSLayoutConstraint.activate([
+            eventButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -281),
+            habitButton.bottomAnchor.constraint(equalTo: eventButton.topAnchor, constant: -20),
+        ])
     }
     
     // MARK: - Navigation
@@ -63,16 +66,14 @@ final class SelectTrackerViewController: UIViewController {
         present(createTrackerVC, animated: true)
     }
     
-    // MARK: - Setup Methods
+    // MARK: - Actions
     
-    private func setupUI() {
-        view.addSubview(eventButton)
-        view.addSubview(habitButton)
-        view.addSubview(titleLabel)
-        
-        NSLayoutConstraint.activate([
-            eventButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -281),
-            habitButton.bottomAnchor.constraint(equalTo: eventButton.topAnchor, constant: -20),
-        ])
+    @objc private func habitButtonTapped() {
+        presentCreateTrackerViewController(isHabit: true)
     }
+    
+    @objc private func eventButtonTapped() {
+        presentCreateTrackerViewController(isHabit: false)
+    }
+    
 }

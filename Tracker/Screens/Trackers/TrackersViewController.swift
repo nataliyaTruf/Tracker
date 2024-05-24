@@ -99,26 +99,6 @@ final class TrackersViewController: UIViewController {
             .store(in: &cancelables)
     }
     
-    // MARK: - Navigation
-    
-    @objc private func addTrackerButtonTapped() {
-        let selectTrackerVC = SelectTrackerViewController()
-        selectTrackerVC.delegate = self
-        selectTrackerVC.modalPresentationStyle = .pageSheet
-        selectTrackerVC.onTrackerCreated = { [weak self] in
-            self?.dismiss(animated: false, completion: nil)
-        }
-        present(selectTrackerVC, animated: true, completion: nil)
-    }
-    
-    // MARK: - Actions
-    
-    @objc private func dateChanged(_ datePicker: UIDatePicker) {
-        viewModel.currentDate = datePicker.date
-        viewModel.loadCompletedTrackers()
-        viewModel.filterTrackersForSelectedDate()
-    }
-    
     // MARK: - Setup Methods
     
     private func setupEmptyStateTrackers() {
@@ -214,6 +194,26 @@ final class TrackersViewController: UIViewController {
         UIView.performWithoutAnimation { [weak self] in
             self?.trackersCollectionView.reloadItems(at: [indexPath])
         }
+    }
+    
+    // MARK: - Navigation
+    
+    @objc private func addTrackerButtonTapped() {
+        let selectTrackerVC = SelectTrackerViewController()
+        selectTrackerVC.delegate = self
+        selectTrackerVC.modalPresentationStyle = .pageSheet
+        selectTrackerVC.onTrackerCreated = { [weak self] in
+            self?.dismiss(animated: false, completion: nil)
+        }
+        present(selectTrackerVC, animated: true, completion: nil)
+    }
+    
+    // MARK: - Actions
+    
+    @objc private func dateChanged(_ datePicker: UIDatePicker) {
+        viewModel.currentDate = datePicker.date
+        viewModel.loadCompletedTrackers()
+        viewModel.filterTrackersForSelectedDate()
     }
 }
 

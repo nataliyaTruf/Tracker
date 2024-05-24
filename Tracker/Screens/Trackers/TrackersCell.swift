@@ -120,10 +120,14 @@ final class TrackersCell: UICollectionViewCell {
         markAsCompleteButton.clipsToBounds = true
     }
     
-    // MARK: - Actions
+    // MARK: - Configuration
     
-    @objc private func markAsCompleteButtonTapped() {
-        onToggleCompleted?()
+    func configure(with tracker: Tracker, completedDays: Int) {
+        emojiLabel.text = tracker.emodji
+        nameLabel.text = tracker.name
+        topBackgroundView.backgroundColor =  UIColor.color(from: tracker.color) ?? .blue
+        markAsCompleteButton.backgroundColor = topBackgroundView.backgroundColor
+        daysCounterLabel.text = "\(completedDays)" + " " + getDayWordForCount(completedDays)
     }
     
     // MARK: - Setup Methods
@@ -175,16 +179,6 @@ final class TrackersCell: UICollectionViewCell {
         ])
     }
     
-    // MARK: - Configuration
-    
-    func configure(with tracker: Tracker, completedDays: Int) {
-        emojiLabel.text = tracker.emodji
-        nameLabel.text = tracker.name
-        topBackgroundView.backgroundColor =  UIColor.color(from: tracker.color) ?? .blue
-        markAsCompleteButton.backgroundColor = topBackgroundView.backgroundColor
-        daysCounterLabel.text = "\(completedDays)" + " " + getDayWordForCount(completedDays)
-    }
-    
     private func getDayWordForCount(_ count: Int) -> String {
         let countLastDigit = count % 10
         let countLastTwoDigits = count % 100
@@ -202,4 +196,11 @@ final class TrackersCell: UICollectionViewCell {
             }
         }
     }
+    
+    // MARK: - Actions
+    
+    @objc private func markAsCompleteButtonTapped() {
+        onToggleCompleted?()
+    }
+    
 }

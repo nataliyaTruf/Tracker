@@ -8,7 +8,7 @@
 import UIKit
 
 
-final class ReusableHeader: UICollectionReusableView {    
+final class ReusableHeader: UICollectionReusableView {
     // MARK: - Properties
     
     static let identifier = "TrackersHeader"
@@ -39,7 +39,7 @@ final class ReusableHeader: UICollectionReusableView {
     }
     
     // MARK: - Configuration
-        func configure(with title: String) {
-            titleLabel.text = title
-        }
+    func configure(with title: String) {
+        titleLabel.text = title
+    }
 }

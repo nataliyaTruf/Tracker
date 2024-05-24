@@ -22,9 +22,9 @@ final class ScheduleViewController: UIViewController {
     var viewModel: ScheduleViewModel!
     private var cancellables = Set<AnyCancellable>()
     
-    var tableView: UITableView!
-    
     // MARK: - UI Components
+    
+    private var tableView: UITableView!
     
     private lazy var titleLabel = CustomTitleLabel(text: "Расписание")
     
@@ -55,13 +55,6 @@ final class ScheduleViewController: UIViewController {
             .store(in: &cancellables)
     }
     
-    // MARK: - Actions
-    
-    @objc private func doneButtonTapped() {
-        viewModel.onScheduleUpdated?(ReccuringSchedule(recurringDays: viewModel.selectedDays.map { $0.rawValue }))
-        dismiss(animated: true, completion: nil)
-    }
-    
     // MARK: - Setup Methods
     
     private func setupDoneButton() {
@@ -88,6 +81,13 @@ final class ScheduleViewController: UIViewController {
     
     private func setuptitleLabel() {
         view.addSubview(titleLabel)
+    }
+    
+    // MARK: - Actions
+    
+    @objc private func doneButtonTapped() {
+        viewModel.onScheduleUpdated?(ReccuringSchedule(recurringDays: viewModel.selectedDays.map { $0.rawValue }))
+        dismiss(animated: true, completion: nil)
     }
 }
 

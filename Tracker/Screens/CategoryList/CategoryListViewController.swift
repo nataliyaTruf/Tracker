@@ -11,8 +11,8 @@ import UIKit
 final class CategoryListViewController: UIViewController {
     // MARK: - Properties
     
-    private var viewModel = CategoryListViewModel()
     var onSelectCategory: ((String) -> Void)?
+    private var viewModel = CategoryListViewModel()
     
     // MARK: - UI Components
     
@@ -54,17 +54,6 @@ final class CategoryListViewController: UIViewController {
         }
     }
     
-    // MARK: - Actions
-    
-    @objc private func addCategoryButtonTapped() {
-        let addCategoryVC = AddCategoryViewController()
-        addCategoryVC.onCategoryAdded = { [weak self] newCategoryName in
-            self?.viewModel.loadCategories()
-        }
-        addCategoryVC.modalPresentationStyle = .pageSheet
-        present(addCategoryVC, animated: true)
-    }
-    
     // MARK: - Setup Methods
     
     private func setupTitleLabel() {
@@ -91,6 +80,17 @@ final class CategoryListViewController: UIViewController {
         NSLayoutConstraint.activate([
             addCategoryButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16)
         ])
+    }
+    
+    // MARK: - Actions
+    
+    @objc private func addCategoryButtonTapped() {
+        let addCategoryVC = AddCategoryViewController()
+        addCategoryVC.onCategoryAdded = { [weak self] newCategoryName in
+            self?.viewModel.loadCategories()
+        }
+        addCategoryVC.modalPresentationStyle = .pageSheet
+        present(addCategoryVC, animated: true)
     }
 }
 
