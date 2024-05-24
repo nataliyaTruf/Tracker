@@ -59,7 +59,7 @@ final class CategoryListViewController: UIViewController {
     @objc private func addCategoryButtonTapped() {
         let addCategoryVC = AddCategoryViewController()
         addCategoryVC.onCategoryAdded = { [weak self] newCategoryName in
-            self?.viewModel.addCategory(name: newCategoryName)
+            self?.viewModel.loadCategories()
         }
         addCategoryVC.modalPresentationStyle = .pageSheet
         present(addCategoryVC, animated: true)

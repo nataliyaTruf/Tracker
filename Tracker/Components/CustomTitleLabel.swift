@@ -23,21 +23,21 @@ final class CustomTitleLabel: UILabel {
     }
     
     override func didMoveToSuperview() {
-            super.didMoveToSuperview()
-            if let superview = superview, superview is UIStackView {
-                setupConstraintsForStackView()
-            } else {
-                setupDefaultConstraints()
-            }
+        super.didMoveToSuperview()
+        if let superview = superview, superview is UIStackView {
+            setupConstraintsForStackView()
+        } else {
+            setupDefaultConstraints()
         }
+    }
+    
+    private func setupConstraintsForStackView() {
+        guard superview != nil else { return }
         
-        private func setupConstraintsForStackView() {
-            guard superview != nil else { return }
-            
-            NSLayoutConstraint.activate([
-                heightAnchor.constraint(equalToConstant: 22)
-            ])
-        }
+        NSLayoutConstraint.activate([
+            heightAnchor.constraint(equalToConstant: 22)
+        ])
+    }
     
     private func setupDefaultConstraints() {
         guard let superview = superview else { return }

@@ -531,4 +531,14 @@ extension CreateTrackerViewController: UITableViewDelegate, UITableViewDataSourc
         cell.selectionStyle = .none
         return cell
     }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        switch indexPath.row {
+                case 0:
+                    showCategoryListViewController()
+                case 1:
+                    showScheduleViewController()
+                default:
+                    break
+                }
+    }
 }

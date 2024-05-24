@@ -39,11 +39,6 @@ final class CategoryListViewModel {
         categories = categoryStore.getAllCategoriesWithTrackers()
     }
     
-    func addCategory(name: String) {
-        categoryStore.createCategory(title: name)
-        loadCategories()
-    }
-    
     func selectCategory(at index: Int) {
         selectedCategory = categories[index]
         selectedIndex = IndexPath(row: index, section: 0)
