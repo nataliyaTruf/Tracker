@@ -278,7 +278,7 @@ final class CreateTrackerViewController: UIViewController {
     
     private func showScheduleViewController() {
         let scheduleViewModel = ScheduleViewModel(
-            schedule: ReccuringSchedule(recurringDays: []),
+            schedule: viewModel.selectedSchedule ?? ReccuringSchedule(recurringDays: []),
             trackerStore: CoreDataStack.shared.trackerStore
         )
         let scheduleVC = ScheduleViewController()
