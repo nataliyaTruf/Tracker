@@ -50,6 +50,8 @@
 		7FFDB1962BFCEA74000BF785 /* CreateTrackerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFDB1952BFCEA74000BF785 /* CreateTrackerViewModel.swift */; };
 		7FFDB19A2BFE25F4000BF785 /* ScheduleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFDB1992BFE25F4000BF785 /* ScheduleViewModel.swift */; };
 		7FFDB1BA2C00D26A000BF785 /* OnboardingPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFDB1B92C00D26A000BF785 /* OnboardingPageViewController.swift */; };
+		7FFDB1C02C01009D000BF785 /* EmptyStateType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFDB1BF2C01009D000BF785 /* EmptyStateType.swift */; };
+		7FFDB1C22C0101F9000BF785 /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFDB1C12C0101F9000BF785 /* EmptyStateView.swift */; };
 		7FFF1B3E2BF38AE00025D1C7 /* AddCategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFF1B3D2BF38AE00025D1C7 /* AddCategoryViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -99,6 +101,8 @@
 		7FFDB1952BFCEA74000BF785 /* CreateTrackerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateTrackerViewModel.swift; sourceTree = "<group>"; };
 		7FFDB1992BFE25F4000BF785 /* ScheduleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleViewModel.swift; sourceTree = "<group>"; };
 		7FFDB1B92C00D26A000BF785 /* OnboardingPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPageViewController.swift; sourceTree = "<group>"; };
+		7FFDB1BF2C01009D000BF785 /* EmptyStateType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateType.swift; sourceTree = "<group>"; };
+		7FFDB1C12C0101F9000BF785 /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
 		7FFF1B3D2BF38AE00025D1C7 /* AddCategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCategoryViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -185,6 +189,7 @@
 				7F9A18A12BDFD0E3002D3DF3 /* CustomTitleLabel.swift */,
 				7F9A18A52BE0FE72002D3DF3 /* ConfigurableTableViewCell.swift */,
 				7FFDB1852BFC8BD5000BF785 /* CustomTextField.swift */,
+				7FFDB1C12C0101F9000BF785 /* EmptyStateView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -196,6 +201,7 @@
 				7F4969892B67B5CE006C27A0 /* UIColor+Extensions.swift */,
 				7F9A18A72BE142C4002D3DF3 /* TableView+Extensions.swift */,
 				7FFDB1872BFC9634000BF785 /* Fonts.swift */,
+				7FFDB1BF2C01009D000BF785 /* EmptyStateType.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -371,6 +377,7 @@
 				7F9A18A02BDFC2B9002D3DF3 /* CustomButton.swift in Sources */,
 				7F4969A22B7D04DE006C27A0 /* ColorCell.swift in Sources */,
 				7FFC54222BC6C8B900B618F6 /* TrackerCategoryStore.swift in Sources */,
+				7FFDB1C22C0101F9000BF785 /* EmptyStateView.swift in Sources */,
 				7FFF1B3E2BF38AE00025D1C7 /* AddCategoryViewController.swift in Sources */,
 				7F49699C2B7CC1D5006C27A0 /* EmojiCell.swift in Sources */,
 				7F4969952B77848E006C27A0 /* ScheduleViewController.swift in Sources */,
@@ -379,6 +386,7 @@
 				7FFDB1962BFCEA74000BF785 /* CreateTrackerViewModel.swift in Sources */,
 				7FFDB1BA2C00D26A000BF785 /* OnboardingPageViewController.swift in Sources */,
 				7F4969862B65294D006C27A0 /* GeometricParams.swift in Sources */,
+				7FFDB1C02C01009D000BF785 /* EmptyStateType.swift in Sources */,
 				7FB1C1992BD7C675000C6BA6 /* OnboardingViewController.swift in Sources */,
 				7FFC541D2BC6AD3E00B618F6 /* TrackerModel.xcdatamodeld in Sources */,
 				7FFDB1862BFC8BD5000BF785 /* CustomTextField.swift in Sources */,

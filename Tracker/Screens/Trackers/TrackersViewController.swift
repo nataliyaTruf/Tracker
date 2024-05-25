@@ -29,20 +29,10 @@ final class TrackersViewController: UIViewController {
     
     // MARK: - UI Components
     
-    private lazy var emptyStateImageView = {
-        let image = UIImageView(image: UIImage(named: "error1"))
-        image.contentMode = .scaleAspectFit
-        image.translatesAutoresizingMaskIntoConstraints = false
-        return image
-    }()
-    
-    private lazy var emptyStateLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Что будем отслеживать?"
-        label.font = Fonts.medium(size: 12)
-        label.textColor = .ypBlackDay
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
+    private lazy var emptyStateView: EmptyStateView = {
+        let view = EmptyStateView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
     }()
     
     // MARK: - Initialization
@@ -102,17 +92,13 @@ final class TrackersViewController: UIViewController {
     // MARK: - Setup Methods
     
     private func setupEmptyStateTrackers() {
-        view.addSubview(emptyStateImageView)
-        view.addSubview(emptyStateLabel)
-        
+        view.addSubview(emptyStateView)
         NSLayoutConstraint.activate([
-            emptyStateImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -330),
-            emptyStateImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            emptyStateLabel.topAnchor.constraint(equalTo: emptyStateImageView.bottomAnchor, constant: +8),
-            emptyStateLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+            emptyStateView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            emptyStateView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 49)
         ])
-        emptyStateLabel.isHidden = true
-        emptyStateImageView.isHidden = true
+        
+        emptyStateView.isHidden = true
     }
     
     private func setupNavigationBar() {
@@ -179,14 +165,13 @@ final class TrackersViewController: UIViewController {
         let hasTrackersToShow = !viewModel.filteredCategories.flatMap { $0.trackers }.isEmpty
         
         trackersCollectionView.isHidden = !hasTrackersToShow
-        emptyStateLabel.isHidden = hasTrackersToShow
-        emptyStateImageView.isHidden = hasTrackersToShow
+        emptyStateView.isHidden = hasTrackersToShow
         updateEmptyStateView(isSearching: viewModel.isSearching)
     }
     
     private func updateEmptyStateView(isSearching: Bool) {
-        emptyStateLabel.text = isSearching ? "Ничего не найдено" : "Что будем отслеживать?"
-        emptyStateImageView.image = UIImage(named: isSearching ? "error2" : "error1")
+        let state: EmptyStateType = isSearching ? .noResults : .noTrackers
+        emptyStateView.configure(with: state, labelHeight: 18)
     }
     
     private func toggleTrackerCompleted(trackerId: UUID, at indexPath: IndexPath) {
