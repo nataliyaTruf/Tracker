@@ -25,6 +25,12 @@ final class CategoryListViewController: UIViewController {
         return button
     }()
     
+    private lazy var emptyStateView: EmptyStateView = {
+        let view = EmptyStateView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
     // MARK: - Lifecycle Methods
     
     override func viewDidLoad() {
@@ -34,23 +40,29 @@ final class CategoryListViewController: UIViewController {
         setupTitleLabel()
         setupAddCategoryButton()
         setupTableView()
+        setupEmptyStateView()
         
         bindViewModel()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        viewModel.loadCategories()
     }
     
     // MARK: - Bind ViewModel
     
     private func bindViewModel() {
-        viewModel.onCategoriesUpdated = { [weak self] categories in
-            self?.tableView.reloadData()
-        }
-        
         viewModel.onCategorySelected = { [weak self] categoryName in
             guard let self = self else { return }
             self.onSelectCategory?(categoryName)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 self.dismiss(animated: true, completion: nil)
             }
+        }
+        
+        viewModel.onViewStateUpdated = { [weak self] state in
+            self?.handleViewState(state)
         }
     }
     
@@ -80,6 +92,34 @@ final class CategoryListViewController: UIViewController {
         NSLayoutConstraint.activate([
             addCategoryButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16)
         ])
+    }
+    
+    private func setupEmptyStateView() {
+        view.addSubview(emptyStateView)
+        
+        NSLayoutConstraint.activate([
+                emptyStateView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                emptyStateView.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor, constant: 20),
+                emptyStateView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+                emptyStateView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
+            ])
+        
+        emptyStateView.configure(with: .noCategories, labelHeight: 36)
+    }
+    
+    // MARK: - UI Updates
+       
+    private func handleViewState(_ state: ViewState) {
+        switch state {
+        case .empty:
+            tableView.isHidden = true
+            emptyStateView.isHidden = false
+            emptyStateView.configure(with: .noCategories, labelHeight: 36)
+        case .populated:
+            tableView.isHidden = false
+            emptyStateView.isHidden = true
+            tableView.reloadData()
+        }
     }
     
     // MARK: - Actions

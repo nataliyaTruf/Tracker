@@ -8,12 +8,17 @@
 import Foundation
 
 
+enum ViewState {
+    case empty
+    case populated
+}
+
 final class CategoryListViewModel {
     // MARK: - Properties
     
     var categories: [TrackerCategory] = []{
         didSet {
-            self.onCategoriesUpdated?(categories)
+            updateViewState()
         }
     }
     
@@ -22,9 +27,14 @@ final class CategoryListViewModel {
     
     // MARK: - Closures
     
-    var onCategoriesUpdated: (([TrackerCategory]) -> Void)?
     var onCategorySelected: ((String) -> Void)?
+    var onViewStateUpdated: ((ViewState) -> Void)?
     
+    private(set) var viewState: ViewState = .empty {
+        didSet {
+            onViewStateUpdated?(viewState)
+        }
+    }
     private let categoryStore = CoreDataStack.shared.trackerCategoryStore
     
     // MARK: - Initialization
@@ -37,11 +47,17 @@ final class CategoryListViewModel {
     
     func loadCategories() {
         categories = categoryStore.getAllCategoriesWithTrackers()
+        updateViewState()
     }
     
     func selectCategory(at index: Int) {
         selectedCategory = categories[index]
         selectedIndex = IndexPath(row: index, section: 0)
         onCategorySelected?(selectedCategory?.title ?? "По умолчанию")
+    }
+    
+    private func updateViewState() {
+        let state: ViewState = categories.isEmpty ? .empty : .populated
+        onViewStateUpdated?(state)
     }
 }
