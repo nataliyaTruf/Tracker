@@ -175,7 +175,7 @@ final class CreateTrackerViewController: UIViewController {
         bindViewModel()
         updateSpacing(isVisible: false)
     }    
- 
+    
     // MARK: - Binding ViewModel
     
     private func bindViewModel() {
@@ -214,7 +214,7 @@ final class CreateTrackerViewController: UIViewController {
             }
             .store(in: &cancellables)
     }
-
+    
     // MARK: - Initial UI Setup
     
     private func setupViews() {
@@ -277,7 +277,10 @@ final class CreateTrackerViewController: UIViewController {
     // MARK: - Navigation
     
     private func showScheduleViewController() {
-        let scheduleViewModel = ScheduleViewModel(schedule: ReccuringSchedule(recurringDays: []), trackerStore: CoreDataStack.shared.trackerStore)
+        let scheduleViewModel = ScheduleViewModel(
+            schedule: ReccuringSchedule(recurringDays: []),
+            trackerStore: CoreDataStack.shared.trackerStore
+        )
         let scheduleVC = ScheduleViewController()
         scheduleVC.viewModel = scheduleViewModel
         scheduleViewModel.onScheduleUpdated = { [weak self] updatedSchedule in
@@ -286,7 +289,7 @@ final class CreateTrackerViewController: UIViewController {
         scheduleVC.modalPresentationStyle = .pageSheet
         present(scheduleVC, animated: true)
     }
-
+    
     private func showCategoryListViewController() {
         let categoryListVC = CategoryListViewController()
         categoryListVC.onSelectCategory = { [weak self] categoryName in
@@ -528,12 +531,12 @@ extension CreateTrackerViewController: UITableViewDelegate, UITableViewDataSourc
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch indexPath.row {
-                case 0:
-                    showCategoryListViewController()
-                case 1:
-                    showScheduleViewController()
-                default:
-                    break
-                }
+        case 0:
+            showCategoryListViewController()
+        case 1:
+            showScheduleViewController()
+        default:
+            break
+        }
     }
 }

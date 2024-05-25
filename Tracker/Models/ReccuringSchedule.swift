@@ -10,38 +10,21 @@ import Foundation
 
 struct ReccuringSchedule: Codable {
     var recurringDays: [Int]
-
+    
     var scheduleText: String {
-        let daysText = recurringDays.compactMap { Weekday(rawValue: $0)?.localizedStringShort }
-        return daysText.joined(separator: ", ")
+        return ScheduleType(from: recurringDays).description
     }
-
+    
     func isReccuringOn(_ day: Weekday) -> Bool {
         return recurringDays.contains(day.rawValue)
     }
-
+    
     mutating func addDay(_ day: Weekday) {
         recurringDays.append(day.rawValue)
     }
-
+    
     mutating func removeDay(_ day: Weekday) {
         recurringDays.removeAll { $0 == day.rawValue }
-    }
-}
-
-enum Weekday: Int, Codable, CaseIterable {
-    case monday = 1, tuesday, wednesday, thursday, friday, saturday, sunday
-
-    var localizedStringShort: String {
-        switch self {
-        case .monday: return "Пн"
-        case .tuesday: return "Вт"
-        case .wednesday: return "Ср"
-        case .thursday: return "Чт"
-        case .friday: return "Пт"
-        case .saturday: return "Сб"
-        case .sunday: return "Вс"
-        }
     }
 }
 

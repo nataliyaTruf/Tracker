@@ -29,7 +29,7 @@ final class ScheduleViewModel {
     init(schedule: ReccuringSchedule, trackerStore: TrackerStore?) {
         self.schedule = schedule
         self.trackerStore = trackerStore
-        self.days = [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday]
+        self.days = Weekday.allCases
         self.selectedDays = schedule.recurringDays.compactMap { Weekday(rawValue: $0) }
         
         $selectedDays
@@ -38,6 +38,7 @@ final class ScheduleViewModel {
             }
             .store(in: &cancellables)
     }
+    
     private func updatedSchedule(with days: [Weekday]) {
         let updatedDays = days.map { $0.rawValue }
         let updatedSchedule = ReccuringSchedule(recurringDays: updatedDays)

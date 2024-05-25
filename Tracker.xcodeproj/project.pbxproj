@@ -53,6 +53,8 @@
 		7FFDB1C02C01009D000BF785 /* EmptyStateType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFDB1BF2C01009D000BF785 /* EmptyStateType.swift */; };
 		7FFDB1C22C0101F9000BF785 /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFDB1C12C0101F9000BF785 /* EmptyStateView.swift */; };
 		7FFDB1C42C01E7E4000BF785 /* ViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFDB1C32C01E7E4000BF785 /* ViewState.swift */; };
+		7FFDB1C82C022B15000BF785 /* Weekday.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFDB1C72C022B15000BF785 /* Weekday.swift */; };
+		7FFDB1CA2C022B70000BF785 /* ScheduleType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFDB1C92C022B70000BF785 /* ScheduleType.swift */; };
 		7FFF1B3E2BF38AE00025D1C7 /* AddCategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FFF1B3D2BF38AE00025D1C7 /* AddCategoryViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -105,6 +107,8 @@
 		7FFDB1BF2C01009D000BF785 /* EmptyStateType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateType.swift; sourceTree = "<group>"; };
 		7FFDB1C12C0101F9000BF785 /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
 		7FFDB1C32C01E7E4000BF785 /* ViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewState.swift; sourceTree = "<group>"; };
+		7FFDB1C72C022B15000BF785 /* Weekday.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Weekday.swift; sourceTree = "<group>"; };
+		7FFDB1C92C022B70000BF785 /* ScheduleType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleType.swift; sourceTree = "<group>"; };
 		7FFF1B3D2BF38AE00025D1C7 /* AddCategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCategoryViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -205,6 +209,8 @@
 				7FFDB1872BFC9634000BF785 /* Fonts.swift */,
 				7FFDB1BF2C01009D000BF785 /* EmptyStateType.swift */,
 				7FFDB1C32C01E7E4000BF785 /* ViewState.swift */,
+				7FFDB1C72C022B15000BF785 /* Weekday.swift */,
+				7FFDB1C92C022B70000BF785 /* ScheduleType.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -388,6 +394,7 @@
 				7F49694F2B5D530F006C27A0 /* TrackerCategory.swift in Sources */,
 				7FFDB1C42C01E7E4000BF785 /* ViewState.swift in Sources */,
 				7FFDB1962BFCEA74000BF785 /* CreateTrackerViewModel.swift in Sources */,
+				7FFDB1CA2C022B70000BF785 /* ScheduleType.swift in Sources */,
 				7FFDB1BA2C00D26A000BF785 /* OnboardingPageViewController.swift in Sources */,
 				7F4969862B65294D006C27A0 /* GeometricParams.swift in Sources */,
 				7FFDB1C02C01009D000BF785 /* EmptyStateType.swift in Sources */,
@@ -396,6 +403,7 @@
 				7FFDB1862BFC8BD5000BF785 /* CustomTextField.swift in Sources */,
 				7F4969882B662C2F006C27A0 /* ReusableHeader.swift in Sources */,
 				7FFDB1882BFC9634000BF785 /* Fonts.swift in Sources */,
+				7FFDB1C82C022B15000BF785 /* Weekday.swift in Sources */,
 				7F4969992B7A2A24006C27A0 /* MockDataService.swift in Sources */,
 				7F4969612B61432E006C27A0 /* SelectTrackerViewController.swift in Sources */,
 				7FFDB1822BFC619D000BF785 /* CategoryListViewModel.swift in Sources */,

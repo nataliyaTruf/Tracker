@@ -130,6 +130,9 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
             cell.layer.cornerRadius = 0
             cell.layer.maskedCorners = []
         }
+        
+        cell.selectionStyle = .none
+        
         return cell
     }
 }
