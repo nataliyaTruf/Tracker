@@ -70,14 +70,13 @@ final class TrackersViewController: UIViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.trackersCollectionView.reloadData()
-                self?.updateView()
             }
             .store(in: &cancelables)
         
-        viewModel.$isSearching
+        viewModel.$viewState
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] isSearching in
-                self?.updateEmptyStateView(isSearching: isSearching)
+            .sink { [weak self] state in
+                self?.handleViewState(state)
             }
             .store(in: &cancelables)
         
@@ -161,17 +160,16 @@ final class TrackersViewController: UIViewController {
     
     // MARK: - UI Updates
     
-    private func updateView() {
-        let hasTrackersToShow = !viewModel.filteredCategories.flatMap { $0.trackers }.isEmpty
-        
-        trackersCollectionView.isHidden = !hasTrackersToShow
-        emptyStateView.isHidden = hasTrackersToShow
-        updateEmptyStateView(isSearching: viewModel.isSearching)
-    }
-    
-    private func updateEmptyStateView(isSearching: Bool) {
-        let state: EmptyStateType = isSearching ? .noResults : .noTrackers
-        emptyStateView.configure(with: state, labelHeight: 18)
+    private func handleViewState(_ state: ViewState) {
+        switch state {
+        case .empty:
+            trackersCollectionView.isHidden = true
+            emptyStateView.isHidden = false
+            emptyStateView.configure(with: viewModel.isSearching ? .noResults : .noTrackers, labelHeight: 18)
+        case .populated:
+            trackersCollectionView.isHidden = false
+            emptyStateView.isHidden = true
+        }
     }
     
     private func toggleTrackerCompleted(trackerId: UUID, at indexPath: IndexPath) {
@@ -217,7 +215,7 @@ extension TrackersViewController: UISearchControllerDelegate, UISearchBarDelegat
         viewModel.isSearching = !searchText.isEmpty
         
         if searchText.isEmpty {
-            viewModel.filteredCategories = viewModel.categories
+            viewModel.filterTrackersForSelectedDate()
         } else {
             viewModel.filteredCategories = viewModel.categories.map { category in
                 let filteredTrackers = category.trackers.filter { tracker in
@@ -226,16 +224,24 @@ extension TrackersViewController: UISearchControllerDelegate, UISearchBarDelegat
                 return TrackerCategory(title: category.title, trackers: filteredTrackers)
             }.filter { !$0.trackers.isEmpty }
         }
+        viewModel.updateViewState()
         trackersCollectionView.reloadData()
-        updateView()
     }
     
     func didDismissSearchController(_ searchController: UISearchController) {
         viewModel.isSearching = false
-        updateView()
+        viewModel.filterTrackersForSelectedDate()
+        viewModel.updateViewState()
+        trackersCollectionView.reloadData()
     }
     
     func searchBarShouldEndEditing(_ searchBar: UISearchBar) -> Bool {
+        if searchBar.text?.isEmpty == true {
+            viewModel.isSearching = false
+            viewModel.filterTrackersForSelectedDate()
+            viewModel.updateViewState()
+            trackersCollectionView.reloadData()
+        }
         return true
     }
     

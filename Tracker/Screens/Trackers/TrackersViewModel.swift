@@ -14,11 +14,20 @@ final class TrackersViewModel {
     // MARK: - Published Properties
     
     @Published var categories: [TrackerCategory] = []
-    @Published var filteredCategories: [TrackerCategory] = []
+    @Published var filteredCategories: [TrackerCategory] = [] {
+        didSet {
+            updateViewState()
+        }
+    }
     @Published var completedTrackers: [TrackerRecord] = []
     @Published var completedTrackerIds = Set<UUID>()
     @Published var currentDate: Date = Date()
-    @Published var isSearching = false
+    @Published var isSearching = false {
+        didSet {
+            updateViewState()
+        }
+    }
+    @Published var viewState: ViewState = .empty
     
     // MARK: - Properties
     
@@ -41,12 +50,14 @@ final class TrackersViewModel {
     func loadCategories() {
         categories = trackerCategoryStore.getAllCategoriesWithTrackers()
         filterTrackersForSelectedDate()
+        updateViewState()
     }
     
     func loadCompletedTrackers() {
         completedTrackers = trackerRecordStore.getAllRecords()
         completedTrackerIds = Set(completedTrackers.map { $0.id })
         filterTrackersForSelectedDate()
+        updateViewState()
     }
     
     func toggleTrackerCompleted(trackerId: UUID) {
@@ -102,5 +113,10 @@ final class TrackersViewModel {
             }
             return TrackerCategory(title: category.title, trackers: filteredTrackers)
         }.filter { !$0.trackers.isEmpty }
+    }
+    
+    func updateViewState() {
+        let hasTrackersToShow = !filteredCategories.flatMap { $0.trackers }.isEmpty
+           viewState = hasTrackersToShow ? .populated : .empty
     }
 }

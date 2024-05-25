@@ -70,7 +70,7 @@ final class EmptyStateView: UIView {
     
     private func setupView() {
         addSubview(stackView)
-        guard let superview = superview else { return }
+        guard superview != nil else { return }
         
         NSLayoutConstraint.activate([
             stackView.topAnchor.constraint(equalTo: topAnchor),

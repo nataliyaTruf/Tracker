@@ -8,11 +8,6 @@
 import Foundation
 
 
-enum ViewState {
-    case empty
-    case populated
-}
-
 final class CategoryListViewModel {
     // MARK: - Properties
     
