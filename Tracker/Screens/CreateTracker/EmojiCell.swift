@@ -17,7 +17,7 @@ final class EmojiCell: UICollectionViewCell {
     private lazy var emojiLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
-        label.font = UIFont(name: "YSDisplay-Bold", size: 32)
+        label.font = Fonts.bold(size: 32)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -33,6 +33,13 @@ final class EmojiCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Configuration
+    
+    func configure(with emoji: String, isSelected: Bool) {
+        emojiLabel.text = emoji
+        contentView.backgroundColor = isSelected ? UIColor.ypLightGray : UIColor.clear
+    }
+    
     // MARK: - Setup Methods
     
     private func setupView() {
@@ -45,13 +52,6 @@ final class EmojiCell: UICollectionViewCell {
             emojiLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             emojiLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
-    }
-    
-    // MARK: - Configuration
-    
-    func configure(with emoji: String, isSelected: Bool) {
-        emojiLabel.text = emoji
-        contentView.backgroundColor = isSelected ? UIColor.ypLightGray : UIColor.clear
     }
 }
 

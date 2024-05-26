@@ -8,7 +8,7 @@
 import UIKit
 
 
-final class ReusableHeader: UICollectionReusableView {    
+final class ReusableHeader: UICollectionReusableView {
     // MARK: - Properties
     
     static let identifier = "TrackersHeader"
@@ -22,7 +22,7 @@ final class ReusableHeader: UICollectionReusableView {
         
         addSubview(titleLabel)
         titleLabel.text = "Домашний уют"
-        titleLabel.font = UIFont(name: "YSDisplay-Bold", size: 19)
+        titleLabel.font = Fonts.bold(size: 19)
         titleLabel.textColor = .ypBlackDay
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         
@@ -39,7 +39,7 @@ final class ReusableHeader: UICollectionReusableView {
     }
     
     // MARK: - Configuration
-        func configure(with title: String) {
-            titleLabel.text = title
-        }
+    func configure(with title: String) {
+        titleLabel.text = title
+    }
 }

@@ -15,7 +15,6 @@ final class TrackersCell: UICollectionViewCell {
     
     var isCompleted: Bool = false {
         didSet {
-            print("isCompleted изменился на \(isCompleted) 🦖")
             let buttonImage = isCompleted ? UIImage(named: "done") : plusImage
             markAsCompleteButton.setImage(buttonImage, for: .normal)
             markAsCompleteButton.alpha = isCompleted ? 0.3 : 1
@@ -53,7 +52,7 @@ final class TrackersCell: UICollectionViewCell {
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
         label.textColor = .ypWhiteDay
-        label.font = UIFont(name: "YSDisplay-Medium", size: 12)
+        label.font = Fonts.medium(size: 12)
         label.text = "Поливать растения"
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -69,7 +68,7 @@ final class TrackersCell: UICollectionViewCell {
     private lazy var daysCounterLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .left
-        label.font = UIFont(name: "YSDisplay-Medium", size: 12)
+        label.font = Fonts.medium(size: 12)
         label.text = "0 дней"
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -121,11 +120,14 @@ final class TrackersCell: UICollectionViewCell {
         markAsCompleteButton.clipsToBounds = true
     }
     
-    // MARK: - Actions
+    // MARK: - Configuration
     
-    @objc private func markAsCompleteButtonTapped() {
-        onToggleCompleted?()
-        print("КНОПКА БЫЛА НАЖАТА 🎾")
+    func configure(with tracker: Tracker, completedDays: Int) {
+        emojiLabel.text = tracker.emodji
+        nameLabel.text = tracker.name
+        topBackgroundView.backgroundColor =  UIColor.color(from: tracker.color) ?? .blue
+        markAsCompleteButton.backgroundColor = topBackgroundView.backgroundColor
+        daysCounterLabel.text = "\(completedDays)" + " " + getDayWordForCount(completedDays)
     }
     
     // MARK: - Setup Methods
@@ -177,16 +179,6 @@ final class TrackersCell: UICollectionViewCell {
         ])
     }
     
-    // MARK: - Configuration
-    
-    func configure(with tracker: Tracker, completedDays: Int) {
-        emojiLabel.text = tracker.emodji
-        nameLabel.text = tracker.name
-        topBackgroundView.backgroundColor =  UIColor.color(from: tracker.color) ?? .blue
-        markAsCompleteButton.backgroundColor = topBackgroundView.backgroundColor
-        daysCounterLabel.text = "\(completedDays)" + " " + getDayWordForCount(completedDays)
-    }
-    
     private func getDayWordForCount(_ count: Int) -> String {
         let countLastDigit = count % 10
         let countLastTwoDigits = count % 100
@@ -204,4 +196,11 @@ final class TrackersCell: UICollectionViewCell {
             }
         }
     }
+    
+    // MARK: - Actions
+    
+    @objc private func markAsCompleteButtonTapped() {
+        onToggleCompleted?()
+    }
+    
 }

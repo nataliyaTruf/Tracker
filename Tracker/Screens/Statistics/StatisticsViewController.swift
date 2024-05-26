@@ -10,26 +10,16 @@ import UIKit
 final class StatisticsViewController: UIViewController {
     // MARK: - UI Components
     
-    private lazy var emptyStateImageView = {
-        let image = UIImageView(image: UIImage(named: "error3"))
-        image.contentMode = .scaleAspectFit
-        image.translatesAutoresizingMaskIntoConstraints = false
-        return image
-    }()
-    
-    private lazy var emptyStateLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Анализировать пока нечего"
-        label.font = UIFont(name: "YSDisplay-Medium", size: 12)
-        label.textColor = .ypBlackDay
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
+    private lazy var emptyStateView: EmptyStateView = {
+        let view = EmptyStateView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
     }()
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Статистика"
-        label.font = UIFont(name: "YSDisplay-Bold", size: 34)
+        label.font = Fonts.bold(size: 34)
         label.textColor = .ypBlackDay
         label.contentMode = .scaleAspectFit
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -57,17 +47,16 @@ final class StatisticsViewController: UIViewController {
     // MARK: - Setup Methods
     
     private func setupEmptyStateStats() {
-        view.addSubview(emptyStateImageView)
-        view.addSubview(emptyStateLabel)
+        view.addSubview(emptyStateView)
         view.addSubview(titleLabel)
         
         NSLayoutConstraint.activate([
-            emptyStateImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            emptyStateImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            emptyStateLabel.topAnchor.constraint(equalTo: emptyStateImageView.bottomAnchor, constant: +8),
-            emptyStateLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            emptyStateView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            emptyStateView.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 49),
             titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 88),
             titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16)
         ])
+        
+        emptyStateView.configure(with: .noStats, labelHeight: 18)
     }
 }
