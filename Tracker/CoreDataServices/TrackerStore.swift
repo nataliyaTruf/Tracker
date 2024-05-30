@@ -45,6 +45,8 @@ final class TrackerStore: NSObject {
         newTrackerCoreData.color = color
         newTrackerCoreData.emoji = emoji
         
+        newTrackerCoreData.creationDate = Date()
+        
         if let schedule = schedule {
             do {
                 let scheduleData = try JSONEncoder().encode(schedule)
@@ -94,7 +96,8 @@ final class TrackerStore: NSObject {
             name: coreDataTracker.name ?? "Что-то хорошее",
             color: coreDataTracker.color ?? "colorSelection6",
             emodji: coreDataTracker.emoji ?? "🦖",
-            schedule: schedule
+            schedule: schedule, 
+            creationDate: coreDataTracker.creationDate ?? Date()
         )
     }
     

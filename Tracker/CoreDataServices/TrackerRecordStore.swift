@@ -88,7 +88,6 @@ final class TrackerRecordStore: NSObject {
         } catch {
             print("Failed to initialize fetched results controller: \(error)")
         }
-        
     }
     
     
@@ -118,7 +117,8 @@ final class TrackerRecordStore: NSObject {
                 try managedObjectContext.save()
                 delegate?.trackerRecordStoreDidChangeContent(records: getAllRecords())
             } catch {
-                print("Failed to save context: \(error)")            }
+                print("Failed to save context: \(error)")
+            }
         }
     }
 }

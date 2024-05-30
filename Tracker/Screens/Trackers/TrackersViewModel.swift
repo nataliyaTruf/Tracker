@@ -49,6 +49,12 @@ final class TrackersViewModel {
     
     func loadCategories() {
         categories = trackerCategoryStore.getAllCategoriesWithTrackers()
+        for category in categories {
+            for tracker in category.trackers {
+                trackerCreationDates[tracker.id] = tracker.creationDate
+            }
+        }
+        
         filterTrackersForSelectedDate()
         updateViewState()
     }
@@ -83,20 +89,6 @@ final class TrackersViewModel {
         return uniquesDates.count
     }
     
-    func addTracker(_ tracker: Tracker, to category: String) {
-        if let index = categories.firstIndex(where: { $0.title == category }) {
-            var updatedTrackers = categories[index].trackers
-            updatedTrackers.append(tracker)
-            categories[index] = TrackerCategory(title: category, trackers: updatedTrackers)
-        } else {
-            let newCategory = TrackerCategory(title: category, trackers: [tracker])
-            categories.append(newCategory)
-        }
-        
-        trackerCreationDates[tracker.id] = Date()
-        filterTrackersForSelectedDate() // ??
-    }
-    
     func filterTrackersForSelectedDate() {
         let dayOfWeek = currentDate.toWeekday()
         
@@ -117,6 +109,6 @@ final class TrackersViewModel {
     
     func updateViewState() {
         let hasTrackersToShow = !filteredCategories.flatMap { $0.trackers }.isEmpty
-           viewState = hasTrackersToShow ? .populated : .empty
+        viewState = hasTrackersToShow ? .populated : .empty
     }
 }

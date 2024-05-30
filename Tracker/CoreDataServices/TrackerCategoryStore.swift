@@ -98,11 +98,14 @@ final class TrackerCategoryStore: NSObject {
                 return nil
             }()
             
-            return Tracker(id: trackerCoreData.id ?? UUID(),
-                           name: trackerCoreData.name ?? "Что-то хорошее",
-                           color: trackerCoreData.color ?? "colorSelection6",
-                           emodji: trackerCoreData.emoji ?? "🦖",
-                           schedule: schedule)
+            return Tracker(
+                id: trackerCoreData.id ?? UUID(),
+                name: trackerCoreData.name ?? "Что-то хорошее",
+                color: trackerCoreData.color ?? "colorSelection6",
+                emodji: trackerCoreData.emoji ?? "🦖",
+                schedule: schedule,
+                creationDate: trackerCoreData.creationDate ?? Date()
+            )
         }
         return TrackerCategory(title: coreDataCategory.title ?? "По умолчанию", trackers: trackers)
     }
@@ -136,7 +139,8 @@ final class TrackerCategoryStore: NSObject {
             do {
                 try managedObjectContext.save()
             } catch {
-                print("Failed to save context: \(error)")            }
+                print("Failed to save context: \(error)")
+            }
         }
     }
 }

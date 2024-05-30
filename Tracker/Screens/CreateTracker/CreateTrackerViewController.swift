@@ -16,19 +16,9 @@ import Combine
  Thus, I had to sacrifice code style uniformity for educational purposes.
  */
 
-// MARK: - Protocols
-
-protocol TrackerCreationDelegate: AnyObject {
-    func trackerCreated(_ tracker: Tracker, category: String)
-}
-
 // MARK: - Main Class
 
-final class CreateTrackerViewController: UIViewController {
-    // MARK: - Delegate
-    
-    weak var delegate: TrackerCreationDelegate?
-    
+final class CreateTrackerViewController: UIViewController {    
     // MARK: - Properties
     
     var onCompletion: (() -> Void)?
@@ -320,9 +310,7 @@ final class CreateTrackerViewController: UIViewController {
     }
     
     @objc private func createButtonTapped() {
-        guard let newTracker = viewModel.createTracker() else { return }
-        
-        delegate?.trackerCreated(newTracker, category: viewModel.selectedCategoryName)
+        guard viewModel.createTracker() != nil else { return }
         onCompletion?()
         dismiss(animated: false, completion: nil)
     }

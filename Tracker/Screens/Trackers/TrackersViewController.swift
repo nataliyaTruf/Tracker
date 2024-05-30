@@ -59,8 +59,6 @@ final class TrackersViewController: UIViewController {
         setupNavigationBar()
         setupSearchController()
         bindViewModel()
-        viewModel.loadCategories()
-        viewModel.loadCompletedTrackers()
     }
     
     // MARK: - Binding ViewModel
@@ -183,7 +181,7 @@ final class TrackersViewController: UIViewController {
     
     @objc private func addTrackerButtonTapped() {
         let selectTrackerVC = SelectTrackerViewController()
-        selectTrackerVC.delegate = self
+        //        selectTrackerVC.delegate = self
         selectTrackerVC.modalPresentationStyle = .pageSheet
         selectTrackerVC.onTrackerCreated = { [weak self] in
             self?.dismiss(animated: false, completion: nil)
@@ -333,15 +331,6 @@ extension TrackersViewController: UICollectionViewDelegateFlowLayout {
             verticalFittingPriority: .fittingSizeLevel
         )
         return size
-    }
-}
-
-// MARK: - TrackerCreationDelegate
-
-extension TrackersViewController: TrackerCreationDelegate {
-    func trackerCreated(_ tracker: Tracker, category: String) {
-        viewModel.addTracker(tracker, to: category)
-        trackersCollectionView.reloadData()
     }
 }
 

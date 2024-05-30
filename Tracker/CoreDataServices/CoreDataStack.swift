@@ -15,6 +15,11 @@ final class CoreDataStack {
     
     lazy var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "TrackerModel")
+        
+        let description = container.persistentStoreDescriptions.first
+        description?.shouldMigrateStoreAutomatically = true
+        description?.shouldInferMappingModelAutomatically = true
+        
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
                 fatalError("Unresolved error \(error), \(error.userInfo)")
@@ -22,18 +27,18 @@ final class CoreDataStack {
         })
         return container
     }()
-
+    
     // MARK: - Store Accessors
     
-    var trackerStore: TrackerStore {
+    private(set) lazy var trackerStore: TrackerStore = {
         return TrackerStore(managedObjectContext: persistentContainer.viewContext)
-    }
+    }()
     
-    var trackerCategoryStore: TrackerCategoryStore {
+    private(set) lazy var trackerCategoryStore: TrackerCategoryStore = {
         return TrackerCategoryStore(managedObjectContext: persistentContainer.viewContext)
-    }
+    }()
     
-    var trackerRecordStore: TrackerRecordStore {
+    private(set) lazy var trackerRecordStore: TrackerRecordStore = {
         return TrackerRecordStore(managedObjectContext: persistentContainer.viewContext)
-    }
+    }()
 }

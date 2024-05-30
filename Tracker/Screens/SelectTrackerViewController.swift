@@ -7,11 +7,7 @@
 
 import UIKit
 
-final class SelectTrackerViewController: UIViewController {
-    // MARK: - Delegate
-    
-    weak var delegate: TrackerCreationDelegate?
-    
+final class SelectTrackerViewController: UIViewController {    
     // MARK: - Properties
     
     var onTrackerCreated: (() -> Void)?
@@ -40,7 +36,7 @@ final class SelectTrackerViewController: UIViewController {
         view?.backgroundColor = UIColor(resource: .ypWhiteDay)
         setupUI()
     }
-   
+    
     // MARK: - Setup Methods
     
     private func setupUI() {
@@ -58,7 +54,6 @@ final class SelectTrackerViewController: UIViewController {
     
     private func presentCreateTrackerViewController(isHabit: Bool) {
         let createTrackerVC = CreateTrackerViewController(isHabit: isHabit)
-        createTrackerVC.delegate = delegate
         createTrackerVC.modalPresentationStyle = .pageSheet
         createTrackerVC.onCompletion = { [weak self] in
             self?.dismiss(animated: false, completion: self?.onTrackerCreated)
