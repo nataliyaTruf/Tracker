@@ -17,10 +17,10 @@ final class CategoryListViewController: UIViewController {
     // MARK: - UI Components
     
     private var tableView: UITableView!
-    private lazy var titleLabel = CustomTitleLabel(text: "Категория")
+    private lazy var titleLabel = CustomTitleLabel(text: L10n.categoryTitle)
     
     private lazy var addCategoryButton: CustomButton = {
-        let button = CustomButton(title: "Добавить категорию")
+        let button = CustomButton(title: L10n.addCategory)
         button.addTarget(self, action: #selector(addCategoryButtonTapped), for: .touchUpInside)
         return button
     }()

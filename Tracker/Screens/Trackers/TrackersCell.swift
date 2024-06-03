@@ -34,7 +34,7 @@ final class TrackersCell: UICollectionViewCell {
         let label = UILabel()
         label.textAlignment = .center
         label.font = UIFont.systemFont(ofSize: 16)
-        label.text = "😪"
+        label.text = L10n.defaultEmoji
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -53,7 +53,7 @@ final class TrackersCell: UICollectionViewCell {
         label.lineBreakMode = .byWordWrapping
         label.textColor = .ypWhiteDay
         label.font = Fonts.medium(size: 12)
-        label.text = "Поливать растения"
+        label.text = L10n.defaultGoodThing
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -69,7 +69,11 @@ final class TrackersCell: UICollectionViewCell {
         let label = UILabel()
         label.textAlignment = .left
         label.font = Fonts.medium(size: 12)
-        label.text = "0 дней"
+        let initialCount = 0
+        label.text = String.localizedStringWithFormat(
+            NSLocalizedString("daysCounter", comment: "Number of days"),
+            initialCount
+        )
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -127,7 +131,7 @@ final class TrackersCell: UICollectionViewCell {
         nameLabel.text = tracker.name
         topBackgroundView.backgroundColor =  UIColor.color(from: tracker.color) ?? .blue
         markAsCompleteButton.backgroundColor = topBackgroundView.backgroundColor
-        daysCounterLabel.text = "\(completedDays)" + " " + getDayWordForCount(completedDays)
+        daysCounterLabel.text = getDayWordForCount(completedDays)
     }
     
     // MARK: - Setup Methods
@@ -180,21 +184,10 @@ final class TrackersCell: UICollectionViewCell {
     }
     
     private func getDayWordForCount(_ count: Int) -> String {
-        let countLastDigit = count % 10
-        let countLastTwoDigits = count % 100
-        
-        if (countLastTwoDigits >= 11 && countLastTwoDigits <= 19) {
-            return "дней"
-        } else {
-            switch countLastDigit {
-            case 1:
-                return "день"
-            case 2...4:
-                return "дня"
-            default:
-                return "дней"
-            }
-        }
+        return String.localizedStringWithFormat(
+            NSLocalizedString("daysCounter", comment: "Number of days"),
+            count
+        )
     }
     
     // MARK: - Actions
@@ -202,5 +195,4 @@ final class TrackersCell: UICollectionViewCell {
     @objc private func markAsCompleteButtonTapped() {
         onToggleCompleted?()
     }
-    
 }

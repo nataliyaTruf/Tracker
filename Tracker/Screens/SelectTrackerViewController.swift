@@ -15,19 +15,19 @@ final class SelectTrackerViewController: UIViewController {
     // MARK: - UI Components
     
     private lazy var eventButton: CustomButton = {
-        let button = CustomButton(title: "Нерегулярное событие")
+        let button = CustomButton(title: L10n.eventButtonTitle)
         button.addTarget(self, action: #selector(eventButtonTapped), for: .touchUpInside)
         return button
     }()
     
     private lazy var habitButton: CustomButton = {
-        let button = CustomButton(title: "Привычка")
+        let button = CustomButton(title: L10n.habitButtonTitle)
         button.addTarget(self, action: #selector(habitButtonTapped), for: .touchUpInside
         )
         return button
     }()
     
-    private lazy var titleLabel = CustomTitleLabel(text: "Создание трекера")
+    private lazy var titleLabel = CustomTitleLabel(text: L10n.createTrackerTitle)
     
     // MARK: - Lifecycle Methods
     

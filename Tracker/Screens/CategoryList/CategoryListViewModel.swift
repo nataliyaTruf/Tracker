@@ -48,7 +48,7 @@ final class CategoryListViewModel {
     func selectCategory(at index: Int) {
         selectedCategory = categories[index]
         selectedIndex = IndexPath(row: index, section: 0)
-        onCategorySelected?(selectedCategory?.title ?? "По умолчанию")
+        onCategorySelected?(selectedCategory?.title ?? L10n.defaultCategory)
     }
     
     private func updateViewState() {

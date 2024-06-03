@@ -32,7 +32,7 @@ final class ConfigurableTableViewCell: UITableViewCell {
     
     private lazy var additionalTextLabel: UILabel = {
         let label = UILabel()
-        label.text = "расписание"
+        label.text = L10n.defaultScheduleText
         label.textColor = .ypGray
         label.font = Fonts.medium(size: 17)
         label.translatesAutoresizingMaskIntoConstraints = false

@@ -14,7 +14,7 @@ final class CreateTrackerViewModel: ObservableObject {
     @Published var trackerName: String = ""
     @Published var selectedEmojiIndex: Int?
     @Published var selectedColorIndex: Int?
-    @Published var selectedCategoryName: String = "По умолчанию"
+    @Published var selectedCategoryName: String?
     @Published var selectedSchedule: ReccuringSchedule?
     
     // MARK: - Properties
@@ -53,21 +53,21 @@ final class CreateTrackerViewModel: ObservableObject {
     }
     
     func createTracker() -> Tracker? {
-        let selectedEmoji = selectedEmojiIndex != nil ? emojis[selectedEmojiIndex!] : "🍔"
+        let selectedEmoji = selectedEmojiIndex != nil ? emojis[selectedEmojiIndex!] : L10n.defaultEmoji
         let selectedColor = selectedColorIndex != nil ? colors[selectedColorIndex!] : .colorSelection6
-        let selectedColorString = UIColor.string(from: selectedColor) ?? "colorSelection6"
+        let selectedColorString = UIColor.string(from: selectedColor) ?? L10n.defaultColor
         
         let newTracker = trackerStore.createTracker(
             id: UUID(),
-            name: trackerName.isEmpty ? "Что-то хорошее" : trackerName,
+            name: trackerName.isEmpty ? L10n.defaultGoodThing : trackerName,
             color: selectedColorString,
             emoji: selectedEmoji,
             schedule: selectedSchedule,
-            categoryTitle: selectedCategoryName
+            categoryTitle: selectedCategoryName ?? L10n.defaultCategory
         )
   
         if let newTrackerCoreData = trackerStore.fetchTrackerCoreData(by: newTracker.id) {
-            trackerCategoryStore.linkTracker(newTrackerCoreData, toCategoryWithTitle: selectedCategoryName)
+            trackerCategoryStore.linkTracker(newTrackerCoreData, toCategoryWithTitle: selectedCategoryName ?? L10n.defaultCategory)
         }
         
         return newTracker

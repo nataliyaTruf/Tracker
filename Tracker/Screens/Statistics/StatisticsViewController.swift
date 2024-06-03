@@ -18,7 +18,7 @@ final class StatisticsViewController: UIViewController {
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Статистика"
+        label.text = L10n.statisticsTitle
         label.font = Fonts.bold(size: 34)
         label.textColor = .ypBlackDay
         label.contentMode = .scaleAspectFit

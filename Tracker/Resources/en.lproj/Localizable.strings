@@ -1,0 +1,61 @@
+/* 
+  Localizable.strings
+  Tracker
+
+  Created by Natasha Trufanova on 03/06/2024.
+  
+ */
+ "defaultGoodThing" = "Something Good";
+ "defaultColor" = "colorSelection6";
+ "defaultEmoji" = "🦖";
+ "onboardingPageOne" = "Track only what you want";
+ "onboardingPageTwo" = "Even if it's not liters of water and yoga";
+ "onboardingButtonText" = "That's technology!";
+ "tabBarTrackers" = "Trackers";
+ "tabBarStatistics" = "Statistics";
+ "trackers" = "Trackers";
+ "search" = "Search";
+ "eventButtonTitle" = "Event";
+ "habitButtonTitle" = "Habit";
+ "createTrackerTitle" = "Create Tracker";
+ "newHabit" = "New Habit";
+ "newEvent" = "New Event";
+ "enterTrackerName" = "Enter tracker name";
+ "characterLimit" = "Character limit 38";
+ "cancel" = "Cancel";
+ "create" = "Create";
+ "category" = "Category";
+ "schedule" = "Schedule";
+ "done" = "Done";
+ "headerTitleEmoji" = "Emoji";
+ "headerTitleColor" = "Color";
+ "categoryTitle" = "Category";
+"addCategoryTitle" = "New Category";
+ "addCategory" = "Add category";
+ "enterCategoryName" = "Enter category name";
+ "scheduleTitle" = "Schedule";
+ "statisticsTitle" = "Statistics";
+ "noAnalysis" = "Nothing to analyze yet";
+ "defaultScheduleText" = "schedule";
+ "defaultCategory" = "Default";
+ "weekdayMonday" = "Monday";
+ "weekdayTuesday" = "Tuesday";
+ "weekdayWednesday" = "Wednesday";
+ "weekdayThursday" = "Thursday";
+ "weekdayFriday" = "Friday";
+ "weekdaySaturday" = "Saturday";
+ "weekdaySunday" = "Sunday";
+ "weekdayMondayShort" = "Mon";
+ "weekdayTuesdayShort" = "Tue";
+ "weekdayWednesdayShort" = "Wed";
+ "weekdayThursdayShort" = "Thu";
+ "weekdayFridayShort" = "Fri";
+ "weekdaySaturdayShort" = "Sat";
+ "weekdaySundayShort" = "Sun";
+ "noCategories" = "Habits and events can be grouped by meaning";
+ "noTrackers" = "What will we track?";
+ "noResults" = "Nothing found";
+ "noStats" = "Nothing to analyze yet";
+ "everyday" = "Everyday";
+ "weekdays" = "Weekdays";
+ "weekend" = "Weekend";

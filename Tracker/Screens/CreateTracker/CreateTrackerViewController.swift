@@ -44,10 +44,10 @@ final class CreateTrackerViewController: UIViewController {
         return stackView
     }()
     
-    private lazy var titleLabel = CustomTitleLabel(text: isHabitTracker ? "Новая привычка" : "Новое нерегулярное событие")
+    private lazy var titleLabel = CustomTitleLabel(text: isHabitTracker ? L10n.newHabit : L10n.newEvent)
     
     private lazy var nameTextField: CustomTextField = {
-        let textField = CustomTextField(placeholder: "Введите название трекера")
+        let textField = CustomTextField(placeholder: L10n.enterTrackerName)
         textField.addTarget(self, action: #selector(textFieldDidChange(_ :)), for: .editingChanged)
         return textField
     }()
@@ -68,7 +68,7 @@ final class CreateTrackerViewController: UIViewController {
     
     private lazy var cancelButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Отменить", for: .normal)
+        button.setTitle(L10n.cancel, for: .normal)
         button.titleLabel?.font = Fonts.medium(size: 16)
         button.tintColor = UIColor.ypRed
         button.layer.borderColor = UIColor.ypRed.cgColor
@@ -82,7 +82,7 @@ final class CreateTrackerViewController: UIViewController {
     
     private lazy var createButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Создать", for: .normal)
+        button.setTitle(L10n.create, for: .normal)
         button.setTitleColor(.ypWhiteDay, for: .normal)
         button.setTitleColor(.ypWhiteDay, for: .disabled)
         button.titleLabel?.font = Fonts.medium(size: 16)
@@ -101,6 +101,7 @@ final class CreateTrackerViewController: UIViewController {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .clear
         collectionView.showsVerticalScrollIndicator = false
+        collectionView.isScrollEnabled = false
         collectionView.register(EmojiCell.self, forCellWithReuseIdentifier: EmojiCell.idetnifier)
         collectionView.register(
             ReusableHeader.self,
@@ -119,6 +120,7 @@ final class CreateTrackerViewController: UIViewController {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .clear
         collectionView.showsVerticalScrollIndicator = false
+        collectionView.isScrollEnabled = false
         collectionView.register(ColorCell.self, forCellWithReuseIdentifier: ColorCell.idetnifier)
         collectionView.register(
             ReusableHeader.self,
@@ -133,7 +135,7 @@ final class CreateTrackerViewController: UIViewController {
     
     private lazy var characterLimitLabel: UILabel = {
         let label = UILabel()
-        label.text = "Ограничение 38 символов"
+        label.text = L10n.characterLimit
         label.font = Fonts.medium(size: 17)
         label.textAlignment = .center
         label.textColor = .ypRed
@@ -192,7 +194,7 @@ final class CreateTrackerViewController: UIViewController {
         
         viewModel.$selectedCategoryName
             .sink { [weak self] category in
-                self?.updateCategoryName(category)
+                self?.updateCategoryName(category ?? L10n.defaultCategory)
                 self?.updateCreateButtonState()
             }
             .store(in: &cancellables)
@@ -291,14 +293,14 @@ final class CreateTrackerViewController: UIViewController {
     
     private func updateCategoryName(_ categoryName: String) {
         if let cell = optionsTableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? ConfigurableTableViewCell {
-            cell.configure(with: "Категория", additionalText: categoryName, accessoryType: .arrow)
+            cell.configure(with: L10n.category, additionalText: categoryName, accessoryType: .arrow)
         }
     }
     
     private func updateSchedule(_ schedule: ReccuringSchedule?) {
         let formattedSchedule = schedule?.scheduleText ?? ""
         if let cell = optionsTableView.cellForRow(at: IndexPath(row: 1, section: 0)) as? ConfigurableTableViewCell {
-            cell.configure(with: "Расписание", additionalText: formattedSchedule, accessoryType: .arrow)
+            cell.configure(with: L10n.schedule, additionalText: formattedSchedule, accessoryType: .arrow)
         }
     }
     
@@ -434,9 +436,9 @@ extension CreateTrackerViewController: UICollectionViewDataSource {
         }
         
         if collectionView == emojiCollectionView {
-            header.configure(with: "Emoji")
+            header.configure(with: L10n.headerTitleEmoji)
         } else if collectionView == colorCollectionView {
-            header.configure(with: "Цвет")
+            header.configure(with: L10n.headerTitleColor)
         }
         
         return header
@@ -496,10 +498,10 @@ extension CreateTrackerViewController: UITableViewDelegate, UITableViewDataSourc
         
         switch indexPath.row {
         case 0:
-            let additionalText = viewModel.selectedCategoryName == "По умолчанию" ? nil : viewModel.selectedCategoryName
-            cell.configure(with: "Категория", additionalText: additionalText, accessoryType: .arrow)
+            let additionalText = viewModel.selectedCategoryName
+            cell.configure(with: L10n.category, additionalText: additionalText, accessoryType: .arrow)
         case 1:
-            cell.configure(with: "Расписание", additionalText: viewModel.selectedSchedule?.scheduleText, accessoryType: .arrow)
+            cell.configure(with: L10n.schedule, additionalText: viewModel.selectedSchedule?.scheduleText, accessoryType: .arrow)
         default:
             break
         }

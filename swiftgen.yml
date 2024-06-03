@@ -1,0 +1,9 @@
+input_dir: Tracker/Resources/ru.lproj
+output_dir: Tracker/Resources/Generated
+
+strings:
+  inputs:
+    - Localizable.strings
+  outputs:
+    templateName: structured-swift5
+    output: L10n.swift

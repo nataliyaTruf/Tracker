@@ -32,12 +32,12 @@ final class MainTabBarController: UITabBarController {
     private func getTabBar() {
         let trackersVC = getVC(
             viewController: TrackersViewController(),
-            title: "Трекеры",
+            title: L10n.tabBarTrackers,
             image: UIImage(named: "trackers")
         )
         let statsVC = getVC(
             viewController: StatisticsViewController(),
-            title: "Статистика",
+            title: L10n.tabBarStatistics,
             image: UIImage(named: "stats")
         )
         let trackersNavController = UINavigationController(rootViewController: trackersVC)

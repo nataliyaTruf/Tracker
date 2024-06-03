@@ -100,14 +100,14 @@ final class TrackerCategoryStore: NSObject {
             
             return Tracker(
                 id: trackerCoreData.id ?? UUID(),
-                name: trackerCoreData.name ?? "Что-то хорошее",
-                color: trackerCoreData.color ?? "colorSelection6",
-                emodji: trackerCoreData.emoji ?? "🦖",
+                name: trackerCoreData.name ?? L10n.defaultGoodThing,
+                color: trackerCoreData.color ?? L10n.defaultColor,
+                emodji: trackerCoreData.emoji ?? L10n.defaultEmoji,
                 schedule: schedule,
                 creationDate: trackerCoreData.creationDate ?? Date()
             )
         }
-        return TrackerCategory(title: coreDataCategory.title ?? "По умолчанию", trackers: trackers)
+        return TrackerCategory(title: coreDataCategory.title ?? L10n.defaultCategory, trackers: trackers)
     }
     
     // MARK: - Setup Methods

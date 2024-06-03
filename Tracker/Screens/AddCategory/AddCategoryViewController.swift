@@ -15,16 +15,16 @@ final class AddCategoryViewController: UIViewController {
     
     // MARK: - UI Components
     
-    private lazy var titleLabel = CustomTitleLabel(text: "Категория")
+    private lazy var titleLabel = CustomTitleLabel(text: L10n.addCategoryTitle)
     
     private lazy var doneButton: CustomButton = {
-        let button = CustomButton(title: "Готово")
+        let button = CustomButton(title: L10n.done)
         button.addTarget(self, action: #selector(doneButtonTapped), for: .touchUpInside)
         return button
     }()
     
     private lazy var nameTextField: CustomTextField = {
-        let textField = CustomTextField(placeholder: "Введите название категории")
+        let textField = CustomTextField(placeholder: L10n.enterCategoryName)
         textField.addTarget(self, action: #selector(textFieldDidChange(_ :)), for: .editingChanged)
         return textField
     }()

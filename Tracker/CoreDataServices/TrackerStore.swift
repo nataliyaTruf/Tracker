@@ -93,10 +93,10 @@ final class TrackerStore: NSObject {
         
         return Tracker(
             id: coreDataTracker.id ?? UUID(),
-            name: coreDataTracker.name ?? "Что-то хорошее",
-            color: coreDataTracker.color ?? "colorSelection6",
-            emodji: coreDataTracker.emoji ?? "🦖",
-            schedule: schedule, 
+            name: coreDataTracker.name ?? L10n.defaultGoodThing,
+            color: coreDataTracker.color ?? L10n.defaultColor,
+            emodji: coreDataTracker.emoji ?? L10n.defaultEmoji,
+            schedule: schedule,
             creationDate: coreDataTracker.creationDate ?? Date()
         )
     }

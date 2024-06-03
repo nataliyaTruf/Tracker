@@ -100,4 +100,11 @@ iOSInjectionProject/
 # Ignore Xcode schemes
 *.xcscheme
 
+# Ignoring build and derived data
+build/
+DerivedData/
+
+# Ignoring SwiftGen generated file
+/Tracker/Resources/Generated/L10n.swift
+
 # End of https://www.toptal.com/developers/gitignore/api/swift,xcode

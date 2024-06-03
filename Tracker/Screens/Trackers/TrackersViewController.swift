@@ -102,7 +102,7 @@ final class TrackersViewController: UIViewController {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
         
-        title = "Трекеры"
+        title = L10n.trackers
         
         let addButton = UIButton(type: .custom)
         if let iconImage = UIImage(named: "add_tracker")?.withRenderingMode(.alwaysOriginal) {
@@ -204,7 +204,7 @@ extension TrackersViewController: UISearchControllerDelegate, UISearchBarDelegat
     private func setupSearchController() {
         searchController.delegate = self
         searchController.searchBar.delegate = self
-        searchController.searchBar.placeholder = "Поиск"
+        searchController.searchBar.placeholder = L10n.search
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
     }

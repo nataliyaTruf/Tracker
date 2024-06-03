@@ -1,0 +1,68 @@
+/* 
+  Localizable.strings
+  Tracker
+
+  Created by Natasha Trufanova on 03/06/2024.
+  
+ */
+ "defaultGoodThing" = "Quelque chose de bien";
+ "defaultColor" = "colorSelection6";
+ "defaultEmoji" = "🦖";
+ "onboardingPageOne" = "Suivez seulement ce que vous voulez";
+ "onboardingPageTwo" = "Même si ce n'est pas des litres d'eau et du yoga";
+ "onboardingButtonText" = "C'est la technologie !";
+ "tabBarTrackers" = "Suivi d'habitudes";
+ "tabBarStatistics" = "Statistiques";
+ "trackers" = "Suivi d'habitudes";
+ "search" = "Recherche";
+ "eventButtonTitle" = "Événement";
+ "habitButtonTitle" = "Habitude";
+ "createTrackerTitle" = "Créer un Suivi";
+ "newHabit" = "Nouvelle Habitude";
+ "newEvent" = "Nouvel Événement";
+ "enterTrackerName" = "Entrez le nom du suivi";
+ "characterLimit" = "Limite de caractères 38";
+ "cancel" = "Annuler";
+ "create" = "Créer";
+ "category" = "Catégorie";
+ "schedule" = "Calendrier";
+ "done" = "Terminé";
+ "headerTitleEmoji" = "Émoji";
+ "headerTitleColor" = "Couleur";
+ "categoryTitle" = "Catégorie";
+"addCategoryTitle" = "Nouvelle Catégorie";
+ "addCategory" = "Ajouter une catégorie";
+ "enterCategoryName" = "Entrez le nom de la catégorie";
+ "scheduleTitle" = "Calendrier";
+ "statisticsTitle" = "Statistiques";
+ "noAnalysis" = "Rien à analyser pour le moment";
+ "defaultScheduleText" = "Calendrier";
+ "defaultCategory" = "Par défaut";
+ "weekdayMonday" = "Lundi";
+ "weekdayTuesday" = "Mardi";
+ "weekdayWednesday" = "Mercredi";
+ "weekdayThursday" = "Jeudi";
+ "weekdayFriday" = "Vendredi";
+ "weekdaySaturday" = "Samedi";
+ "weekdaySunday" = "Dimanche";
+ "weekdayMondayShort" = "Lun";
+ "weekdayTuesdayShort" = "Mar";
+ "weekdayWednesdayShort" = "Mer";
+ "weekdayThursdayShort" = "Jeu";
+ "weekdayFridayShort" = "Ven";
+ "weekdaySaturdayShort" = "Sam";
+ "weekdaySundayShort" = "Dim";
+ "weekdayMondayShort" = "Lun";
+ "weekdayTuesdayShort" = "Mar";
+ "weekdayWednesdayShort" = "Mer";
+ "weekdayThursdayShort" = "Jeu";
+ "weekdayFridayShort" = "Ven";
+ "weekdaySaturdayShort" = "Sam";
+ "weekdaySundayShort" = "Dim";
+ "noCategories" = "Les habitudes et les événements peuvent être groupés par signification";
+ "noTrackers" = "Qu'allons-nous suivre ?";
+ "noResults" = "Rien trouvé";
+ "noStats" = "Rien à analyser pour le moment";
+ "everyday" = "Tous les jours";
+ "weekdays" = "En semaine";
+ "weekend" = "Week-end";

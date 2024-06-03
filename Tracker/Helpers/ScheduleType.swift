@@ -30,11 +30,11 @@ enum ScheduleType {
     var description: String {
         switch self {
         case .everyday:
-            return "Каждый день"
+            return L10n.everyday
         case .weekdays:
-            return "Будние дни"
+            return L10n.weekdays
         case .weekend:
-            return "Выходные дни"
+            return L10n.weekend
         case .custom(let days):
             return days.compactMap { Weekday(rawValue: $0)?.localizedStringShort }.joined(separator: ", ")
         }
