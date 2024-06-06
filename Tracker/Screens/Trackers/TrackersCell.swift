@@ -12,6 +12,9 @@ final class TrackersCell: UICollectionViewCell {
     
     static let cellIdetnifier = "TrackersCell"
     var onToggleCompleted: (() -> Void)?
+    var onPin: (() -> Void)?
+    var onEdit: (() -> Void)?
+    var onDelete: (() -> Void)?
     
     var isCompleted: Bool = false {
         didSet {
@@ -103,6 +106,7 @@ final class TrackersCell: UICollectionViewCell {
             action: #selector(markAsCompleteButtonTapped),
             for: .touchUpInside
         )
+        setupContextMenu()
     }
     
     required init?(coder: NSCoder) {
@@ -139,9 +143,9 @@ final class TrackersCell: UICollectionViewCell {
     private func setupViews() {
         contentView.addSubview(topBackgroundView)
         contentView.addSubview(bottomBackgroundView)
-        contentView.addSubview(emojiBackgroundView)
-        contentView.addSubview(emojiLabel)
-        contentView.addSubview(nameLabel)
+        topBackgroundView.addSubview(emojiBackgroundView)
+        topBackgroundView.addSubview(emojiLabel)
+        topBackgroundView.addSubview(nameLabel)
         contentView.addSubview(daysCounterLabel)
         contentView.addSubview(markAsCompleteButton)
         
@@ -183,6 +187,13 @@ final class TrackersCell: UICollectionViewCell {
         ])
     }
     
+    // MARK: - Private Methods
+    
+    private func setupContextMenu() {
+        let interaction = UIContextMenuInteraction(delegate: self)
+        topBackgroundView.addInteraction(interaction)
+    }
+    
     private func getDayWordForCount(_ count: Int) -> String {
         return String.localizedStringWithFormat(
             NSLocalizedString("daysCounter", comment: "Number of days"),
@@ -194,5 +205,29 @@ final class TrackersCell: UICollectionViewCell {
     
     @objc private func markAsCompleteButtonTapped() {
         onToggleCompleted?()
+    }
+}
+
+// MARK: UIContextMenuInteractionDelegate
+
+extension TrackersCell: UIContextMenuInteractionDelegate {
+    func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
+        print("contextMenuInteraction called")
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] suggestedActions in
+            guard let self = self else { return nil }
+            
+            let pinAction = UIAction(title: "Закрепить") { [weak self] action in
+                self?.onPin?()
+            }
+            
+            let editAction = UIAction(title: "Редактировать") { [weak self] action in
+                self?.onEdit?()
+            }
+            
+            let deleteAction = UIAction(title: "Удалить", attributes: .destructive) { [weak self] action in
+                self?.onDelete?()
+            }
+            return UIMenu(title: "", children: [pinAction, editAction, deleteAction])
+        }
     }
 }
