@@ -111,4 +111,10 @@ final class TrackersViewModel {
         let hasTrackersToShow = !filteredCategories.flatMap { $0.trackers }.isEmpty
         viewState = hasTrackersToShow ? .populated : .empty
     }
+    
+    func deleteTracker(trackerId: UUID) {
+        trackerStore.deleteTracker(trackerId: trackerId)
+        loadCategories()
+        loadCompletedTrackers()
+    }
 }

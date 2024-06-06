@@ -101,6 +101,13 @@ final class TrackerStore: NSObject {
         )
     }
     
+    func deleteTracker(trackerId: UUID) {
+        if let trackerCoreData = fetchTrackerCoreData(by: trackerId) {
+            managedObjectContext.delete(trackerCoreData)
+            saveContext()
+        }
+    }
+    
     // MARK: - Setup Methods
     
     private func setupFetchedResultsController() {

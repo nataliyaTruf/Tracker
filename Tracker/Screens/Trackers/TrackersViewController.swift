@@ -274,6 +274,23 @@ extension TrackersViewController: UICollectionViewDataSource {
             guard let self = self, self.viewModel.currentDate <= Date() else { return }
             self.toggleTrackerCompleted(trackerId: tracker.id, at: indexPath)
         }
+        cell.onDelete = { [weak self] in
+            let alert = UIAlertController(
+                title: "Уверены что хотите удалить трекер?",
+                message: nil, preferredStyle: .actionSheet)
+            let deleteAction = UIAlertAction(
+                title: "Удалить",
+                style: .destructive
+            ) { [weak self] _ in
+                guard let self = self else { return }
+                let tracker = self.viewModel.filteredCategories[indexPath.section].trackers[indexPath.row]
+                self.viewModel.deleteTracker(trackerId: tracker.id)
+            }
+            let cancelAction = UIAlertAction(title: "Отмена", style: .cancel)
+            alert.addAction(deleteAction)
+            alert.addAction(cancelAction)
+            self?.present(alert, animated: true)
+        }
         return cell
     }
     
