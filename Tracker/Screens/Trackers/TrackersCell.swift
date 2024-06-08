@@ -95,6 +95,13 @@ final class TrackersCell: UICollectionViewCell {
         return button
     }()
     
+    private lazy var pinImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "pinned")
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
+    }()
+    
     // MARK: - Initialization
     
     override init(frame: CGRect) {
@@ -148,7 +155,7 @@ final class TrackersCell: UICollectionViewCell {
         topBackgroundView.addSubview(nameLabel)
         contentView.addSubview(daysCounterLabel)
         contentView.addSubview(markAsCompleteButton)
-        
+        topBackgroundView.addSubview(pinImageView)
         setupLayout()
     }
     
@@ -184,6 +191,10 @@ final class TrackersCell: UICollectionViewCell {
             
             daysCounterLabel.centerYAnchor.constraint(equalTo: markAsCompleteButton.centerYAnchor),
             daysCounterLabel.leadingAnchor.constraint(equalTo: bottomBackgroundView.leadingAnchor, constant: 12),
+            pinImageView.topAnchor.constraint(equalTo: topBackgroundView.topAnchor, constant: 12),
+            pinImageView.trailingAnchor.constraint(equalTo: topBackgroundView.trailingAnchor, constant: -4),
+            pinImageView.widthAnchor.constraint(equalToConstant: 24),
+            pinImageView.heightAnchor.constraint(equalToConstant: 24)
         ])
     }
     
