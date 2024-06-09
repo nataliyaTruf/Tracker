@@ -177,6 +177,15 @@ final class TrackersViewController: UIViewController {
         }
     }
     
+    func togglePinTracker(tracker: Tracker, at indexPath: IndexPath) {
+        if viewModel.isTrackerPinned(tracker) {
+            viewModel.unpinTracker(tracker)
+        } else {
+            viewModel.pinTracker(tracker)
+        }
+        trackersCollectionView.reloadData()
+    }
+    
     // MARK: - Navigation
     
     @objc private func addTrackerButtonTapped() {
@@ -266,14 +275,22 @@ extension TrackersViewController: UICollectionViewDataSource {
         }
         
         let tracker = viewModel.filteredCategories[indexPath.section].trackers[indexPath.row]
+        
         cell.isCompleted = viewModel.completedTrackerIds.contains(tracker.id) && viewModel.isTrackerCompletedOnCurrentDate(trackerId: tracker.id)
         let daysCount = viewModel.countCompletedDays(for: tracker.id)
-        cell.configure(with: tracker, completedDays: daysCount)
+        
+        let isPinned = viewModel.isTrackerPinned(tracker)
+        cell.configure(with: tracker, completedDays: daysCount, isPinned: isPinned)
         
         cell.onToggleCompleted = { [weak self] in
             guard let self = self, self.viewModel.currentDate <= Date() else { return }
             self.toggleTrackerCompleted(trackerId: tracker.id, at: indexPath)
         }
+        
+        cell.onPin = { [weak self] in
+            self?.togglePinTracker(tracker: tracker, at: indexPath)
+        }
+        
         cell.onDelete = { [weak self] in
             let alert = UIAlertController(
                 title: "Уверены что хотите удалить трекер?",

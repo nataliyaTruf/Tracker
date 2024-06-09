@@ -24,6 +24,16 @@ final class TrackersCell: UICollectionViewCell {
         }
     }
     
+    var isPinned: Bool = false {
+        didSet {
+            pinImageView.isHidden = !isPinned
+            pinActionTitle = isPinned ? "Открепить" : "Закрепить"
+            print("isPinned updated to: \(isPinned)")
+        }
+    }
+    
+    private var pinActionTitle = "Закрепить"
+    
     // MARK: - UI Components
     
     private lazy var topBackgroundView: UIView = {
@@ -137,12 +147,14 @@ final class TrackersCell: UICollectionViewCell {
     
     // MARK: - Configuration
     
-    func configure(with tracker: Tracker, completedDays: Int) {
+    func configure(with tracker: Tracker, completedDays: Int, isPinned: Bool) {
         emojiLabel.text = tracker.emodji
         nameLabel.text = tracker.name
         topBackgroundView.backgroundColor =  UIColor.color(from: tracker.color) ?? .blue
         markAsCompleteButton.backgroundColor = topBackgroundView.backgroundColor
         daysCounterLabel.text = getDayWordForCount(completedDays)
+        self.isPinned = isPinned
+        print("Configure called with isPinned: \(isPinned)")
     }
     
     // MARK: - Setup Methods
@@ -227,7 +239,7 @@ extension TrackersCell: UIContextMenuInteractionDelegate {
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] suggestedActions in
             guard let self = self else { return nil }
             
-            let pinAction = UIAction(title: "Закрепить") { [weak self] action in
+            let pinAction = UIAction(title: self.pinActionTitle) { [weak self] action in
                 self?.onPin?()
             }
             

@@ -76,7 +76,14 @@ final class TrackerCategoryStore: NSObject {
         let fetchRequest: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
         do {
             let categoriesCoreData = try managedObjectContext.fetch(fetchRequest)
-            return categoriesCoreData.map { convertToTrackerCategoryModel(coreDataCategory: $0) }
+            
+            var categories = categoriesCoreData.map { convertToTrackerCategoryModel(coreDataCategory: $0) }
+            if let pinnedIndex = categories.firstIndex(where: { $0.title == "Закрепленные" }) {
+                let pinnedCategory = categories.remove(at: pinnedIndex)
+                categories.insert(pinnedCategory, at: 0)
+            }
+            
+            return categories
         } catch {
             print("Failed to fetch categories with trackers: \(error)")
             return []
@@ -104,10 +111,49 @@ final class TrackerCategoryStore: NSObject {
                 color: trackerCoreData.color ?? L10n.defaultColor,
                 emodji: trackerCoreData.emoji ?? L10n.defaultEmoji,
                 schedule: schedule,
-                creationDate: trackerCoreData.creationDate ?? Date()
+                creationDate: trackerCoreData.creationDate ?? Date(), 
+                originalCategory: trackerCoreData.originalCategory ?? L10n.defaultCategory
             )
         }
         return TrackerCategory(title: coreDataCategory.title ?? L10n.defaultCategory, trackers: trackers)
+    }
+    
+    func pinTracker(_ trackerId: UUID) {
+        guard let trackerCoreData = CoreDataStack.shared.trackerStore.fetchTrackerCoreData(by: trackerId) else { return }
+        
+        if let currentCategory = trackerCoreData.category {
+            currentCategory.removeFromTrackers(trackerCoreData)
+            trackerCoreData.originalCategory = currentCategory.title
+        }
+        
+        let pinnedCategory = createCategoryIfNotExists(with: "Закрепленные")
+        //        trackerCoreData.originalCategory = trackerCoreData.category?.title
+        trackerCoreData.category = pinnedCategory
+        pinnedCategory.addToTrackers(trackerCoreData)
+        
+        saveContext()
+    }
+    
+    func unpinTracker(_ trackerId: UUID) {
+        guard let trackerCoreData = CoreDataStack.shared.trackerStore.fetchTrackerCoreData(by: trackerId) else { return }
+        
+        if let pinnedCategory = trackerCoreData.category, pinnedCategory.title == "Закрепленные" {
+            pinnedCategory.removeFromTrackers(trackerCoreData)
+        }
+        
+        if let originalCategoryTitle = trackerCoreData.originalCategory {
+            if let originalCategory = fetchCategory(by: originalCategoryTitle) {
+                trackerCoreData.category = originalCategory
+                originalCategory.addToTrackers(trackerCoreData)
+                trackerCoreData.originalCategory = nil
+            } else {
+                let newCategory = createCategoryIfNotExists(with: originalCategoryTitle)
+                trackerCoreData.category = newCategory
+                newCategory.addToTrackers(trackerCoreData)
+                trackerCoreData.originalCategory = nil
+            }
+        }
+        saveContext()
     }
     
     // MARK: - Setup Methods

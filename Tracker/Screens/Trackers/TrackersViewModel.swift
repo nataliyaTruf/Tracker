@@ -38,14 +38,14 @@ final class TrackersViewModel {
     
     private var cancellables = Set<AnyCancellable>()
     
-    // MARK: - Initializer
+    // MARK: - Initialization
     
     init() {
         loadCategories()
         loadCompletedTrackers()
     }
     
-    // MARK: - Methods
+    // MARK: - Data Loading
     
     func loadCategories() {
         categories = trackerCategoryStore.getAllCategoriesWithTrackers()
@@ -65,6 +65,8 @@ final class TrackersViewModel {
         filterTrackersForSelectedDate()
         updateViewState()
     }
+    
+    // MARK: - Task Completion
     
     func toggleTrackerCompleted(trackerId: UUID) {
         if isTrackerCompletedOnCurrentDate(trackerId: trackerId) {
@@ -89,6 +91,8 @@ final class TrackersViewModel {
         return uniquesDates.count
     }
     
+    // MARK: - Filtering
+    
     func filterTrackersForSelectedDate() {
         let dayOfWeek = currentDate.toWeekday()
         
@@ -112,9 +116,33 @@ final class TrackersViewModel {
         viewState = hasTrackersToShow ? .populated : .empty
     }
     
+    // MARK: - Deletion
+    
     func deleteTracker(trackerId: UUID) {
         trackerStore.deleteTracker(trackerId: trackerId)
         loadCategories()
         loadCompletedTrackers()
     }
+    
+    // MARK: - Pinning
+    
+    func isTrackerPinned(_ tracker: Tracker) -> Bool {
+        guard let trackerCoreData = trackerStore.fetchTrackerCoreData(by: tracker.id) else { return false }
+        return trackerCoreData.category?.title == "Закрепленные"
+    }
+    
+    func pinTracker(_ tracker: Tracker) {
+        print("Pinning tracker: \(tracker.name)")
+        trackerCategoryStore.pinTracker(tracker.id)
+        loadCategories()
+        filterTrackersForSelectedDate()
+    }
+    
+    func unpinTracker(_ tracker: Tracker) {
+        print("Unpinning tracker: \(tracker.name)")
+        trackerCategoryStore.unpinTracker(tracker.id)
+        loadCategories()
+        filterTrackersForSelectedDate()
+    }
 }
+

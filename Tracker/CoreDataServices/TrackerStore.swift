@@ -97,7 +97,8 @@ final class TrackerStore: NSObject {
             color: coreDataTracker.color ?? L10n.defaultColor,
             emodji: coreDataTracker.emoji ?? L10n.defaultEmoji,
             schedule: schedule,
-            creationDate: coreDataTracker.creationDate ?? Date()
+            creationDate: coreDataTracker.creationDate ?? Date(),
+            originalCategory: coreDataTracker.originalCategory ?? L10n.defaultCategory
         )
     }
     
