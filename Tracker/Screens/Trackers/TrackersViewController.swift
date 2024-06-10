@@ -21,6 +21,7 @@ final class TrackersViewController: UIViewController {
     
     private let searchController = UISearchController(searchResultsController: nil)
     private var trackersCollectionView: UICollectionView!
+    private var filterButton: UIButton!
     private var params: GeometricParams
     private var trackerCreationDates: [UUID : Date] = [:]
     
@@ -58,6 +59,7 @@ final class TrackersViewController: UIViewController {
         setupTrackersCollectionView()
         setupNavigationBar()
         setupSearchController()
+        setupFilterButton()
         bindViewModel()
     }
     
@@ -147,12 +149,32 @@ final class TrackersViewController: UIViewController {
         
         trackersCollectionView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(trackersCollectionView)
+            trackersCollectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 60, right: 0)
+            trackersCollectionView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 60, right: 0)
         
         NSLayoutConstraint.activate([
             trackersCollectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
             trackersCollectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             trackersCollectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             trackersCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
+        ])
+    }
+    
+    private func setupFilterButton() {
+        filterButton = UIButton(type: .system)
+        filterButton.setTitle("Фильтры", for: .normal)
+        filterButton.translatesAutoresizingMaskIntoConstraints = false
+        filterButton.backgroundColor = .ypBlue
+        filterButton.setTitleColor(.ypWhiteDay, for: .normal)
+        filterButton.layer.cornerRadius = 16
+        filterButton.addTarget(self, action: #selector(filterButtonTapped), for: .touchUpInside)
+        view.addSubview(filterButton)
+        
+        NSLayoutConstraint.activate([
+            filterButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
+            filterButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            filterButton.widthAnchor.constraint(equalToConstant: 114),
+            filterButton.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
     
@@ -218,6 +240,10 @@ final class TrackersViewController: UIViewController {
         viewModel.currentDate = datePicker.date
         viewModel.loadCompletedTrackers()
         viewModel.filterTrackersForSelectedDate()
+    }
+    
+    @objc private func filterButtonTapped() {
+        //TODO: action
     }
 }
 
