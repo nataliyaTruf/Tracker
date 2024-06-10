@@ -188,9 +188,21 @@ final class TrackersViewController: UIViewController {
     
     // MARK: - Navigation
     
+    private func presentEditTrackerViewController(tracker: Tracker) {
+        let isHabit = tracker.schedule != nil
+        let editTrackerVC = CreateTrackerViewController(isHabit: isHabit, isEditing: true, existingTrackerId: tracker.id)
+        
+        editTrackerVC.loadExistingTrackerData(tracker.id)
+        editTrackerVC.onCompletion = { [weak self] in
+            self?.viewModel.loadCategories()
+            self?.trackersCollectionView.reloadData()
+        }
+        editTrackerVC.modalPresentationStyle = .pageSheet
+        present(editTrackerVC, animated: true, completion: nil)
+    }
+    
     @objc private func addTrackerButtonTapped() {
         let selectTrackerVC = SelectTrackerViewController()
-        //        selectTrackerVC.delegate = self
         selectTrackerVC.modalPresentationStyle = .pageSheet
         selectTrackerVC.onTrackerCreated = { [weak self] in
             self?.dismiss(animated: false, completion: nil)
@@ -289,6 +301,10 @@ extension TrackersViewController: UICollectionViewDataSource {
         
         cell.onPin = { [weak self] in
             self?.togglePinTracker(tracker: tracker, at: indexPath)
+        }
+        
+        cell.onEdit = { [weak self] in
+            self?.presentEditTrackerViewController(tracker: tracker)
         }
         
         cell.onDelete = { [weak self] in

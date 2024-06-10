@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7F3ABE4A2C16E31C004BB55B /* Array+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F3ABE492C16E31C004BB55B /* Array+Extensions.swift */; };
 		7F49689C2B554269006C27A0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F49689B2B554269006C27A0 /* AppDelegate.swift */; };
 		7F49689E2B554269006C27A0 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F49689D2B554269006C27A0 /* SceneDelegate.swift */; };
 		7F4968A02B554269006C27A0 /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F49689F2B554269006C27A0 /* MainTabBarController.swift */; };
@@ -62,6 +63,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7F3ABE492C16E31C004BB55B /* Array+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Extensions.swift"; sourceTree = "<group>"; };
 		7F4968982B554269006C27A0 /* Tracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7F49689B2B554269006C27A0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7F49689D2B554269006C27A0 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -224,6 +226,7 @@
 				7FFDB1C32C01E7E4000BF785 /* ViewState.swift */,
 				7FFDB1C72C022B15000BF785 /* Weekday.swift */,
 				7FFDB1C92C022B70000BF785 /* ScheduleType.swift */,
+				7F3ABE492C16E31C004BB55B /* Array+Extensions.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -455,6 +458,7 @@
 				7FFDB1882BFC9634000BF785 /* Fonts.swift in Sources */,
 				7FFDB1C82C022B15000BF785 /* Weekday.swift in Sources */,
 				7F4969992B7A2A24006C27A0 /* MockDataService.swift in Sources */,
+				7F3ABE4A2C16E31C004BB55B /* Array+Extensions.swift in Sources */,
 				7F4969612B61432E006C27A0 /* SelectTrackerViewController.swift in Sources */,
 				7FFDB1822BFC619D000BF785 /* CategoryListViewModel.swift in Sources */,
 				7F49694D2B5D5015006C27A0 /* ReccuringSchedule.swift in Sources */,

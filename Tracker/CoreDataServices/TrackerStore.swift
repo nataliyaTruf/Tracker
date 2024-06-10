@@ -38,7 +38,14 @@ final class TrackerStore: NSObject {
     
     // MARK: - Public Methods
     
-    func createTracker(id: UUID, name: String, color: String, emoji: String, schedule: ReccuringSchedule?, categoryTitle: String) -> Tracker {
+    func createTracker(
+        id: UUID,
+        name: String,
+        color: String,
+        emoji: String,
+        schedule: ReccuringSchedule?,
+        categoryTitle: String
+    ) -> Tracker {
         let newTrackerCoreData = TrackerCoreData(context: managedObjectContext)
         newTrackerCoreData.id = UUID()
         newTrackerCoreData.name = name
@@ -61,6 +68,36 @@ final class TrackerStore: NSObject {
         
         saveContext()
         return convertToTrackerModel(coreDataTracker: newTrackerCoreData)
+    }
+    
+    func updateTracker(
+        id: UUID,
+        name: String,
+        color: String,
+        emoji: String,
+        schedule: ReccuringSchedule?,
+        categoryTitle: String
+    ) -> Tracker? {
+        if let trackerCoreData = fetchTrackerCoreData(by: id) {
+            trackerCoreData.name = name
+            trackerCoreData.color = color
+            trackerCoreData.emoji = emoji
+            
+            if let schedule = schedule {
+                do {
+                    let scheduleData = try JSONEncoder().encode(schedule)
+                    trackerCoreData.schedule = scheduleData as NSObject
+                } catch {
+                    print("TrackerStore - Error encoding schedule: \(error)")
+                }
+            }
+            
+            categoryStore.linkTracker(trackerCoreData, toCategoryWithTitle: categoryTitle)
+            
+            saveContext()
+            return convertToTrackerModel(coreDataTracker: trackerCoreData)
+        }
+        return nil
     }
     
     func fetchTrackerCoreData(by id: UUID) -> TrackerCoreData? {

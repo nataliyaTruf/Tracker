@@ -10,7 +10,7 @@ import Combine
 
 final class CreateTrackerViewModel: ObservableObject {
     // MARK: - Published Properties
- 
+    
     @Published var trackerName: String = ""
     @Published var selectedEmojiIndex: Int?
     @Published var selectedColorIndex: Int?
@@ -30,9 +30,9 @@ final class CreateTrackerViewModel: ObservableObject {
         .colorSelection11, .colorSelection12, .colorSelection13, .colorSelection14, .colorSelection15,
         .colorSelection16, .colorSelection17, .colorSelection18
     ]
+    let trackerStore = CoreDataStack.shared.trackerStore
+    let trackerRecordStore = CoreDataStack.shared.trackerRecordStore
     private let trackerCategoryStore = CoreDataStack.shared.trackerCategoryStore
-    private let trackerStore = CoreDataStack.shared.trackerStore
-    private let trackerRecordStore = CoreDataStack.shared.trackerRecordStore
     
     // MARK: - Methods
     
@@ -51,25 +51,37 @@ final class CreateTrackerViewModel: ObservableObject {
     func selectCategory(name: String) {
         selectedCategoryName = name
     }
-    
-    func createTracker() -> Tracker? {
+
+    func createOrUpdateTracker(isEditingMode: Bool, existingTrackerId: UUID? = nil) -> Tracker? {
         let selectedEmoji = selectedEmojiIndex != nil ? emojis[selectedEmojiIndex!] : L10n.defaultEmoji
         let selectedColor = selectedColorIndex != nil ? colors[selectedColorIndex!] : .colorSelection6
         let selectedColorString = UIColor.string(from: selectedColor) ?? L10n.defaultColor
-        
-        let newTracker = trackerStore.createTracker(
-            id: UUID(),
-            name: trackerName.isEmpty ? L10n.defaultGoodThing : trackerName,
-            color: selectedColorString,
-            emoji: selectedEmoji,
-            schedule: selectedSchedule,
-            categoryTitle: selectedCategoryName ?? L10n.defaultCategory
-        )
-  
-        if let newTrackerCoreData = trackerStore.fetchTrackerCoreData(by: newTracker.id) {
-            trackerCategoryStore.linkTracker(newTrackerCoreData, toCategoryWithTitle: selectedCategoryName ?? L10n.defaultCategory)
+
+        if isEditingMode, let existingTrackerId = existingTrackerId {
+            return trackerStore.updateTracker(
+                id: existingTrackerId,
+                name: trackerName.isEmpty ? L10n.defaultGoodThing : trackerName,
+                color: selectedColorString,
+                emoji: selectedEmoji,
+                schedule: selectedSchedule,
+                categoryTitle: selectedCategoryName ?? L10n.defaultCategory
+            )
+        } else {
+            let newTracker = trackerStore.createTracker(
+                id: UUID(),
+                name: trackerName.isEmpty ? L10n.defaultGoodThing : trackerName,
+                color: selectedColorString,
+                emoji: selectedEmoji,
+                schedule: selectedSchedule,
+                categoryTitle: selectedCategoryName ?? L10n.defaultCategory
+            )
+
+            if let newTrackerCoreData = trackerStore.fetchTrackerCoreData(by: newTracker.id) {
+                trackerCategoryStore.linkTracker(newTrackerCoreData, toCategoryWithTitle: selectedCategoryName ?? L10n.defaultCategory)
+            }
+
+            return newTracker
         }
-        
-        return newTracker
     }
+
 }

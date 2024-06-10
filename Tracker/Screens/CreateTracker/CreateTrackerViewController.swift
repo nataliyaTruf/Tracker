@@ -18,7 +18,7 @@ import Combine
 
 // MARK: - Main Class
 
-final class CreateTrackerViewController: UIViewController {    
+final class CreateTrackerViewController: UIViewController {
     // MARK: - Properties
     
     var onCompletion: (() -> Void)?
@@ -27,6 +27,8 @@ final class CreateTrackerViewController: UIViewController {
     private var viewModel = CreateTrackerViewModel()
     private var cancellables: Set<AnyCancellable> = []
     private var isHabitTracker: Bool
+    private var isEditingMode: Bool
+    private var existingTrackerId: UUID?
     
     // MARK: - UI Components
     
@@ -44,7 +46,7 @@ final class CreateTrackerViewController: UIViewController {
         return stackView
     }()
     
-    private lazy var titleLabel = CustomTitleLabel(text: isHabitTracker ? L10n.newHabit : L10n.newEvent)
+    private lazy var titleLabel = CustomTitleLabel(text: isEditingMode ? "Редактирование привычки" : (isHabitTracker ? L10n.newHabit : L10n.newEvent))
     
     private lazy var nameTextField: CustomTextField = {
         let textField = CustomTextField(placeholder: L10n.enterTrackerName)
@@ -82,7 +84,7 @@ final class CreateTrackerViewController: UIViewController {
     
     private lazy var createButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle(L10n.create, for: .normal)
+        button.setTitle(isEditingMode ? "Сохранить" : L10n.create, for: .normal)
         button.setTitleColor(.ypWhiteDay, for: .normal)
         button.setTitleColor(.ypWhiteDay, for: .disabled)
         button.titleLabel?.font = Fonts.medium(size: 16)
@@ -144,11 +146,23 @@ final class CreateTrackerViewController: UIViewController {
         return label
     }()
     
+    private lazy var completedDaysLabel: UILabel = {
+        let label = UILabel()
+        label.text = ""
+        label.font = Fonts.bold(size: 32)
+        label.textAlignment = .center
+        label.textColor = .ypBlackDay
+        label.isHidden = !isEditingMode
+        return label
+    }()
+    
     // MARK: - Initialization
     
-    init(isHabit: Bool) {
+    init(isHabit: Bool, isEditing: Bool = false, existingTrackerId: UUID? = nil) {
         self.params = GeometricParams(cellCount: 6, leftInsets: 2, rightInsets: 2, cellSpacing: 5)
         self.isHabitTracker = isHabit
+        self.isEditingMode = isEditing
+        self.existingTrackerId = existingTrackerId
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -165,8 +179,35 @@ final class CreateTrackerViewController: UIViewController {
         setupKeyboardDismiss()
         nameTextField.delegate = self
         bindViewModel()
-        updateSpacing(isVisible: false)
-    }    
+        
+        if isEditingMode, let existingTrackerId = existingTrackerId {
+            loadExistingTrackerData(existingTrackerId)
+        }
+    }
+    
+    
+    // MARK: - Configuration
+    
+    func loadExistingTrackerData(_ trackerId: UUID) {
+        guard let tracker = viewModel.trackerStore.fetchTrackerCoreData(by: trackerId) else { return }
+        
+        viewModel.trackerName = tracker.name ?? L10n.defaultGoodThing
+        viewModel.selectedEmojiIndex = viewModel.emojis.firstIndex(of: tracker.emoji ?? L10n.defaultEmoji)
+        viewModel.selectedColorIndex = viewModel.colors.firstIndex(of: UIColor.color(from: tracker.color ?? L10n.defaultColor) ?? .colorSelection6)
+        viewModel.selectedCategoryName = tracker.category?.title ?? tracker.originalCategory
+        viewModel.selectedSchedule = {
+            if let scheduleData = tracker.schedule as? Data {
+                return try? JSONDecoder().decode(ReccuringSchedule.self, from: scheduleData)
+            }
+            return nil
+        }()
+        
+        let daysCount = viewModel.trackerRecordStore.getAllRecords().filter { $0.id == trackerId }.count
+        completedDaysLabel.text = String.localizedStringWithFormat(
+            NSLocalizedString("daysCounter", comment: "Number of days"),
+            daysCount
+        )
+    }
     
     // MARK: - Binding ViewModel
     
@@ -214,6 +255,7 @@ final class CreateTrackerViewController: UIViewController {
         scrollView.addSubview(stackView)
         
         stackView.addArrangedSubview(titleLabel)
+        stackView.addArrangedSubview(completedDaysLabel)
         stackView.addArrangedSubview(nameTextField)
         stackView.addArrangedSubview(characterLimitLabel)
         stackView.addArrangedSubview(optionsTableView)
@@ -225,15 +267,15 @@ final class CreateTrackerViewController: UIViewController {
     }
     
     private func setupSpacing() {
-        stackView.setCustomSpacing(38, after: titleLabel)
-        stackView.setCustomSpacing(24, after: nameTextField)
         stackView.setCustomSpacing(50, after: optionsTableView)
-        
         stackView.setCustomSpacing(34, after: emojiCollectionView)
         stackView.setCustomSpacing(16, after: colorCollectionView)
         
         stackView.isLayoutMarginsRelativeArrangement = true
         stackView.layoutMargins = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+        
+        updateSpacing(isEditingMode)
+        updateSpacing(isVisible: false)
     }
     
     private func updateSpacing(isVisible: Bool) {
@@ -242,6 +284,14 @@ final class CreateTrackerViewController: UIViewController {
         
         stackView.setCustomSpacing(spacingAfterTextField, after: nameTextField)
         stackView.setCustomSpacing(spacingAfterCharacterLimitLabel, after: characterLimitLabel)
+    }
+    
+    private func updateSpacing(_ isEditing: Bool) {
+        let spacingAfterTitleLabel: CGFloat = isEditing ? 24 : 38
+        let spacingAfterCompletedDaysLabel: CGFloat = isEditing ? 40 : 24
+        
+        stackView.setCustomSpacing(spacingAfterTitleLabel, after: titleLabel)
+        stackView.setCustomSpacing(spacingAfterCompletedDaysLabel, after: completedDaysLabel)
     }
     
     private func setupConstraints() {
@@ -262,7 +312,8 @@ final class CreateTrackerViewController: UIViewController {
             nameTextField.heightAnchor.constraint(equalToConstant: 75),
             characterLimitLabel.heightAnchor.constraint(equalToConstant: 22),
             emojiCollectionView.heightAnchor.constraint(equalToConstant: 222),
-            colorCollectionView.heightAnchor.constraint(equalToConstant: 222)
+            colorCollectionView.heightAnchor.constraint(equalToConstant: 222),
+            completedDaysLabel.heightAnchor.constraint(equalToConstant: 38)
         ])
     }
     
@@ -312,7 +363,7 @@ final class CreateTrackerViewController: UIViewController {
     }
     
     @objc private func createButtonTapped() {
-        guard viewModel.createTracker() != nil else { return }
+        guard viewModel.createOrUpdateTracker(isEditingMode: isEditingMode, existingTrackerId: existingTrackerId) != nil else { return }
         onCompletion?()
         dismiss(animated: false, completion: nil)
     }
