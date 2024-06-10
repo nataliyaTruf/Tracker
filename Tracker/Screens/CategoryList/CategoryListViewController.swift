@@ -98,17 +98,17 @@ final class CategoryListViewController: UIViewController {
         view.addSubview(emptyStateView)
         
         NSLayoutConstraint.activate([
-                emptyStateView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-                emptyStateView.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor, constant: 20),
-                emptyStateView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-                emptyStateView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
-            ])
+            emptyStateView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            emptyStateView.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor, constant: 20),
+            emptyStateView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            emptyStateView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
+        ])
         
         emptyStateView.configure(with: .noCategories, labelHeight: 36)
     }
     
     // MARK: - UI Updates
-       
+    
     private func handleViewState(_ state: ViewState) {
         switch state {
         case .empty:
@@ -151,6 +151,12 @@ extension CategoryListViewController: UITableViewDelegate, UITableViewDataSource
         cell.configure(with: category.title, accessoryType: .none)
         cell.accessoryType = (indexPath == viewModel.selectedIndex) ? .checkmark : .none
         
+        if category.title.lowercased() == "закрепленные".lowercased() {
+                   cell.setTitleTextColor(.gray)
+               } else {
+                   cell.setTitleTextColor(.black)
+               }
+        
         let isLastCell = indexPath.row == tableView.numberOfRows(inSection: indexPath.section) - 1
         if isLastCell {
             cell.hideSeparator()
@@ -165,6 +171,10 @@ extension CategoryListViewController: UITableViewDelegate, UITableViewDataSource
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let category = viewModel.categories[indexPath.row]
+        if category.title.lowercased() == "закрепленные".lowercased() {
+            return
+        }
         viewModel.selectCategory(at: indexPath.row)
         tableView.reloadData()
     }

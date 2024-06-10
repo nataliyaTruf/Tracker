@@ -29,6 +29,7 @@ final class CreateTrackerViewController: UIViewController {
     private var isHabitTracker: Bool
     private var isEditingMode: Bool
     private var existingTrackerId: UUID?
+    private var isPinned: Bool
     
     // MARK: - UI Components
     
@@ -158,11 +159,12 @@ final class CreateTrackerViewController: UIViewController {
     
     // MARK: - Initialization
     
-    init(isHabit: Bool, isEditing: Bool = false, existingTrackerId: UUID? = nil) {
+    init(isHabit: Bool, isEditing: Bool = false, existingTrackerId: UUID? = nil, isPinned: Bool = false) {
         self.params = GeometricParams(cellCount: 6, leftInsets: 2, rightInsets: 2, cellSpacing: 5)
         self.isHabitTracker = isHabit
         self.isEditingMode = isEditing
         self.existingTrackerId = existingTrackerId
+        self.isPinned = isPinned
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -571,6 +573,11 @@ extension CreateTrackerViewController: UITableViewDelegate, UITableViewDataSourc
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if isPinned && indexPath.section == 0 && indexPath.row == 0 {
+            print("Category selection is blocked for pinned tracker")
+            return
+        }
+        
         switch indexPath.row {
         case 0:
             showCategoryListViewController()

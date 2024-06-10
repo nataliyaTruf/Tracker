@@ -190,7 +190,9 @@ final class TrackersViewController: UIViewController {
     
     private func presentEditTrackerViewController(tracker: Tracker) {
         let isHabit = tracker.schedule != nil
-        let editTrackerVC = CreateTrackerViewController(isHabit: isHabit, isEditing: true, existingTrackerId: tracker.id)
+        let isPinned = viewModel.isTrackerPinned(tracker)
+        let editTrackerVC = CreateTrackerViewController(isHabit: isHabit, isEditing: true, existingTrackerId: tracker.id, isPinned: isPinned)
+        
         
         editTrackerVC.loadExistingTrackerData(tracker.id)
         editTrackerVC.onCompletion = { [weak self] in

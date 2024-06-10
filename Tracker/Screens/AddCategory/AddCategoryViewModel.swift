@@ -13,6 +13,7 @@ final class AddCategoryViewModel {
     
     var onCategoryAdded: ((String) -> Void)?
     var onDoneButtonStateUpdated: ((Bool) -> Void)?
+    var onInvalidCategoryName: ((Bool) -> Void)?
     
     // MARK: - Properties
     
@@ -27,6 +28,8 @@ final class AddCategoryViewModel {
     
     func validateCategoryName(_ name: String?) {
         let isNameEntered = !(name?.isEmpty ?? true)
-        onDoneButtonStateUpdated?(isNameEntered)
+        let isNameInvalid = name?.trimmingCharacters(in: .whitespaces).lowercased() == "закрепленные".lowercased()
+        onDoneButtonStateUpdated?(isNameEntered && !isNameInvalid)
+        onInvalidCategoryName?(isNameInvalid)
     }
 }

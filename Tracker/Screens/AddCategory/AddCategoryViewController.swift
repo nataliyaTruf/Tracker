@@ -53,6 +53,16 @@ final class AddCategoryViewController: UIViewController {
             self?.doneButton.isEnabled = isEnabled
             self?.doneButton.backgroundColor = isEnabled ? .ypBlackDay : .ypGray
         }
+        
+        viewModel.onInvalidCategoryName = { [weak self] isInvalid in
+                    self?.nameTextField.textColor = isInvalid ? .red : .black
+                    if isInvalid {
+                        self?.nameTextField.text = ""
+                        self?.nameTextField.placeholder = "Название недопустимо"
+                    } else {
+                        self?.nameTextField.placeholder = L10n.enterCategoryName
+                    }
+                }
     }
     
     // MARK: - Setup Methods
