@@ -28,6 +28,13 @@ final class TrackersViewModel {
         }
     }
     @Published var viewState: ViewState = .empty
+    @Published var selectedFilter: TrackerFilter = .all {
+        didSet {
+            saveSelectedFilter()
+            filterTrackersForSelectedDate()
+            updateViewState()
+        }
+    }
     
     // MARK: - Properties
     
@@ -41,6 +48,7 @@ final class TrackersViewModel {
     // MARK: - Initialization
     
     init() {
+        loadSelectedFilter()
         loadCategories()
         loadCompletedTrackers()
     }
@@ -97,14 +105,45 @@ final class TrackersViewModel {
         let dayOfWeek = currentDate.toWeekday()
         
         filteredCategories = categories.map { category in
-            let filteredTrackers = category.trackers.filter { tracker in
-                if let schedule = tracker.schedule {
-                    return schedule.isReccuringOn(dayOfWeek)
-                } else {
-                    if let creationDate = trackerCreationDates[tracker.id] {
-                        return !completedTrackerIds.contains(tracker.id) && Calendar.current.isDate(currentDate, inSameDayAs: creationDate)
+            let filteredTrackers: [Tracker]
+            
+            switch selectedFilter {
+                
+            case .all:
+                filteredTrackers = category.trackers.filter { tracker in
+                    if let schedule = tracker.schedule {
+                        return schedule.isReccuringOn(dayOfWeek)
+                    } else {
+                        if let creationDate = trackerCreationDates[tracker.id] {
+                            return Calendar.current.isDate(currentDate, inSameDayAs: creationDate)
+                        }
+                        return false
                     }
-                    return false
+                }
+                
+            case .today:
+                filteredTrackers = category.trackers.filter { tracker in
+                    if Calendar.current.isDate(currentDate, inSameDayAs: Date()) {
+                        if let schedule = tracker.schedule {
+                            return schedule.isReccuringOn(dayOfWeek)
+                        } else {
+                            if let creationDate = trackerCreationDates[tracker.id] {
+                                return Calendar.current.isDate(currentDate, inSameDayAs: creationDate)
+                            }
+                            return false
+                        }
+                    } else {
+                        return false
+                    }
+                }
+                
+            case .completed:
+                filteredTrackers = category.trackers.filter { tracker in
+                    isTrackerCompletedOnCurrentDate(trackerId: tracker.id) && isTrackerScheduledForCurrentDate(tracker: tracker)
+                }
+            case .uncompleted:
+                filteredTrackers = category.trackers.filter { tracker in
+                    !isTrackerCompletedOnCurrentDate(trackerId: tracker.id) && isTrackerScheduledForCurrentDate(tracker: tracker)
                 }
             }
             return TrackerCategory(title: category.title, trackers: filteredTrackers)
@@ -143,6 +182,30 @@ final class TrackersViewModel {
         trackerCategoryStore.unpinTracker(tracker.id)
         loadCategories()
         filterTrackersForSelectedDate()
+    }
+    
+    // MARK: - Private methods
+    
+    private func loadSelectedFilter() {
+        if let savedFilter = UserDefaults.standard.string(forKey: "selectedFilter") {
+            selectedFilter = TrackerFilter(rawValue: savedFilter) ?? .all
+        }
+    }
+    
+    private func saveSelectedFilter() {
+        UserDefaults.standard.set(selectedFilter.rawValue, forKey: "selectedFilter")
+    }
+    
+    private func isTrackerScheduledForCurrentDate(tracker: Tracker) -> Bool {
+        let dayOfWeek = currentDate.toWeekday()
+        if let schedule = tracker.schedule {
+            return schedule.isReccuringOn(dayOfWeek)
+        } else {
+            if let creationDate = trackerCreationDates[tracker.id] {
+                return Calendar.current.isDate(currentDate, inSameDayAs: creationDate)
+            }
+            return false
+        }
     }
 }
 

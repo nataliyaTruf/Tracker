@@ -84,7 +84,14 @@ final class TrackersViewController: UIViewController {
         viewModel.$currentDate
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
-                self?.trackersCollectionView.reloadData()
+                self?.viewModel.filterTrackersForSelectedDate()
+            }
+            .store(in: &cancelables)
+        
+        viewModel.$selectedFilter
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] filter in
+                self?.applyFilter(filter)
             }
             .store(in: &cancelables)
     }
@@ -209,6 +216,25 @@ final class TrackersViewController: UIViewController {
         trackersCollectionView.reloadData()
     }
     
+    // MARK: - Helper Methods
+    
+    private func applyFilter(_ filter: TrackerFilter) {
+        if filter == .today {
+            viewModel.currentDate = Date()
+        }
+        viewModel.filterTrackersForSelectedDate()
+        trackersCollectionView.reloadData()
+        updateDatePickerIfNeeded(for: filter)
+    }
+    
+    private func updateDatePickerIfNeeded(for filter: TrackerFilter) {
+        if filter == .today {
+            if let datePickerItem = navigationItem.rightBarButtonItem?.customView as? UIDatePicker {
+                datePickerItem.date = Date()
+            }
+        }
+    }
+    
     // MARK: - Navigation
     
     private func presentEditTrackerViewController(tracker: Tracker) {
@@ -226,12 +252,6 @@ final class TrackersViewController: UIViewController {
         present(editTrackerVC, animated: true, completion: nil)
     }
     
-    private func applyFilter(_ filter: TrackerFilter) {
-        // TODO: Logic
-        trackersCollectionView.reloadData()
-    }
-    
-    
     @objc private func addTrackerButtonTapped() {
         let selectTrackerVC = SelectTrackerViewController()
         selectTrackerVC.modalPresentationStyle = .pageSheet
@@ -243,10 +263,10 @@ final class TrackersViewController: UIViewController {
     
     @objc private func filterButtonTapped() {
         let filtersVC = FiltersViewController()
-        filtersVC.selectedFilter = selectedFilter
+        filtersVC.selectedFilter = viewModel.selectedFilter
         filtersVC.modalPresentationStyle = .pageSheet
         filtersVC.onSelectFilter = { [weak self] filter in
-            self?.selectedFilter = filter
+            self?.viewModel.selectedFilter = filter
             self?.applyFilter(filter)
             self?.dismiss(animated: false, completion: nil)
         }
