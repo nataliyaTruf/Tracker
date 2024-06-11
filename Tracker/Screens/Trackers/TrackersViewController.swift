@@ -64,6 +64,17 @@ final class TrackersViewController: UIViewController {
         bindViewModel()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        AnalyticsService.logEvent(event: "open", screen: "Main")
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        AnalyticsService.logEvent(event: "close", screen: "Main")
+    }
+
+    
     // MARK: - Binding ViewModel
     
     private func bindViewModel() {
@@ -202,8 +213,9 @@ final class TrackersViewController: UIViewController {
             emptyStateView.isHidden = true
         }
     }
-    
+
     private func toggleTrackerCompleted(trackerId: UUID, at indexPath: IndexPath) {
+        AnalyticsService.logEvent(event: "click", screen: "Main", item: "track")
         viewModel.toggleTrackerCompleted(trackerId: trackerId)
         UIView.performWithoutAnimation { [weak self] in
             self?.trackersCollectionView.reloadItems(at: [indexPath])
@@ -268,8 +280,9 @@ final class TrackersViewController: UIViewController {
         editTrackerVC.modalPresentationStyle = .pageSheet
         present(editTrackerVC, animated: true, completion: nil)
     }
-    
+
     @objc private func addTrackerButtonTapped() {
+        AnalyticsService.logEvent(event: "click", screen: "Main", item: "add_track")
         let selectTrackerVC = SelectTrackerViewController()
         selectTrackerVC.modalPresentationStyle = .pageSheet
         selectTrackerVC.onTrackerCreated = { [weak self] in
@@ -277,8 +290,9 @@ final class TrackersViewController: UIViewController {
         }
         present(selectTrackerVC, animated: true, completion: nil)
     }
-    
+
     @objc private func filterButtonTapped() {
+        AnalyticsService.logEvent(event: "click", screen: "Main", item: "filter")
         let filtersVC = FiltersViewController()
         filtersVC.selectedFilter = viewModel.selectedFilter
         filtersVC.modalPresentationStyle = .pageSheet

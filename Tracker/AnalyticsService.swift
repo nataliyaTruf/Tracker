@@ -10,10 +10,24 @@ import YandexMobileMetrica
 
 struct AnalyticsService {
     static func activate() {
-        guard let configuration = YMMYandexMetricaConfiguration(apiKey: "ae22eab9-2e67-46f1-ae91-f96361cc68cf") else {
+        guard let configuration = YMMYandexMetricaConfiguration(apiKey: "API_KEY") else {
             return
         }
         
         YMMYandexMetrica.activate(with: configuration)
+    }
+    
+    static func logEvent(event: String, screen: String, item: String? = nil) {
+        var eventParameters: [String: Any] = [
+            "event": event,
+            "screen": screen
+        ]
+        if let item = item {
+            eventParameters["item"] = item
+        }
+        print("Logging event: \(eventParameters)")
+        YMMYandexMetrica.reportEvent("ui_event", parameters: eventParameters, onFailure: { error in
+            print("Error: \(error.localizedDescription)")
+        })
     }
 }
