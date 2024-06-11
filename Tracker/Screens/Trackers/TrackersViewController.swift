@@ -71,6 +71,7 @@ final class TrackersViewController: UIViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.trackersCollectionView.reloadData()
+                self?.updateFilterButtonVisibility()
             }
             .store(in: &cancelables)
         
@@ -184,6 +185,8 @@ final class TrackersViewController: UIViewController {
             filterButton.widthAnchor.constraint(equalToConstant: 114),
             filterButton.heightAnchor.constraint(equalToConstant: 50)
         ])
+        
+        updateFilterButtonVisibility()
     }
     
     // MARK: - UI Updates
@@ -216,6 +219,18 @@ final class TrackersViewController: UIViewController {
         trackersCollectionView.reloadData()
     }
     
+    private func updateFilterButtonVisibility() {
+        filterButton.isHidden = viewModel.filteredCategories.isEmpty
+    }
+    
+    private func updateFilterButtonAppearance() {
+        if viewModel.selectedFilter == .all {
+            filterButton.setTitleColor(.ypWhiteDay, for: .normal)
+        } else {
+            filterButton.setTitleColor(.ypRed, for: .normal)
+        }
+    }
+    
     // MARK: - Helper Methods
     
     private func applyFilter(_ filter: TrackerFilter) {
@@ -225,12 +240,14 @@ final class TrackersViewController: UIViewController {
         viewModel.filterTrackersForSelectedDate()
         trackersCollectionView.reloadData()
         updateDatePickerIfNeeded(for: filter)
+        updateFilterButtonAppearance()
     }
     
     private func updateDatePickerIfNeeded(for filter: TrackerFilter) {
         if filter == .today {
             if let datePickerItem = navigationItem.rightBarButtonItem?.customView as? UIDatePicker {
                 datePickerItem.date = Date()
+                updateFilterButtonAppearance()
             }
         }
     }
