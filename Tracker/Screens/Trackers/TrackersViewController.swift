@@ -24,6 +24,7 @@ final class TrackersViewController: UIViewController {
     private var filterButton: UIButton!
     private var params: GeometricParams
     private var trackerCreationDates: [UUID : Date] = [:]
+    private var selectedFilter: TrackerFilter = .all
     
     private var viewModel = TrackersViewModel()
     private var cancelables = Set<AnyCancellable>()
@@ -149,8 +150,8 @@ final class TrackersViewController: UIViewController {
         
         trackersCollectionView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(trackersCollectionView)
-            trackersCollectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 60, right: 0)
-            trackersCollectionView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 60, right: 0)
+        trackersCollectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 60, right: 0)
+        trackersCollectionView.scrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 60, right: 0)
         
         NSLayoutConstraint.activate([
             trackersCollectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
@@ -225,6 +226,12 @@ final class TrackersViewController: UIViewController {
         present(editTrackerVC, animated: true, completion: nil)
     }
     
+    private func applyFilter(_ filter: TrackerFilter) {
+        // TODO: Logic
+        trackersCollectionView.reloadData()
+    }
+    
+    
     @objc private func addTrackerButtonTapped() {
         let selectTrackerVC = SelectTrackerViewController()
         selectTrackerVC.modalPresentationStyle = .pageSheet
@@ -234,16 +241,24 @@ final class TrackersViewController: UIViewController {
         present(selectTrackerVC, animated: true, completion: nil)
     }
     
+    @objc private func filterButtonTapped() {
+        let filtersVC = FiltersViewController()
+        filtersVC.selectedFilter = selectedFilter
+        filtersVC.modalPresentationStyle = .pageSheet
+        filtersVC.onSelectFilter = { [weak self] filter in
+            self?.selectedFilter = filter
+            self?.applyFilter(filter)
+            self?.dismiss(animated: false, completion: nil)
+        }
+        present(filtersVC, animated: true)
+    }
+    
     // MARK: - Actions
     
     @objc private func dateChanged(_ datePicker: UIDatePicker) {
         viewModel.currentDate = datePicker.date
         viewModel.loadCompletedTrackers()
         viewModel.filterTrackersForSelectedDate()
-    }
-    
-    @objc private func filterButtonTapped() {
-        //TODO: action
     }
 }
 
