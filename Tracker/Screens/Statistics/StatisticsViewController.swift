@@ -33,6 +33,14 @@ final class StatisticsViewController: UIViewController {
         return view
     }()
     
+    // MARK: - Properties
+    
+    private var completedTrackersCount: Int = 0 {
+        didSet {
+            statisticItemView.configure(value: completedTrackersCount, description: "Трекеров завершено")
+            updateView()
+        }
+    }
     
     // MARK: - Initialization
     
@@ -50,8 +58,9 @@ final class StatisticsViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .ypWhiteDay
         setupTitleLabel()
-        //        setupEmptyStateStats()
+        setupEmptyStateStats()
         setupPopulatedState()
+        loadStatistics()
     }
     
     // MARK: - Setup Methods
@@ -86,6 +95,18 @@ final class StatisticsViewController: UIViewController {
             statisticItemView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             statisticItemView.heightAnchor.constraint(equalToConstant: 90)
         ])
+    }
+    
+    private func loadStatistics() {
+        completedTrackersCount = UserDefaults.standard.integer(forKey: "completedTrackersCount")
+    }
+    
+    private func updateView() {
+        if completedTrackersCount == 0 {
+            updateViewState(.empty)
+        } else {
+            updateViewState(.populated)
+        }
     }
     
     private func updateViewState(_ state: ViewState) {

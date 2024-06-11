@@ -42,6 +42,7 @@ final class TrackersViewModel {
     private let trackerStore = CoreDataStack.shared.trackerStore
     private let trackerRecordStore = CoreDataStack.shared.trackerRecordStore
     private var trackerCreationDates: [UUID : Date] = [:]
+    private let completedTrackersKey = "completedTrackersCount"
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -51,6 +52,7 @@ final class TrackersViewModel {
         loadSelectedFilter()
         loadCategories()
         loadCompletedTrackers()
+        updateCompletedTrackersCount()
     }
     
     // MARK: - Data Loading
@@ -81,11 +83,13 @@ final class TrackersViewModel {
             CoreDataStack.shared.trackerRecordStore.deleteRecord(trackerId: trackerId, date: currentDate)
             completedTrackerIds.remove(trackerId)
             completedTrackers.removeAll {$0.id == trackerId && Calendar.current.isDate($0.date, inSameDayAs: currentDate)}
+            updateCompletedTrackersCount(decrement: true)
         } else {
             CoreDataStack.shared.trackerRecordStore.createRecord(trackerId: trackerId, date: currentDate)
             completedTrackerIds.insert(trackerId)
             let newRecord = TrackerRecord(id: trackerId, date: currentDate)
             completedTrackers.append(newRecord)
+            updateCompletedTrackersCount(increment: true)
         }
     }
     
@@ -206,6 +210,16 @@ final class TrackersViewModel {
             }
             return false
         }
+    }
+    
+    private func updateCompletedTrackersCount(increment: Bool = false, decrement: Bool = false) {
+        var count = UserDefaults.standard.integer(forKey: completedTrackersKey)
+        if increment {
+            count += 1
+        } else if decrement {
+            count -= 1
+        }
+        UserDefaults.standard.set(count, forKey: completedTrackersKey)
     }
 }
 

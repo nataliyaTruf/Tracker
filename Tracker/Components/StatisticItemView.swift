@@ -100,21 +100,3 @@ final class StatisticItemView: UIView {
         descriptionLabel.text = description
     }
 }
-
-extension UIColor {
-    convenience init(hex: String) {
-        var hexSanitized = hex.trimmingCharacters(in: .whitespacesAndNewlines)
-        hexSanitized = hexSanitized.replacingOccurrences(of: "#", with: "")
-        
-        var rgb: UInt64 = 0
-        
-        Scanner(string: hexSanitized).scanHexInt64(&rgb)
-        
-        let mask: UInt64 = 0x000000FF
-        let r = CGFloat((rgb >> 16) & mask) / 255.0
-        let g = CGFloat((rgb >> 8) & mask) / 255.0
-        let b = CGFloat(rgb & mask) / 255.0
-        
-        self.init(red: r, green: g, blue: b, alpha: 1.0)
-    }
-}
