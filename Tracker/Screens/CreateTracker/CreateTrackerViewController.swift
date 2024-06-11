@@ -176,6 +176,8 @@ final class CreateTrackerViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .ypWhiteDay
+        
         setupViews()
         setupConstraints()
         setupKeyboardDismiss()
@@ -221,20 +223,6 @@ final class CreateTrackerViewController: UIViewController {
             }
             .store(in: &cancellables)
         
-        viewModel.$selectedEmojiIndex
-            .sink { [weak self] _ in
-                self?.emojiCollectionView.reloadData()
-                self?.updateCreateButtonState()
-            }
-            .store(in: &cancellables)
-        
-        viewModel.$selectedColorIndex
-            .sink { [weak self] _ in
-                self?.colorCollectionView.reloadData()
-                self?.updateCreateButtonState()
-            }
-            .store(in: &cancellables)
-        
         viewModel.$selectedCategoryName
             .sink { [weak self] category in
                 self?.updateCategoryName(category ?? L10n.defaultCategory)
@@ -254,6 +242,7 @@ final class CreateTrackerViewController: UIViewController {
     
     private func setupViews() {
         view.addSubview(scrollView)
+        view.addSubview(buttonsView)
         scrollView.addSubview(stackView)
         
         stackView.addArrangedSubview(titleLabel)
@@ -263,7 +252,6 @@ final class CreateTrackerViewController: UIViewController {
         stackView.addArrangedSubview(optionsTableView)
         stackView.addArrangedSubview(emojiCollectionView)
         stackView.addArrangedSubview(colorCollectionView)
-        stackView.addArrangedSubview(buttonsView)
         setupButtonsView()
         setupSpacing()
     }
@@ -301,7 +289,7 @@ final class CreateTrackerViewController: UIViewController {
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: buttonsView.topAnchor),
             
             stackView.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: 27),
             stackView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
@@ -310,6 +298,10 @@ final class CreateTrackerViewController: UIViewController {
             stackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             
             buttonsView.heightAnchor.constraint(equalToConstant: 60),
+            buttonsView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            buttonsView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            buttonsView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            
             optionsTableView.heightAnchor.constraint(equalToConstant: isHabitTracker ? 150 : 75),
             nameTextField.heightAnchor.constraint(equalToConstant: 75),
             characterLimitLabel.heightAnchor.constraint(equalToConstant: 22),
@@ -408,13 +400,13 @@ extension CreateTrackerViewController {
         buttonsView.addSubview(createButton)
         
         NSLayoutConstraint.activate([
-            cancelButton.leadingAnchor.constraint(equalTo: buttonsView.leadingAnchor, constant: 4),
+            cancelButton.leadingAnchor.constraint(equalTo: buttonsView.leadingAnchor),
             cancelButton.topAnchor.constraint(equalTo: buttonsView.topAnchor),
             cancelButton.bottomAnchor.constraint(equalTo: buttonsView.bottomAnchor),
             cancelButton.heightAnchor.constraint(equalToConstant: 60),
             
             createButton.leadingAnchor.constraint(equalTo: cancelButton.trailingAnchor, constant: 8),
-            createButton.trailingAnchor.constraint(equalTo: buttonsView.trailingAnchor, constant: -4),
+            createButton.trailingAnchor.constraint(equalTo: buttonsView.trailingAnchor),
             createButton.topAnchor.constraint(equalTo: buttonsView.topAnchor),
             createButton.bottomAnchor.constraint(equalTo: buttonsView.bottomAnchor),
             createButton.heightAnchor.constraint(equalToConstant: 60),
@@ -428,11 +420,9 @@ extension CreateTrackerViewController {
     
     private func updateCreateButtonState() {
         let isNameEntered = !viewModel.trackerName.isEmpty
-        let isEmojiSelected = viewModel.selectedEmojiIndex != nil
-        let isColorSelected = viewModel.selectedColorIndex != nil
         let isScheduleSet = viewModel.selectedSchedule != nil || !isHabitTracker
         
-        let isFormComplete = isNameEntered && isEmojiSelected && isColorSelected && isScheduleSet
+        let isFormComplete = isNameEntered && isScheduleSet
         
         createButton.isEnabled = isFormComplete
         createButton.backgroundColor = isFormComplete ? .ypBlackDay : .ypGray

@@ -51,12 +51,12 @@ final class CreateTrackerViewModel: ObservableObject {
     func selectCategory(name: String) {
         selectedCategoryName = name
     }
-
+    
     func createOrUpdateTracker(isEditingMode: Bool, existingTrackerId: UUID? = nil) -> Tracker? {
-        let selectedEmoji = selectedEmojiIndex != nil ? emojis[selectedEmojiIndex!] : L10n.defaultEmoji
-        let selectedColor = selectedColorIndex != nil ? colors[selectedColorIndex!] : .colorSelection6
+        let selectedEmoji = selectedEmojiIndex != nil ? emojis[selectedEmojiIndex!] : (emojis.randomElement() ?? L10n.defaultEmoji)
+        let selectedColor = selectedColorIndex != nil ? colors[selectedColorIndex!] : (colors.randomElement() ?? .colorSelection6)
         let selectedColorString = UIColor.string(from: selectedColor) ?? L10n.defaultColor
-
+        
         if isEditingMode, let existingTrackerId = existingTrackerId {
             return trackerStore.updateTracker(
                 id: existingTrackerId,
@@ -75,13 +75,12 @@ final class CreateTrackerViewModel: ObservableObject {
                 schedule: selectedSchedule,
                 categoryTitle: selectedCategoryName ?? L10n.defaultCategory
             )
-
+            
             if let newTrackerCoreData = trackerStore.fetchTrackerCoreData(by: newTracker.id) {
                 trackerCategoryStore.linkTracker(newTrackerCoreData, toCategoryWithTitle: selectedCategoryName ?? L10n.defaultCategory)
             }
-
+            
             return newTracker
         }
     }
-
 }
