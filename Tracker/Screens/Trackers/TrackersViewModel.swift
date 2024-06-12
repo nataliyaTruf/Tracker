@@ -163,6 +163,7 @@ final class TrackersViewModel {
     
     func deleteTracker(trackerId: UUID) {
         trackerStore.deleteTracker(trackerId: trackerId)
+        resetTrackerStatistics(trackerId: trackerId)
         loadCategories()
         loadCompletedTrackers()
     }
@@ -218,8 +219,16 @@ final class TrackersViewModel {
             count += 1
         } else if decrement {
             count -= 1
+        } else {
+            count = completedTrackers.count
         }
         UserDefaults.standard.set(count, forKey: completedTrackersKey)
+    }
+    
+    private func resetTrackerStatistics(trackerId: UUID) {
+        completedTrackers.removeAll { $0.id == trackerId }
+        completedTrackerIds.remove(trackerId)
+        updateCompletedTrackersCount()
     }
 }
 

@@ -65,6 +65,22 @@ final class TrackerRecordStore: NSObject {
         }
     }
     
+    func deleteAllRecords(for trackerId: UUID) {
+        let fetchRequest: NSFetchRequest<TrackerRecordCoreData> = TrackerRecordCoreData.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %@", trackerId as CVarArg)
+        
+        do {
+            let results = try managedObjectContext.fetch(fetchRequest)
+            for record in results {
+                managedObjectContext.delete(record)
+            }
+            saveContext()
+        } catch let error as NSError {
+            print("Failed to delete all records for tracker \(trackerId): \(error), \(error.userInfo)")
+        }
+    }
+    
+    
     func getAllRecords() -> [TrackerRecord] {
         return (fetchedResultController.fetchedObjects ?? []).map(convertToTrackerRecordModel)
     }
