@@ -68,12 +68,24 @@ final class TrackersViewController: UIViewController {
         super.viewDidAppear(animated)
         AnalyticsService.logEvent(event: "open", screen: "Main")
     }
-
+    
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         AnalyticsService.logEvent(event: "close", screen: "Main")
     }
-
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            trackersCollectionView.backgroundColor = .ypWhiteDay
+            setupDatePickerItem()
+            setupNavigationBar()
+            if let searchTextField = searchController.searchBar.value(forKey: "searchField") as? UITextField {
+                updateSearchTextFieldAppearance(searchTextField)
+            }
+        }
+    }
     
     // MARK: - Binding ViewModel
     
@@ -123,13 +135,20 @@ final class TrackersViewController: UIViewController {
     private func setupNavigationBar() {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
-        
         title = L10n.trackers
-        
         let addButton = UIButton(type: .custom)
-        if let iconImage = UIImage(named: "add_tracker")?.withRenderingMode(.alwaysOriginal) {
+        var iconImage: UIImage?
+        
+        if traitCollection.userInterfaceStyle == .dark {
+            iconImage = UIImage(named: "add_tracker_dark")?.withRenderingMode(.alwaysOriginal)
+        } else {
+            iconImage = UIImage(named: "add_tracker")?.withRenderingMode(.alwaysOriginal)
+        }
+        
+        if let iconImage = iconImage {
             addButton.setImage(iconImage, for: .normal)
         }
+        
         addButton.addTarget(
             self,
             action: #selector(addTrackerButtonTapped),
@@ -148,6 +167,21 @@ final class TrackersViewController: UIViewController {
         datePicker.widthAnchor.constraint(equalToConstant: 110).isActive = true
         datePicker.datePickerMode = .date
         datePicker.preferredDatePickerStyle = .compact
+        
+        if traitCollection.userInterfaceStyle == .dark {
+            datePicker.overrideUserInterfaceStyle = .light
+            datePicker.backgroundColor = UIColor.ypLightGray
+            datePicker.layer.cornerRadius = 8
+            datePicker.layer.masksToBounds = true
+            
+            let textFieldInsideDatePicker = (datePicker.subviews[0].subviews[0].subviews[0] as? UITextField)
+            textFieldInsideDatePicker?.textColor = UIColor.black
+        } else {
+            datePicker.overrideUserInterfaceStyle = .unspecified
+            datePicker.backgroundColor = nil
+            datePicker.layer.cornerRadius = 0
+        }
+        
         datePicker.addTarget(
             self,
             action: #selector(dateChanged(_ :)),
@@ -178,6 +212,8 @@ final class TrackersViewController: UIViewController {
             trackersCollectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             trackersCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
         ])
+        
+        trackersCollectionView.backgroundColor = .ypWhiteDay
     }
     
     private func setupFilterButton() {
@@ -213,7 +249,7 @@ final class TrackersViewController: UIViewController {
             emptyStateView.isHidden = true
         }
     }
-
+    
     private func toggleTrackerCompleted(trackerId: UUID, at indexPath: IndexPath) {
         AnalyticsService.logEvent(event: "click", screen: "Main", item: "track")
         viewModel.toggleTrackerCompleted(trackerId: trackerId)
@@ -280,7 +316,7 @@ final class TrackersViewController: UIViewController {
         editTrackerVC.modalPresentationStyle = .pageSheet
         present(editTrackerVC, animated: true, completion: nil)
     }
-
+    
     @objc private func addTrackerButtonTapped() {
         AnalyticsService.logEvent(event: "click", screen: "Main", item: "add_track")
         let selectTrackerVC = SelectTrackerViewController()
@@ -290,7 +326,7 @@ final class TrackersViewController: UIViewController {
         }
         present(selectTrackerVC, animated: true, completion: nil)
     }
-
+    
     @objc private func filterButtonTapped() {
         AnalyticsService.logEvent(event: "click", screen: "Main", item: "filter")
         let filtersVC = FiltersViewController()
@@ -315,13 +351,18 @@ final class TrackersViewController: UIViewController {
 
 // MARK: - UISearchControllerDelegate, UISearchBarDelegate
 
-extension TrackersViewController: UISearchControllerDelegate, UISearchBarDelegate {
+extension TrackersViewController: UISearchControllerDelegate, UISearchBarDelegate, UITextFieldDelegate  {
     private func setupSearchController() {
         searchController.delegate = self
         searchController.searchBar.delegate = self
         searchController.searchBar.placeholder = L10n.search
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
+        
+        if let searchTextField = searchController.searchBar.value(forKey: "searchField") as? UITextField {
+            searchTextField.delegate = self
+            updateSearchTextFieldAppearance(searchTextField)
+        }
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String ) {
@@ -360,6 +401,26 @@ extension TrackersViewController: UISearchControllerDelegate, UISearchBarDelegat
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         searchBar.resignFirstResponder()
+    }
+    
+    private func updateSearchTextFieldAppearance(_ searchTextField: UITextField) {
+        if traitCollection.userInterfaceStyle == .dark {
+            searchTextField.textColor = UIColor.white
+            searchTextField.attributedPlaceholder = NSAttributedString(string: L10n.search, attributes: [NSAttributedString.Key.foregroundColor: UIColor.white])
+            
+            if let leftView = searchTextField.leftView as? UIImageView {
+                leftView.image = leftView.image?.withRenderingMode(.alwaysTemplate)
+                leftView.tintColor = UIColor.white
+            }
+        } else {
+            searchTextField.textColor = UIColor.black
+            searchTextField.attributedPlaceholder = NSAttributedString(string: L10n.search, attributes: [NSAttributedString.Key.foregroundColor: UIColor.darkGray])
+            
+            if let leftView = searchTextField.leftView as? UIImageView {
+                leftView.image = leftView.image?.withRenderingMode(.alwaysTemplate)
+                leftView.tintColor = UIColor.darkGray
+            }
+        }
     }
 }
 
