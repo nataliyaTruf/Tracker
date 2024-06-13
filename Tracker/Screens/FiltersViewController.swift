@@ -13,13 +13,13 @@ final class FiltersViewController: UIViewController {
     var onSelectFilter: ((TrackerFilter) -> Void)?
     var selectedFilter: TrackerFilter = .all
     private var previouslySelectedIndex: IndexPath?
-    private let filterOptions = ["Все трекеры", "Трекеры на сегодня", "Завершённые", "Незавершённые"]
+    private let filterOptions = [L10n.allTrackersTitle, L10n.trackersForTodayTitle, L10n.completedTrackersTitle, L10n.uncompletedTrackersTitle]
     private let filterTypes: [TrackerFilter] = [.all, .today, .completed, .uncompleted]
     
     // MARK: - UI Components
     
     private var tableView: UITableView!
-    private lazy var titleLabel = CustomTitleLabel(text: "Фильтры")
+    private lazy var titleLabel = CustomTitleLabel(text: L10n.filters)
     
     // MARK: - Lifecycle Methods
     
@@ -68,8 +68,6 @@ extension FiltersViewController: UITableViewDelegate, UITableViewDataSource {
             return UITableViewCell()
         }
         
-        let filterOptions = ["Все трекеры", "Трекеры на сегодня", "Завершённые", "Незавершённые"]
-        let filterTypes: [TrackerFilter] = [.all, .today, .completed, .uncompleted]
         let isSelected = selectedFilter == filterTypes[indexPath.row]
         
         cell.configure(with: filterOptions[indexPath.row], accessoryType: .none)

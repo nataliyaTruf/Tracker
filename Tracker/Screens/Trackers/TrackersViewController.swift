@@ -221,7 +221,7 @@ final class TrackersViewController: UIViewController {
     
     private func setupFilterButton() {
         filterButton = UIButton(type: .system)
-        filterButton.setTitle("Фильтры", for: .normal)
+        filterButton.setTitle(L10n.filters, for: .normal)
         filterButton.translatesAutoresizingMaskIntoConstraints = false
         filterButton.backgroundColor = .ypBlue
         filterButton.setTitleColor(.ypWhiteDay, for: .normal)
@@ -492,17 +492,17 @@ extension TrackersViewController: UICollectionViewDataSource {
         
         cell.onDelete = { [weak self] in
             let alert = UIAlertController(
-                title: "Уверены что хотите удалить трекер?",
+                title: L10n.deleteTrackerConfirmationTitle,
                 message: nil, preferredStyle: .actionSheet)
             let deleteAction = UIAlertAction(
-                title: "Удалить",
+                title: L10n.deleteActionTitle,
                 style: .destructive
             ) { [weak self] _ in
                 guard let self = self else { return }
                 let tracker = self.viewModel.filteredCategories[indexPath.section].trackers[indexPath.row]
                 self.viewModel.deleteTracker(trackerId: tracker.id)
             }
-            let cancelAction = UIAlertAction(title: "Отмена", style: .cancel)
+            let cancelAction = UIAlertAction(title: L10n.cancelActionTitle, style: .cancel)
             alert.addAction(deleteAction)
             alert.addAction(cancelAction)
             self?.present(alert, animated: true)

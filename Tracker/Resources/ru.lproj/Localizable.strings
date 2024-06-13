@@ -59,3 +59,19 @@
  "everyday" = "Каждый день";
  "weekdays" = "Будние дни";
  "weekend" = "Выходные дни";
+
+"deleteTrackerConfirmationTitle" = "Уверены что хотите удалить трекер?";
+"deleteActionTitle" = "Удалить";
+"cancelActionTitle" = "Отмена";
+"editActionTitle" = "Редактировать";
+"pin" = "Закрепить";
+"unpin" = "Открепить";
+"pinned" = "Закрепленные";
+"editingHabitTitle" = "Редактирование привычки";
+"save" = "Сохранить";
+"filters" = "Фильтры";
+"allTrackersTitle" = "Все трекеры";
+"trackersForTodayTitle" = "Трекеры на сегодня";
+"completedTrackersTitle" = "Завершённые";
+"uncompletedTrackersTitle" = "Незавершённые";
+"trackersCompletedTitle" = "Трекеров завершено";

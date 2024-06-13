@@ -47,7 +47,7 @@ final class CreateTrackerViewController: UIViewController {
         return stackView
     }()
     
-    private lazy var titleLabel = CustomTitleLabel(text: isEditingMode ? "Редактирование привычки" : (isHabitTracker ? L10n.newHabit : L10n.newEvent))
+    private lazy var titleLabel = CustomTitleLabel(text: isEditingMode ? L10n.editingHabitTitle : (isHabitTracker ? L10n.newHabit : L10n.newEvent))
     
     private lazy var nameTextField: CustomTextField = {
         let textField = CustomTextField(placeholder: L10n.enterTrackerName)
@@ -85,7 +85,7 @@ final class CreateTrackerViewController: UIViewController {
     
     private lazy var createButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle(isEditingMode ? "Сохранить" : L10n.create, for: .normal)
+        button.setTitle(isEditingMode ? L10n.save : L10n.create, for: .normal)
         button.setTitleColor(.ypWhiteDay, for: .normal)
         button.setTitleColor(.ypWhiteDay, for: .disabled)
         button.titleLabel?.font = Fonts.medium(size: 16)

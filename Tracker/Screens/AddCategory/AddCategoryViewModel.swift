@@ -28,7 +28,7 @@ final class AddCategoryViewModel {
     
     func validateCategoryName(_ name: String?) {
         let isNameEntered = !(name?.isEmpty ?? true)
-        let isNameInvalid = name?.trimmingCharacters(in: .whitespaces).lowercased() == "закрепленные".lowercased()
+        let isNameInvalid = name?.trimmingCharacters(in: .whitespaces).lowercased() == L10n.pinned.lowercased()
         onDoneButtonStateUpdated?(isNameEntered && !isNameInvalid)
         onInvalidCategoryName?(isNameInvalid)
     }

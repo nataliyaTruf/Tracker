@@ -151,7 +151,7 @@ extension CategoryListViewController: UITableViewDelegate, UITableViewDataSource
         cell.configure(with: category.title, accessoryType: .none)
         cell.accessoryType = (indexPath == viewModel.selectedIndex) ? .checkmark : .none
         
-        if category.title.lowercased() == "закрепленные".lowercased() {
+        if category.title.lowercased() == L10n.pinned.lowercased() {
                    cell.setTitleTextColor(.gray)
                } else {
                    cell.setTitleTextColor(.black)
@@ -172,7 +172,7 @@ extension CategoryListViewController: UITableViewDelegate, UITableViewDataSource
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let category = viewModel.categories[indexPath.row]
-        if category.title.lowercased() == "закрепленные".lowercased() {
+        if category.title.lowercased() == L10n.pinned.lowercased() {
             return
         }
         viewModel.selectCategory(at: indexPath.row)

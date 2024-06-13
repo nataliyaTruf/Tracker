@@ -78,7 +78,7 @@ final class TrackerCategoryStore: NSObject {
             let categoriesCoreData = try managedObjectContext.fetch(fetchRequest)
             
             var categories = categoriesCoreData.map { convertToTrackerCategoryModel(coreDataCategory: $0) }
-            if let pinnedIndex = categories.firstIndex(where: { $0.title == "Закрепленные" }) {
+            if let pinnedIndex = categories.firstIndex(where: { $0.title == L10n.pinned }) {
                 let pinnedCategory = categories.remove(at: pinnedIndex)
                 categories.insert(pinnedCategory, at: 0)
             }
@@ -126,7 +126,7 @@ final class TrackerCategoryStore: NSObject {
             trackerCoreData.originalCategory = currentCategory.title
         }
         
-        let pinnedCategory = createCategoryIfNotExists(with: "Закрепленные")
+        let pinnedCategory = createCategoryIfNotExists(with: L10n.pinned)
         //        trackerCoreData.originalCategory = trackerCoreData.category?.title
         trackerCoreData.category = pinnedCategory
         pinnedCategory.addToTrackers(trackerCoreData)
@@ -137,7 +137,7 @@ final class TrackerCategoryStore: NSObject {
     func unpinTracker(_ trackerId: UUID) {
         guard let trackerCoreData = CoreDataStack.shared.trackerStore.fetchTrackerCoreData(by: trackerId) else { return }
         
-        if let pinnedCategory = trackerCoreData.category, pinnedCategory.title == "Закрепленные" {
+        if let pinnedCategory = trackerCoreData.category, pinnedCategory.title == L10n.pinned {
             pinnedCategory.removeFromTrackers(trackerCoreData)
         }
         

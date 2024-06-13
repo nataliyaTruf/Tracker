@@ -59,3 +59,19 @@
  "everyday" = "Everyday";
  "weekdays" = "Weekdays";
  "weekend" = "Weekend";
+
+"deleteTrackerConfirmationTitle" = "Êtes-vous sûr de vouloir supprimer le traqueur ?";
+"deleteActionTitle" = "Supprimer";
+"cancelActionTitle" = "Annuler";
+"editActionTitle" = "Edit";
+"pin" = "Épingler";
+"unpin" = "Détacher";
+"pinned" = "Épinglés";
+"editingHabitTitle" = "Modifier l'habitude";
+"save" = "Enregistrer";
+"filters" = "Filtres";
+"allTrackersTitle" = "Tous les traqueurs";
+"trackersForTodayTitle" = "Traqueurs pour aujourd'hui";
+"completedTrackersTitle" = "Terminés";
+"uncompletedTrackersTitle" = "Non terminés";
+"trackersCompletedTitle" = "Traqueurs terminés";

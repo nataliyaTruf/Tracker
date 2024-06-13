@@ -27,12 +27,12 @@ final class TrackersCell: UICollectionViewCell {
     var isPinned: Bool = false {
         didSet {
             pinImageView.isHidden = !isPinned
-            pinActionTitle = isPinned ? "Открепить" : "Закрепить"
+            pinActionTitle = isPinned ? L10n.unpin : L10n.pin
             print("isPinned updated to: \(isPinned)")
         }
     }
     
-    private var pinActionTitle = "Закрепить"
+    private var pinActionTitle = L10n.pin
     
     // MARK: - UI Components
     
@@ -243,12 +243,12 @@ extension TrackersCell: UIContextMenuInteractionDelegate {
                 self?.onPin?()
             }
             
-            let editAction = UIAction(title: "Редактировать") { [weak self] action in
+            let editAction = UIAction(title: L10n.editActionTitle) { [weak self] action in
                 AnalyticsService.logEvent(event: "click", screen: "Main", item: "edit")
                 self?.onEdit?()
             }
             
-            let deleteAction = UIAction(title: "Удалить", attributes: .destructive) { [weak self] action in
+            let deleteAction = UIAction(title: L10n.deleteActionTitle, attributes: .destructive) { [weak self] action in
                 AnalyticsService.logEvent(event: "click", screen: "Main", item: "delete")
                 self?.onDelete?()
             }

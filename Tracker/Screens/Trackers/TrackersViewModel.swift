@@ -174,7 +174,7 @@ final class TrackersViewModel {
     
     func isTrackerPinned(_ tracker: Tracker) -> Bool {
         guard let trackerCoreData = trackerStore.fetchTrackerCoreData(by: tracker.id) else { return false }
-        return trackerCoreData.category?.title == "Закрепленные"
+        return trackerCoreData.category?.title == L10n.pinned
     }
     
     func pinTracker(_ tracker: Tracker) {
