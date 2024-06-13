@@ -19,14 +19,14 @@ import Combine
 final class TrackersViewController: UIViewController {
     // MARK: - Properties
     
+    var viewModel = TrackersViewModel()
+    
     private let searchController = UISearchController(searchResultsController: nil)
     private var trackersCollectionView: UICollectionView!
     private var filterButton: UIButton!
     private var params: GeometricParams
     private var trackerCreationDates: [UUID : Date] = [:]
     private var selectedFilter: TrackerFilter = .all
-    
-    private var viewModel = TrackersViewModel()
     private var cancelables = Set<AnyCancellable>()
     
     // MARK: - UI Components
