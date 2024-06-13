@@ -11,6 +11,7 @@
 		7F143CB72C1AD72300044BDB /* InlineSnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 7F143CB62C1AD72300044BDB /* InlineSnapshotTesting */; };
 		7F143CB92C1AD72300044BDB /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 7F143CB82C1AD72300044BDB /* SnapshotTesting */; };
 		7F143CBA2C1AD9CB00044BDB /* TrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F143CAB2C1ABF2400044BDB /* TrackerTests.swift */; };
+		7F143CBC2C1B1EA000044BDB /* StatisticsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F143CBB2C1B1EA000044BDB /* StatisticsViewModel.swift */; };
 		7F3ABE4A2C16E31C004BB55B /* Array+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F3ABE492C16E31C004BB55B /* Array+Extensions.swift */; };
 		7F3ABE4C2C1774CA004BB55B /* FiltersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F3ABE4B2C1774CA004BB55B /* FiltersViewController.swift */; };
 		7F3ABE4E2C177A28004BB55B /* TrackerFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F3ABE4D2C177A28004BB55B /* TrackerFilter.swift */; };
@@ -85,6 +86,7 @@
 		3700058326EFA61C7672153E /* Pods-Tracker.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tracker.release.xcconfig"; path = "Target Support Files/Pods-Tracker/Pods-Tracker.release.xcconfig"; sourceTree = "<group>"; };
 		7F143CA92C1ABF2400044BDB /* TrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		7F143CAB2C1ABF2400044BDB /* TrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerTests.swift; sourceTree = "<group>"; };
+		7F143CBB2C1B1EA000044BDB /* StatisticsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsViewModel.swift; sourceTree = "<group>"; };
 		7F3ABE492C16E31C004BB55B /* Array+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Extensions.swift"; sourceTree = "<group>"; };
 		7F3ABE4B2C1774CA004BB55B /* FiltersViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FiltersViewController.swift; sourceTree = "<group>"; };
 		7F3ABE4D2C177A28004BB55B /* TrackerFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerFilter.swift; sourceTree = "<group>"; };
@@ -380,6 +382,7 @@
 			isa = PBXGroup;
 			children = (
 				7F4968B72B556C9A006C27A0 /* StatisticsViewController.swift */,
+				7F143CBB2C1B1EA000044BDB /* StatisticsViewModel.swift */,
 			);
 			path = Statistics;
 			sourceTree = "<group>";
@@ -635,6 +638,7 @@
 				7F4969912B76307F006C27A0 /* CreateTrackerViewController.swift in Sources */,
 				7FFDB18A2BFCA300000BF785 /* TrackersViewModel.swift in Sources */,
 				7F3ABE4E2C177A28004BB55B /* TrackerFilter.swift in Sources */,
+				7F143CBC2C1B1EA000044BDB /* StatisticsViewModel.swift in Sources */,
 				7F4968B62B55578D006C27A0 /* TrackersViewController.swift in Sources */,
 				7F49689C2B554269006C27A0 /* AppDelegate.swift in Sources */,
 				7FFDB19A2BFE25F4000BF785 /* ScheduleViewModel.swift in Sources */,

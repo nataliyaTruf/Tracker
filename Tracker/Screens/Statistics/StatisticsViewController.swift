@@ -6,8 +6,13 @@
 //
 
 import UIKit
+import Combine
 
 final class StatisticsViewController: UIViewController {
+    // MARK: - Properties
+    private var viewModel: StatisticsViewModel = StatisticsViewModel()
+    private var cancellables = Set<AnyCancellable>()
+    
     // MARK: - UI Components
     
     private lazy var emptyStateView: EmptyStateView = {
@@ -33,15 +38,6 @@ final class StatisticsViewController: UIViewController {
         return view
     }()
     
-    // MARK: - Properties
-    
-    private var completedTrackersCount: Int = 0 {
-        didSet {
-            statisticItemView.configure(value: completedTrackersCount, description: "Трекеров завершено")
-            updateView()
-        }
-    }
-    
     // MARK: - Initialization
     
     init() {
@@ -60,7 +56,25 @@ final class StatisticsViewController: UIViewController {
         setupTitleLabel()
         setupEmptyStateStats()
         setupPopulatedState()
-        loadStatistics()
+        bindViewModel()
+    }
+    
+    // MARK: - Binding ViewModel
+    
+    private func bindViewModel() {
+        viewModel.$completedTrackersCount
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] count in
+                self?.statisticItemView.configure(value: count, description: "Трекеров завершено")
+            }
+            .store(in: &cancellables)
+        
+        viewModel.$viewState
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] state in
+                self?.updateViewState(state)
+            }
+            .store(in: &cancellables)
     }
     
     // MARK: - Setup Methods
@@ -95,18 +109,6 @@ final class StatisticsViewController: UIViewController {
             statisticItemView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             statisticItemView.heightAnchor.constraint(equalToConstant: 90)
         ])
-    }
-    
-    private func loadStatistics() {
-        completedTrackersCount = UserDefaults.standard.integer(forKey: "completedTrackersCount")
-    }
-    
-    private func updateView() {
-        if completedTrackersCount == 0 {
-            updateViewState(.empty)
-        } else {
-            updateViewState(.populated)
-        }
     }
     
     private func updateViewState(_ state: ViewState) {

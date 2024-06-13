@@ -7,6 +7,7 @@
 
 import Foundation
 import CoreData
+import Combine
 
 // MARK: - Protocols
 
@@ -23,8 +24,10 @@ final class TrackerRecordStore: NSObject {
     
     // MARK: - Properties
     
+    var completedTrackersCountSubject = PassthroughSubject<Int, Never>()
     private let managedObjectContext: NSManagedObjectContext
     private var fetchedResultController: NSFetchedResultsController<TrackerRecordCoreData>!
+    private let completedTrackersKey = "completedTrackersCount"
     
     // MARK: - Initialization
     
@@ -37,6 +40,7 @@ final class TrackerRecordStore: NSObject {
     // MARK: - Public Methods
     
     func createRecord(trackerId: UUID, date: Date) {
+        print("Creating record for tracker \(trackerId) on date \(date)")
         let record = TrackerRecordCoreData(context: managedObjectContext)
         record.id = trackerId
         record.date = date
@@ -45,10 +49,11 @@ final class TrackerRecordStore: NSObject {
         }
         
         saveContext()
-        
+        updateCompletedTrackersCount()
     }
     
     func deleteRecord(trackerId: UUID, date: Date) {
+        print("Deleting record for tracker \(trackerId) on date \(date)")
         let fetchRequest: NSFetchRequest<TrackerRecordCoreData> = TrackerRecordCoreData.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "id == %@ AND date == %@", trackerId as CVarArg, date as CVarArg)
         
@@ -59,6 +64,7 @@ final class TrackerRecordStore: NSObject {
             }
             
             saveContext()
+            updateCompletedTrackersCount()
             
         } catch let error as NSError {
             print("Failed delete Record \(error), \(error.userInfo)")
@@ -79,7 +85,6 @@ final class TrackerRecordStore: NSObject {
             print("Failed to delete all records for tracker \(trackerId): \(error), \(error.userInfo)")
         }
     }
-    
     
     func getAllRecords() -> [TrackerRecord] {
         return (fetchedResultController.fetchedObjects ?? []).map(convertToTrackerRecordModel)
@@ -106,7 +111,6 @@ final class TrackerRecordStore: NSObject {
         }
     }
     
-    
     // MARK: - Private Methods
     
     private func fetchTracker(by id: UUID) -> TrackerCoreData? {
@@ -122,7 +126,6 @@ final class TrackerRecordStore: NSObject {
         }
     }
     
-    
     private func convertToTrackerRecordModel(coreDataRecord: TrackerRecordCoreData) -> TrackerRecord {
         return TrackerRecord(id: coreDataRecord.id!, date: coreDataRecord.date!)
     }
@@ -137,6 +140,17 @@ final class TrackerRecordStore: NSObject {
             }
         }
     }
+    
+    private func updateCompletedTrackersCount() {
+        let count = getAllRecords().count
+        print("Updating completed trackers count: \(count)")
+        UserDefaults.standard.set(count, forKey: completedTrackersKey)
+        completedTrackersCountSubject.send(count)
+    }
+    
+    func loadCompletedTrackersCount() -> Int {
+            return UserDefaults.standard.integer(forKey: completedTrackersKey)
+        }
 }
 
 // MARK: - NSFetchedResultsControllerDelegate
