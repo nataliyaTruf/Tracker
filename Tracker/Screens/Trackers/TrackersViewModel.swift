@@ -37,11 +37,10 @@ final class TrackersViewModel {
     }
     
     // MARK: - Properties
-    
+    var trackerCreationDates: [UUID : Date] = [:]
     private let trackerCategoryStore = CoreDataStack.shared.trackerCategoryStore
     private let trackerStore = CoreDataStack.shared.trackerStore
     private let trackerRecordStore = CoreDataStack.shared.trackerRecordStore
-    private var trackerCreationDates: [UUID : Date] = [:]
     private let completedTrackersKey = "completedTrackersCount"
     
     private var cancellables = Set<AnyCancellable>()

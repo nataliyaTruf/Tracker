@@ -102,6 +102,7 @@ final class TrackersViewController: UIViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] state in
                 self?.handleViewState(state)
+                self?.updateFilterButtonVisibility()
             }
             .store(in: &cancelables)
         
@@ -109,6 +110,7 @@ final class TrackersViewController: UIViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.viewModel.filterTrackersForSelectedDate()
+                self?.updateFilterButtonVisibility()
             }
             .store(in: &cancelables)
         
@@ -116,6 +118,7 @@ final class TrackersViewController: UIViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] filter in
                 self?.applyFilter(filter)
+                self?.updateFilterButtonVisibility()
             }
             .store(in: &cancelables)
     }
@@ -266,11 +269,36 @@ final class TrackersViewController: UIViewController {
         }
         trackersCollectionView.reloadData()
     }
-    
+
     private func updateFilterButtonVisibility() {
-        filterButton.isHidden = viewModel.filteredCategories.isEmpty
+        let hasTrackersForSelectedDate = viewModel.categories.flatMap { $0.trackers }.contains { tracker in
+            let dayOfWeek = viewModel.currentDate.toWeekday()
+            if let schedule = tracker.schedule {
+                return schedule.isReccuringOn(dayOfWeek)
+            } else {
+                if let creationDate = viewModel.trackerCreationDates[tracker.id] {
+                    return Calendar.current.isDate(viewModel.currentDate, inSameDayAs: creationDate)
+                }
+                return false
+            }
+        }
+
+        let noResults = viewModel.filteredCategories.isEmpty && viewModel.isSearching
+
+        if noResults && hasTrackersForSelectedDate {
+            emptyStateView.isHidden = false
+            emptyStateView.configure(with: .noResults, labelHeight: 18)
+            filterButton.isHidden = false
+        } else if !hasTrackersForSelectedDate {
+            emptyStateView.isHidden = false
+            emptyStateView.configure(with: .noTrackers, labelHeight: 18)
+            filterButton.isHidden = true
+        } else {
+            emptyStateView.configure(with: .noResults, labelHeight: 18)
+            filterButton.isHidden = false
+        }
     }
-    
+
     private func updateFilterButtonAppearance() {
         if viewModel.selectedFilter == .all {
             filterButton.setTitleColor(.ypWhiteDay, for: .normal)
