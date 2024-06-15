@@ -142,7 +142,6 @@ final class TrackerStore: NSObject {
     func deleteTracker(trackerId: UUID) {
         if let trackerCoreData = fetchTrackerCoreData(by: trackerId) {
             managedObjectContext.delete(trackerCoreData)
-            CoreDataStack.shared.trackerRecordStore.deleteAllRecords(for: trackerId)
             saveContext()
         }
     }

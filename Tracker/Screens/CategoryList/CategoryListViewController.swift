@@ -151,12 +151,6 @@ extension CategoryListViewController: UITableViewDelegate, UITableViewDataSource
         cell.configure(with: category.title, accessoryType: .none)
         cell.accessoryType = (indexPath == viewModel.selectedIndex) ? .checkmark : .none
         
-        if category.title.lowercased() == L10n.pinned.lowercased() {
-                   cell.setTitleTextColor(.gray)
-               } else {
-                   cell.setTitleTextColor(.black)
-               }
-        
         let isLastCell = indexPath.row == tableView.numberOfRows(inSection: indexPath.section) - 1
         if isLastCell {
             cell.hideSeparator()
@@ -171,10 +165,7 @@ extension CategoryListViewController: UITableViewDelegate, UITableViewDataSource
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let category = viewModel.categories[indexPath.row]
-        if category.title.lowercased() == L10n.pinned.lowercased() {
-            return
-        }
+        _ = viewModel.categories[indexPath.row]
         viewModel.selectCategory(at: indexPath.row)
         tableView.reloadData()
     }

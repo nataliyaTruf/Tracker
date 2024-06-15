@@ -80,7 +80,10 @@ final class TrackerRecordStore: NSObject {
             for record in results {
                 managedObjectContext.delete(record)
             }
+            
             saveContext()
+            updateCompletedTrackersCount()
+            
         } catch let error as NSError {
             print("Failed to delete all records for tracker \(trackerId): \(error), \(error.userInfo)")
         }
@@ -88,6 +91,28 @@ final class TrackerRecordStore: NSObject {
     
     func getAllRecords() -> [TrackerRecord] {
         return (fetchedResultController.fetchedObjects ?? []).map(convertToTrackerRecordModel)
+    }
+    
+    func updateCompletedTrackersCount() {
+        let count = countCompletedTrackers()
+        print("Updating completed trackers count: \(count)")
+        UserDefaults.standard.set(count, forKey: completedTrackersKey)
+        completedTrackersCountSubject.send(count)
+    }
+    
+    func countCompletedTrackers() -> Int {
+        let fetchRequest: NSFetchRequest<TrackerRecordCoreData> = TrackerRecordCoreData.fetchRequest()
+        do {
+            let results = try managedObjectContext.fetch(fetchRequest)
+            return results.count
+        } catch {
+            print("Failed to fetch completed trackers count: \(error)")
+            return 0
+        }
+    }
+    
+    func loadCompletedTrackersCount() -> Int {
+        return UserDefaults.standard.integer(forKey: completedTrackersKey)
     }
     
     // MARK: - Setup Methods
@@ -102,6 +127,7 @@ final class TrackerRecordStore: NSObject {
             sectionNameKeyPath: nil,
             cacheName: "TrackerRecordsCache"
         )
+        
         fetchedResultController.delegate = self
         
         do {
@@ -140,17 +166,6 @@ final class TrackerRecordStore: NSObject {
             }
         }
     }
-    
-    private func updateCompletedTrackersCount() {
-        let count = getAllRecords().count
-        print("Updating completed trackers count: \(count)")
-        UserDefaults.standard.set(count, forKey: completedTrackersKey)
-        completedTrackersCountSubject.send(count)
-    }
-    
-    func loadCompletedTrackersCount() -> Int {
-            return UserDefaults.standard.integer(forKey: completedTrackersKey)
-        }
 }
 
 // MARK: - NSFetchedResultsControllerDelegate

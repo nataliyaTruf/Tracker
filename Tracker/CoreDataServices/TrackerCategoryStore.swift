@@ -77,12 +77,7 @@ final class TrackerCategoryStore: NSObject {
         do {
             let categoriesCoreData = try managedObjectContext.fetch(fetchRequest)
             
-            var categories = categoriesCoreData.map { convertToTrackerCategoryModel(coreDataCategory: $0) }
-            if let pinnedIndex = categories.firstIndex(where: { $0.title == L10n.pinned }) {
-                let pinnedCategory = categories.remove(at: pinnedIndex)
-                categories.insert(pinnedCategory, at: 0)
-            }
-            
+            let categories = categoriesCoreData.map { convertToTrackerCategoryModel(coreDataCategory: $0) }
             return categories
         } catch {
             print("Failed to fetch categories with trackers: \(error)")

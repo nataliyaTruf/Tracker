@@ -30,4 +30,32 @@ struct AnalyticsService {
             print("Error: \(error.localizedDescription)")
         })
     }
+    static func didOpenMain() {
+        logEvent(event: "open", screen: "Main")
+    }
+    
+    static func didCloseMain() {
+        logEvent(event: "close", screen: "Main")
+    }
+    
+    static func didClickAddTrack() {
+        logEvent(event: "click", screen: "Main", item: "add_track")
+    }
+    
+    static func didClickFilter() {
+        logEvent(event: "click", screen: "Main", item: "filter")
+    }
+    
+    static func didClickTrack() {
+        logEvent(event: "click", screen: "Main", item: "track")
+    }
+    
+    static func didClickEdit() {
+        logEvent(event: "click", screen: "Main", item: "edit")
+    }
+    
+    static func didClickDelete() {
+        logEvent(event: "click", screen: "Main", item: "delete")
+    }
 }
+

@@ -244,12 +244,12 @@ extension TrackersCell: UIContextMenuInteractionDelegate {
             }
             
             let editAction = UIAction(title: L10n.editActionTitle) { [weak self] action in
-                AnalyticsService.logEvent(event: "click", screen: "Main", item: "edit")
+                AnalyticsService.didClickEdit()
                 self?.onEdit?()
             }
             
             let deleteAction = UIAction(title: L10n.deleteActionTitle, attributes: .destructive) { [weak self] action in
-                AnalyticsService.logEvent(event: "click", screen: "Main", item: "delete")
+                AnalyticsService.didClickDelete()
                 self?.onDelete?()
             }
             return UIMenu(title: "", children: [pinAction, editAction, deleteAction])

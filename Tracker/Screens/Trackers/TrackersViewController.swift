@@ -66,12 +66,12 @@ final class TrackersViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        AnalyticsService.logEvent(event: "open", screen: "Main")
+        AnalyticsService.didOpenMain()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        AnalyticsService.logEvent(event: "close", screen: "Main")
+        AnalyticsService.didCloseMain()
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -254,7 +254,7 @@ final class TrackersViewController: UIViewController {
     }
     
     private func toggleTrackerCompleted(trackerId: UUID, at indexPath: IndexPath) {
-        AnalyticsService.logEvent(event: "click", screen: "Main", item: "track")
+        AnalyticsService.didClickTrack()
         viewModel.toggleTrackerCompleted(trackerId: trackerId)
         UIView.performWithoutAnimation { [weak self] in
             self?.trackersCollectionView.reloadItems(at: [indexPath])
@@ -269,7 +269,7 @@ final class TrackersViewController: UIViewController {
         }
         trackersCollectionView.reloadData()
     }
-
+    
     private func updateFilterButtonVisibility() {
         let hasTrackersForSelectedDate = viewModel.categories.flatMap { $0.trackers }.contains { tracker in
             let dayOfWeek = viewModel.currentDate.toWeekday()
@@ -282,9 +282,9 @@ final class TrackersViewController: UIViewController {
                 return false
             }
         }
-
+        
         let noResults = viewModel.filteredCategories.isEmpty && viewModel.isSearching
-
+        
         if noResults && hasTrackersForSelectedDate {
             emptyStateView.isHidden = false
             emptyStateView.configure(with: .noResults, labelHeight: 18)
@@ -298,7 +298,7 @@ final class TrackersViewController: UIViewController {
             filterButton.isHidden = false
         }
     }
-
+    
     private func updateFilterButtonAppearance() {
         if viewModel.selectedFilter == .all {
             filterButton.setTitleColor(.ypWhiteDay, for: .normal)
@@ -346,7 +346,7 @@ final class TrackersViewController: UIViewController {
     }
     
     @objc private func addTrackerButtonTapped() {
-        AnalyticsService.logEvent(event: "click", screen: "Main", item: "add_track")
+        AnalyticsService.didClickAddTrack()
         let selectTrackerVC = SelectTrackerViewController()
         selectTrackerVC.modalPresentationStyle = .pageSheet
         selectTrackerVC.onTrackerCreated = { [weak self] in
@@ -356,7 +356,7 @@ final class TrackersViewController: UIViewController {
     }
     
     @objc private func filterButtonTapped() {
-        AnalyticsService.logEvent(event: "click", screen: "Main", item: "filter")
+        AnalyticsService.didClickFilter()
         let filtersVC = FiltersViewController()
         filtersVC.selectedFilter = viewModel.selectedFilter
         filtersVC.modalPresentationStyle = .pageSheet
@@ -432,22 +432,18 @@ extension TrackersViewController: UISearchControllerDelegate, UISearchBarDelegat
     }
     
     private func updateSearchTextFieldAppearance(_ searchTextField: UITextField) {
-        if traitCollection.userInterfaceStyle == .dark {
-            searchTextField.textColor = UIColor.white
-            searchTextField.attributedPlaceholder = NSAttributedString(string: L10n.search, attributes: [NSAttributedString.Key.foregroundColor: UIColor.white])
-            
-            if let leftView = searchTextField.leftView as? UIImageView {
-                leftView.image = leftView.image?.withRenderingMode(.alwaysTemplate)
-                leftView.tintColor = UIColor.white
-            }
-        } else {
-            searchTextField.textColor = UIColor.black
-            searchTextField.attributedPlaceholder = NSAttributedString(string: L10n.search, attributes: [NSAttributedString.Key.foregroundColor: UIColor.darkGray])
-            
-            if let leftView = searchTextField.leftView as? UIImageView {
-                leftView.image = leftView.image?.withRenderingMode(.alwaysTemplate)
-                leftView.tintColor = UIColor.darkGray
-            }
+        let isDarkMode = traitCollection.userInterfaceStyle == .dark
+        
+        let searchTextFieldColor = isDarkMode ? UIColor.white : UIColor.black
+        let searchTextFieldForegroundColor = isDarkMode ? UIColor.white : UIColor.darkGray
+        let leftViewColor = isDarkMode ? UIColor.white : UIColor.darkGray
+        
+        searchTextField.textColor = searchTextFieldColor
+        searchTextField.attributedPlaceholder = NSAttributedString(string: L10n.search, attributes: [NSAttributedString.Key.foregroundColor: searchTextFieldForegroundColor])
+        
+        if let leftView = searchTextField.leftView as? UIImageView {
+            leftView.image = leftView.image?.withRenderingMode(.alwaysTemplate)
+            leftView.tintColor = leftViewColor
         }
     }
 }
@@ -500,7 +496,7 @@ extension TrackersViewController: UICollectionViewDataSource {
             ) { [weak self] _ in
                 guard let self = self else { return }
                 let tracker = self.viewModel.filteredCategories[indexPath.section].trackers[indexPath.row]
-                self.viewModel.deleteTracker(trackerId: tracker.id)
+                self.viewModel.deleteTrackerAndRecords(trackerId: tracker.id)
             }
             let cancelAction = UIAlertAction(title: L10n.cancelActionTitle, style: .cancel)
             alert.addAction(deleteAction)

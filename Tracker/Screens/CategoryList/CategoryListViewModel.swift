@@ -41,7 +41,7 @@ final class CategoryListViewModel {
     // MARK: - Methods
     
     func loadCategories() {
-        categories = categoryStore.getAllCategoriesWithTrackers()
+        categories = categoryStore.getAllCategoriesWithTrackers().filter { $0.title != L10n.pinned }
         updateViewState()
     }
     
