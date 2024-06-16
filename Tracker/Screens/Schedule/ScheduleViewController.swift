@@ -26,10 +26,10 @@ final class ScheduleViewController: UIViewController {
     
     private var tableView: UITableView!
     
-    private lazy var titleLabel = CustomTitleLabel(text: "Расписание")
+    private lazy var titleLabel = CustomTitleLabel(text: L10n.scheduleTitle)
     
     private lazy var doneButton: CustomButton = {
-        let button = CustomButton(title: "Готово")
+        let button = CustomButton(title: L10n.done)
         button.addTarget(self, action: #selector(doneButtonTapped), for: .touchUpInside)
         return button
     }()
@@ -111,7 +111,7 @@ extension ScheduleViewController: UITableViewDelegate, UITableViewDataSource {
         let day = viewModel.days[indexPath.row]
         let isOn = viewModel.selectedDays.contains(day)
         
-        cell.configure(with: day.localizedStringShort, additionalText: nil, accessoryType: .switchControl(isOn: isOn))
+        cell.configure(with: day.localizedString, additionalText: nil, accessoryType: .switchControl(isOn: isOn))
         
         cell.onSwitchValueChanged = { [weak self] isOn in
             self?.updateSchedule(forDay: indexPath.row, isOn: isOn)

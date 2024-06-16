@@ -12,6 +12,9 @@ final class TrackersCell: UICollectionViewCell {
     
     static let cellIdetnifier = "TrackersCell"
     var onToggleCompleted: (() -> Void)?
+    var onPin: (() -> Void)?
+    var onEdit: (() -> Void)?
+    var onDelete: (() -> Void)?
     
     var isCompleted: Bool = false {
         didSet {
@@ -20,6 +23,16 @@ final class TrackersCell: UICollectionViewCell {
             markAsCompleteButton.alpha = isCompleted ? 0.3 : 1
         }
     }
+    
+    var isPinned: Bool = false {
+        didSet {
+            pinImageView.isHidden = !isPinned
+            pinActionTitle = isPinned ? L10n.unpin : L10n.pin
+            print("isPinned updated to: \(isPinned)")
+        }
+    }
+    
+    private var pinActionTitle = L10n.pin
     
     // MARK: - UI Components
     
@@ -34,7 +47,7 @@ final class TrackersCell: UICollectionViewCell {
         let label = UILabel()
         label.textAlignment = .center
         label.font = UIFont.systemFont(ofSize: 16)
-        label.text = "😪"
+        label.text = L10n.defaultEmoji
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -51,9 +64,9 @@ final class TrackersCell: UICollectionViewCell {
         label.textAlignment = .left
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
-        label.textColor = .ypWhiteDay
+        label.textColor = .white
         label.font = Fonts.medium(size: 12)
-        label.text = "Поливать растения"
+        label.text = L10n.defaultGoodThing
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -69,7 +82,11 @@ final class TrackersCell: UICollectionViewCell {
         let label = UILabel()
         label.textAlignment = .left
         label.font = Fonts.medium(size: 12)
-        label.text = "0 дней"
+        let initialCount = 0
+        label.text = String.localizedStringWithFormat(
+            NSLocalizedString("daysCounter", comment: "Number of days"),
+            initialCount
+        )
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -88,6 +105,13 @@ final class TrackersCell: UICollectionViewCell {
         return button
     }()
     
+    private lazy var pinImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "pinned")
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
+    }()
+    
     // MARK: - Initialization
     
     override init(frame: CGRect) {
@@ -99,6 +123,7 @@ final class TrackersCell: UICollectionViewCell {
             action: #selector(markAsCompleteButtonTapped),
             for: .touchUpInside
         )
+        setupContextMenu()
     }
     
     required init?(coder: NSCoder) {
@@ -122,12 +147,14 @@ final class TrackersCell: UICollectionViewCell {
     
     // MARK: - Configuration
     
-    func configure(with tracker: Tracker, completedDays: Int) {
+    func configure(with tracker: Tracker, completedDays: Int, isPinned: Bool) {
         emojiLabel.text = tracker.emodji
         nameLabel.text = tracker.name
         topBackgroundView.backgroundColor =  UIColor.color(from: tracker.color) ?? .blue
         markAsCompleteButton.backgroundColor = topBackgroundView.backgroundColor
-        daysCounterLabel.text = "\(completedDays)" + " " + getDayWordForCount(completedDays)
+        daysCounterLabel.text = getDayWordForCount(completedDays)
+        self.isPinned = isPinned
+        print("Configure called with isPinned: \(isPinned)")
     }
     
     // MARK: - Setup Methods
@@ -135,12 +162,12 @@ final class TrackersCell: UICollectionViewCell {
     private func setupViews() {
         contentView.addSubview(topBackgroundView)
         contentView.addSubview(bottomBackgroundView)
-        contentView.addSubview(emojiBackgroundView)
-        contentView.addSubview(emojiLabel)
-        contentView.addSubview(nameLabel)
+        topBackgroundView.addSubview(emojiBackgroundView)
+        topBackgroundView.addSubview(emojiLabel)
+        topBackgroundView.addSubview(nameLabel)
         contentView.addSubview(daysCounterLabel)
         contentView.addSubview(markAsCompleteButton)
-        
+        topBackgroundView.addSubview(pinImageView)
         setupLayout()
     }
     
@@ -176,25 +203,25 @@ final class TrackersCell: UICollectionViewCell {
             
             daysCounterLabel.centerYAnchor.constraint(equalTo: markAsCompleteButton.centerYAnchor),
             daysCounterLabel.leadingAnchor.constraint(equalTo: bottomBackgroundView.leadingAnchor, constant: 12),
+            pinImageView.topAnchor.constraint(equalTo: topBackgroundView.topAnchor, constant: 12),
+            pinImageView.trailingAnchor.constraint(equalTo: topBackgroundView.trailingAnchor, constant: -4),
+            pinImageView.widthAnchor.constraint(equalToConstant: 24),
+            pinImageView.heightAnchor.constraint(equalToConstant: 24)
         ])
     }
     
+    // MARK: - Private Methods
+    
+    private func setupContextMenu() {
+        let interaction = UIContextMenuInteraction(delegate: self)
+        topBackgroundView.addInteraction(interaction)
+    }
+    
     private func getDayWordForCount(_ count: Int) -> String {
-        let countLastDigit = count % 10
-        let countLastTwoDigits = count % 100
-        
-        if (countLastTwoDigits >= 11 && countLastTwoDigits <= 19) {
-            return "дней"
-        } else {
-            switch countLastDigit {
-            case 1:
-                return "день"
-            case 2...4:
-                return "дня"
-            default:
-                return "дней"
-            }
-        }
+        return String.localizedStringWithFormat(
+            NSLocalizedString("daysCounter", comment: "Number of days"),
+            count
+        )
     }
     
     // MARK: - Actions
@@ -202,5 +229,30 @@ final class TrackersCell: UICollectionViewCell {
     @objc private func markAsCompleteButtonTapped() {
         onToggleCompleted?()
     }
-    
+}
+
+// MARK: UIContextMenuInteractionDelegate
+
+extension TrackersCell: UIContextMenuInteractionDelegate {
+    func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
+        print("contextMenuInteraction called")
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] suggestedActions in
+            guard let self = self else { return nil }
+            
+            let pinAction = UIAction(title: self.pinActionTitle) { [weak self] action in
+                self?.onPin?()
+            }
+            
+            let editAction = UIAction(title: L10n.editActionTitle) { [weak self] action in
+                AnalyticsService.didClickEdit()
+                self?.onEdit?()
+            }
+            
+            let deleteAction = UIAction(title: L10n.deleteActionTitle, attributes: .destructive) { [weak self] action in
+                AnalyticsService.didClickDelete()
+                self?.onDelete?()
+            }
+            return UIMenu(title: "", children: [pinAction, editAction, deleteAction])
+        }
+    }
 }

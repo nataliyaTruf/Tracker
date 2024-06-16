@@ -38,12 +38,21 @@ final class TrackerStore: NSObject {
     
     // MARK: - Public Methods
     
-    func createTracker(id: UUID, name: String, color: String, emoji: String, schedule: ReccuringSchedule?, categoryTitle: String) -> Tracker {
+    func createTracker(
+        id: UUID,
+        name: String,
+        color: String,
+        emoji: String,
+        schedule: ReccuringSchedule?,
+        categoryTitle: String
+    ) -> Tracker {
         let newTrackerCoreData = TrackerCoreData(context: managedObjectContext)
         newTrackerCoreData.id = UUID()
         newTrackerCoreData.name = name
         newTrackerCoreData.color = color
         newTrackerCoreData.emoji = emoji
+        
+        newTrackerCoreData.creationDate = Date()
         
         if let schedule = schedule {
             do {
@@ -59,6 +68,36 @@ final class TrackerStore: NSObject {
         
         saveContext()
         return convertToTrackerModel(coreDataTracker: newTrackerCoreData)
+    }
+    
+    func updateTracker(
+        id: UUID,
+        name: String,
+        color: String,
+        emoji: String,
+        schedule: ReccuringSchedule?,
+        categoryTitle: String
+    ) -> Tracker? {
+        if let trackerCoreData = fetchTrackerCoreData(by: id) {
+            trackerCoreData.name = name
+            trackerCoreData.color = color
+            trackerCoreData.emoji = emoji
+            
+            if let schedule = schedule {
+                do {
+                    let scheduleData = try JSONEncoder().encode(schedule)
+                    trackerCoreData.schedule = scheduleData as NSObject
+                } catch {
+                    print("TrackerStore - Error encoding schedule: \(error)")
+                }
+            }
+            
+            categoryStore.linkTracker(trackerCoreData, toCategoryWithTitle: categoryTitle)
+            
+            saveContext()
+            return convertToTrackerModel(coreDataTracker: trackerCoreData)
+        }
+        return nil
     }
     
     func fetchTrackerCoreData(by id: UUID) -> TrackerCoreData? {
@@ -91,11 +130,20 @@ final class TrackerStore: NSObject {
         
         return Tracker(
             id: coreDataTracker.id ?? UUID(),
-            name: coreDataTracker.name ?? "Что-то хорошее",
-            color: coreDataTracker.color ?? "colorSelection6",
-            emodji: coreDataTracker.emoji ?? "🦖",
-            schedule: schedule
+            name: coreDataTracker.name ?? L10n.defaultGoodThing,
+            color: coreDataTracker.color ?? L10n.defaultColor,
+            emodji: coreDataTracker.emoji ?? L10n.defaultEmoji,
+            schedule: schedule,
+            creationDate: coreDataTracker.creationDate ?? Date(),
+            originalCategory: coreDataTracker.originalCategory ?? L10n.defaultCategory
         )
+    }
+    
+    func deleteTracker(trackerId: UUID) {
+        if let trackerCoreData = fetchTrackerCoreData(by: trackerId) {
+            managedObjectContext.delete(trackerCoreData)
+            saveContext()
+        }
     }
     
     // MARK: - Setup Methods

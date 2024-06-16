@@ -15,16 +15,16 @@ final class AddCategoryViewController: UIViewController {
     
     // MARK: - UI Components
     
-    private lazy var titleLabel = CustomTitleLabel(text: "Категория")
+    private lazy var titleLabel = CustomTitleLabel(text: L10n.addCategoryTitle)
     
     private lazy var doneButton: CustomButton = {
-        let button = CustomButton(title: "Готово")
+        let button = CustomButton(title: L10n.done)
         button.addTarget(self, action: #selector(doneButtonTapped), for: .touchUpInside)
         return button
     }()
     
     private lazy var nameTextField: CustomTextField = {
-        let textField = CustomTextField(placeholder: "Введите название категории")
+        let textField = CustomTextField(placeholder: L10n.enterCategoryName)
         textField.addTarget(self, action: #selector(textFieldDidChange(_ :)), for: .editingChanged)
         return textField
     }()
@@ -53,6 +53,16 @@ final class AddCategoryViewController: UIViewController {
             self?.doneButton.isEnabled = isEnabled
             self?.doneButton.backgroundColor = isEnabled ? .ypBlackDay : .ypGray
         }
+        
+        viewModel.onInvalidCategoryName = { [weak self] isInvalid in
+                    self?.nameTextField.textColor = isInvalid ? .red : .black
+                    if isInvalid {
+                        self?.nameTextField.text = ""
+                        self?.nameTextField.placeholder = "Название недопустимо"
+                    } else {
+                        self?.nameTextField.placeholder = L10n.enterCategoryName
+                    }
+                }
     }
     
     // MARK: - Setup Methods

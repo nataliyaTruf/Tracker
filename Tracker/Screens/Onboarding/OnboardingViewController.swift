@@ -16,9 +16,9 @@ enum OnboardingPage: Int, CaseIterable {
     var title: String {
         switch self {
         case .pageOne:
-            return "Отслеживайте только то, что хотите"
+            return L10n.onboardingPageOne
         case .pageTwo:
-            return "Даже если это не литры воды и йога"
+            return L10n.onboardingPageTwo
         }
     }
     
@@ -46,7 +46,7 @@ final class OnboardingViewController: UIPageViewController {
     }()
     
     lazy var skipButton: CustomButton = {
-        let button = CustomButton(title: "Вот это технологии!")
+        let button = CustomButton(title: L10n.onboardingButtonText)
         button.addTarget(self, action: #selector(skipButtonTapped), for: .touchUpInside)
         return button
     }()

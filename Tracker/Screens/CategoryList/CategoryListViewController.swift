@@ -17,10 +17,10 @@ final class CategoryListViewController: UIViewController {
     // MARK: - UI Components
     
     private var tableView: UITableView!
-    private lazy var titleLabel = CustomTitleLabel(text: "Категория")
+    private lazy var titleLabel = CustomTitleLabel(text: L10n.categoryTitle)
     
     private lazy var addCategoryButton: CustomButton = {
-        let button = CustomButton(title: "Добавить категорию")
+        let button = CustomButton(title: L10n.addCategory)
         button.addTarget(self, action: #selector(addCategoryButtonTapped), for: .touchUpInside)
         return button
     }()
@@ -98,17 +98,17 @@ final class CategoryListViewController: UIViewController {
         view.addSubview(emptyStateView)
         
         NSLayoutConstraint.activate([
-                emptyStateView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-                emptyStateView.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor, constant: 20),
-                emptyStateView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-                emptyStateView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
-            ])
+            emptyStateView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            emptyStateView.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor, constant: 20),
+            emptyStateView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            emptyStateView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
+        ])
         
         emptyStateView.configure(with: .noCategories, labelHeight: 36)
     }
     
     // MARK: - UI Updates
-       
+    
     private func handleViewState(_ state: ViewState) {
         switch state {
         case .empty:
@@ -165,6 +165,7 @@ extension CategoryListViewController: UITableViewDelegate, UITableViewDataSource
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        _ = viewModel.categories[indexPath.row]
         viewModel.selectCategory(at: indexPath.row)
         tableView.reloadData()
     }

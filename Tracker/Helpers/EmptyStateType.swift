@@ -30,13 +30,13 @@ enum EmptyStateType {
     var text: String {
         switch self {
         case .noCategories:
-            return "Привычки и события можно\nобъединить по смыслу"
+            return L10n.noCategories
         case .noTrackers:
-            return "Что будем отслеживать?"
+            return L10n.noTrackers
         case .noResults:
-            return "Ничего не найдено"
+            return L10n.noResults
         case .noStats:
-            return "Анализировать пока нечего"
+            return L10n.noStats
         }
     }
 }

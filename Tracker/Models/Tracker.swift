@@ -13,4 +13,6 @@ struct Tracker {
     let color: String
     let emodji: String
     let schedule: ReccuringSchedule?
+    let creationDate: Date
+    let originalCategory: String?
 }
