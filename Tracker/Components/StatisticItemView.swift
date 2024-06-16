@@ -14,7 +14,7 @@ final class StatisticItemView: UIView {
     private let valueLabel: UILabel = {
         let label = UILabel()
         label.font = Fonts.bold(size: 34)
-        label.textColor = .black
+        label.textColor = .ypBlackDay
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()

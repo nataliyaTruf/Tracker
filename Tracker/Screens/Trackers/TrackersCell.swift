@@ -64,7 +64,7 @@ final class TrackersCell: UICollectionViewCell {
         label.textAlignment = .left
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
-        label.textColor = .ypWhiteDay
+        label.textColor = .white
         label.font = Fonts.medium(size: 12)
         label.text = L10n.defaultGoodThing
         label.translatesAutoresizingMaskIntoConstraints = false
