@@ -41,14 +41,14 @@ final class CategoryListViewModel {
     // MARK: - Methods
     
     func loadCategories() {
-        categories = categoryStore.getAllCategoriesWithTrackers()
+        categories = categoryStore.getAllCategoriesWithTrackers().filter { $0.title != L10n.pinned }
         updateViewState()
     }
     
     func selectCategory(at index: Int) {
         selectedCategory = categories[index]
         selectedIndex = IndexPath(row: index, section: 0)
-        onCategorySelected?(selectedCategory?.title ?? "По умолчанию")
+        onCategorySelected?(selectedCategory?.title ?? L10n.defaultCategory)
     }
     
     private func updateViewState() {

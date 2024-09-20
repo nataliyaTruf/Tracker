@@ -21,7 +21,7 @@ final class ReusableHeader: UICollectionReusableView {
         super.init(frame: frame)
         
         addSubview(titleLabel)
-        titleLabel.text = "Домашний уют"
+        titleLabel.text = L10n.defaultCategory
         titleLabel.font = Fonts.bold(size: 19)
         titleLabel.textColor = .ypBlackDay
         titleLabel.translatesAutoresizingMaskIntoConstraints = false

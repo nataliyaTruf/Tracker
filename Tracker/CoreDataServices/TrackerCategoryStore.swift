@@ -76,7 +76,9 @@ final class TrackerCategoryStore: NSObject {
         let fetchRequest: NSFetchRequest<TrackerCategoryCoreData> = TrackerCategoryCoreData.fetchRequest()
         do {
             let categoriesCoreData = try managedObjectContext.fetch(fetchRequest)
-            return categoriesCoreData.map { convertToTrackerCategoryModel(coreDataCategory: $0) }
+            
+            let categories = categoriesCoreData.map { convertToTrackerCategoryModel(coreDataCategory: $0) }
+            return categories
         } catch {
             print("Failed to fetch categories with trackers: \(error)")
             return []
@@ -98,13 +100,55 @@ final class TrackerCategoryStore: NSObject {
                 return nil
             }()
             
-            return Tracker(id: trackerCoreData.id ?? UUID(),
-                           name: trackerCoreData.name ?? "Что-то хорошее",
-                           color: trackerCoreData.color ?? "colorSelection6",
-                           emodji: trackerCoreData.emoji ?? "🦖",
-                           schedule: schedule)
+            return Tracker(
+                id: trackerCoreData.id ?? UUID(),
+                name: trackerCoreData.name ?? L10n.defaultGoodThing,
+                color: trackerCoreData.color ?? L10n.defaultColor,
+                emodji: trackerCoreData.emoji ?? L10n.defaultEmoji,
+                schedule: schedule,
+                creationDate: trackerCoreData.creationDate ?? Date(), 
+                originalCategory: trackerCoreData.originalCategory ?? L10n.defaultCategory
+            )
         }
-        return TrackerCategory(title: coreDataCategory.title ?? "По умолчанию", trackers: trackers)
+        return TrackerCategory(title: coreDataCategory.title ?? L10n.defaultCategory, trackers: trackers)
+    }
+    
+    func pinTracker(_ trackerId: UUID) {
+        guard let trackerCoreData = CoreDataStack.shared.trackerStore.fetchTrackerCoreData(by: trackerId) else { return }
+        
+        if let currentCategory = trackerCoreData.category {
+            currentCategory.removeFromTrackers(trackerCoreData)
+            trackerCoreData.originalCategory = currentCategory.title
+        }
+        
+        let pinnedCategory = createCategoryIfNotExists(with: L10n.pinned)
+        //        trackerCoreData.originalCategory = trackerCoreData.category?.title
+        trackerCoreData.category = pinnedCategory
+        pinnedCategory.addToTrackers(trackerCoreData)
+        
+        saveContext()
+    }
+    
+    func unpinTracker(_ trackerId: UUID) {
+        guard let trackerCoreData = CoreDataStack.shared.trackerStore.fetchTrackerCoreData(by: trackerId) else { return }
+        
+        if let pinnedCategory = trackerCoreData.category, pinnedCategory.title == L10n.pinned {
+            pinnedCategory.removeFromTrackers(trackerCoreData)
+        }
+        
+        if let originalCategoryTitle = trackerCoreData.originalCategory {
+            if let originalCategory = fetchCategory(by: originalCategoryTitle) {
+                trackerCoreData.category = originalCategory
+                originalCategory.addToTrackers(trackerCoreData)
+                trackerCoreData.originalCategory = nil
+            } else {
+                let newCategory = createCategoryIfNotExists(with: originalCategoryTitle)
+                trackerCoreData.category = newCategory
+                newCategory.addToTrackers(trackerCoreData)
+                trackerCoreData.originalCategory = nil
+            }
+        }
+        saveContext()
     }
     
     // MARK: - Setup Methods
@@ -136,7 +180,8 @@ final class TrackerCategoryStore: NSObject {
             do {
                 try managedObjectContext.save()
             } catch {
-                print("Failed to save context: \(error)")            }
+                print("Failed to save context: \(error)")
+            }
         }
     }
 }

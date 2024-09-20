@@ -27,17 +27,25 @@ final class MainTabBarController: UITabBarController {
         setupTabBarAppearance()
     }
     
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        
+        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            setupTabBarAppearance()
+        }
+    }
+    
     // MARK: - Setup Methods
     
     private func getTabBar() {
         let trackersVC = getVC(
             viewController: TrackersViewController(),
-            title: "Трекеры",
+            title: L10n.tabBarTrackers,
             image: UIImage(named: "trackers")
         )
         let statsVC = getVC(
             viewController: StatisticsViewController(),
-            title: "Статистика",
+            title: L10n.tabBarStatistics,
             image: UIImage(named: "stats")
         )
         let trackersNavController = UINavigationController(rootViewController: trackersVC)
@@ -50,8 +58,12 @@ final class MainTabBarController: UITabBarController {
         return viewController
     }
     
-    private func setupTabBarAppearance() {
-        tabBar.layer.borderColor = UIColor.ypGray.cgColor
+    func setupTabBarAppearance() {
+        if traitCollection.userInterfaceStyle == .dark {
+            tabBar.layer.borderColor = UIColor.ypWhiteDay.cgColor
+        } else {
+            tabBar.layer.borderColor = UIColor.ypGray.cgColor
+        }
         tabBar.layer.borderWidth = 1.0
         tabBar.clipsToBounds = true
     }

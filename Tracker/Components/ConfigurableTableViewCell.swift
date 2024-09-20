@@ -32,7 +32,7 @@ final class ConfigurableTableViewCell: UITableViewCell {
     
     private lazy var additionalTextLabel: UILabel = {
         let label = UILabel()
-        label.text = "расписание"
+        label.text = L10n.defaultScheduleText
         label.textColor = .ypGray
         label.font = Fonts.medium(size: 17)
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -101,6 +101,10 @@ final class ConfigurableTableViewCell: UITableViewCell {
     func showSeparator() {
         separator.isHidden = false
     }
+    
+    func setTitleTextColor(_ color: UIColor) {
+           titleLabel.textColor = color
+       }
     
     func configure(with text: String, additionalText: String? = nil, accessoryType: CellAccessoryType) {
         titleLabel.text = text
